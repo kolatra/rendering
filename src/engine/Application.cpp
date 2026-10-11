@@ -4,6 +4,8 @@
 #include "platform/WindowGLFW.hpp"
 #include <iostream>
 
+#include "objects/Penger.hpp"
+
 Application::Application(uint32_t width, uint32_t height, std::string &title) {
     // TODO: Default for now, configurable somehow later.
     rendering_backend = Backend::OpenGL;
@@ -29,8 +31,9 @@ Application::Application(uint32_t width, uint32_t height, std::string &title) {
 
 void Application::run() {
     GLShader shader("shaders/triangle.vsh", "shaders/triangle.fsh");
-    Model penger("penger-obj-main/penger/penger.obj", false);
+    Penger penger;
 
+    window->Show();
     while (!window->ShouldClose()) {
         renderer->clear({0.2f, 0.3f, 0.3f, 1.0f});
 

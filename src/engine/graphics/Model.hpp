@@ -24,12 +24,12 @@ public:
 
     // model data
     std::vector<Texture> textures_loaded;
-    std::vector<Mesh> meshes;
+    std::vector<GlMesh> meshes;
     std::string directory;
     bool gammaCorrection;
 
     void loadModel(std::string path);
     void processNode(aiNode *node, const aiScene *scene);
-    Mesh processMesh(aiMesh *mesh, const aiScene *scene);
+    GlMesh processMesh(aiMesh *mesh, const aiScene *scene);
     std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 };

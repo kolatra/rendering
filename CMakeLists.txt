@@ -20,7 +20,11 @@ set(ASSIMP_INCLUDE_DIR ${ASSIMP_DIR}/include)
 set(ASSIMP_LIB_DIR "C:\\Users\\tlouk\\git\\assimp\\lib\\Debug")
 set(ASSIMP_BIN_DIR "C:\\Users\\tlouk\\git\\assimp\\bin\\Debug")
 
-add_compile_options(/utf-8)
+if (MSVC)
+    add_compile_options(/utf-8 /bigobj)
+endif ()
+
+find_package(Vulkan REQUIRED COMPONENTS volk shaderc_combined)
 
 add_executable(engine_v29090909 src/main.cpp
         src/engine/platform/IWindow.hpp
@@ -34,6 +38,8 @@ add_executable(engine_v29090909 src/main.cpp
         include/glad/gl.c
         src/engine/graphics/Model.cpp
         src/engine/graphics/Model.hpp
+        src/engine/objects/Penger.cpp
+        src/engine/objects/Penger.hpp
 )
 
 target_include_directories(${PROJECT_NAME}
@@ -55,8 +61,11 @@ target_link_directories(${PROJECT_NAME}
         ${ASSIMP_BIN_DIR}
 )
 
-target_link_libraries(${PROJECT_NAME}
-        PRIVATE glfw3
-        PRIVATE freetype
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        glfw3
+        freetype
         assimp-vc145-mtd
+        Vulkan::Vulkan
+        Vulkan::volk
+        Vulkan::shaderc_combined
 )

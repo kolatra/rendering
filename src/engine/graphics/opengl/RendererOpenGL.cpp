@@ -29,7 +29,7 @@ void RendererOpenGL::endFrame() {
 
 }
 
-void RendererOpenGL::drawMesh(const Mesh &mesh, IShader &shader, glm::mat4 transform) {
+void RendererOpenGL::drawMesh(const GlMesh &mesh, IShader &shader, glm::mat4 transform) {
     auto gl_shader = static_cast<GLShader&>(shader);
 }
 
@@ -102,15 +102,11 @@ void GLShader::setInt(const std::string &name, int value) {
     
 }
 
-Mesh::Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices, std::vector<Texture> &textures) {
+GlMesh::GlMesh(std::vector<Vertex> &vertices, std::vector<uint32_t> &indices, std::vector<Texture> &textures) {
     this->vertices = vertices;
     this->indices = indices;
     this->textures = textures;
 
-    setupMesh();
-}
-
-void Mesh::setupMesh() {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -120,7 +116,7 @@ void Mesh::setupMesh() {
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32_t), &indices[0], GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
@@ -134,10 +130,14 @@ void Mesh::setupMesh() {
     glBindVertexArray(0);
 }
 
-void Mesh::Draw(IShader &shader) {
-    unsigned int diffuseNr = 1;
-    unsigned int specularNr = 1;
-    for (unsigned int i = 0; i < textures.size(); i++) {
+GlMesh::~GlMesh() {
+
+}
+
+void GlMesh::Draw(IShader &shader) {
+    uint32_t diffuseNr = 1;
+    uint32_t specularNr = 1;
+    for (uint32_t i = 0; i < textures.size(); i++) {
         glActiveTexture(GL_TEXTURE0 + i);
         std::string number;
         std::string name = textures[i].type;
@@ -155,11 +155,11 @@ void Mesh::Draw(IShader &shader) {
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
 
-unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma) {
+uint32_t TextureFromFile(const char *path, const std::string &directory, bool gamma) {
     std::string filename = std::string(path);
     filename = directory + '/' + filename;
 
-    unsigned int textureID;
+    uint32_t textureID;
     glGenTextures(1, &textureID);
 
     int width, height, nrComponents;

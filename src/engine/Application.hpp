@@ -1,5 +1,5 @@
-#ifndef ENGINE_V29090909_APPLICATION_HPP
-#define ENGINE_V29090909_APPLICATION_HPP
+#pragma once
+
 #include <memory>
 
 #include "graphics/IRenderer.hpp"
@@ -15,4 +15,3 @@ public:
     void setBackend(const Backend choice) { rendering_backend = choice; }
 };
 
-#endif //ENGINE_V29090909_APPLICATION_HPP

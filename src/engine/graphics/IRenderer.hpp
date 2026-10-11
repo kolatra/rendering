@@ -27,21 +27,27 @@ struct Vertex {
 };
 
 struct Texture {
-    unsigned int id;
+    uint32_t id;
     std::string type;
     std::string path;
 };
 
-class Mesh {
+class IMesh {
 public:
     std::vector<Vertex> vertices;
-    std::vector<unsigned int> indices;
+    std::vector<uint32_t> indices;
     std::vector<Texture> textures;
-    Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices, std::vector<Texture> &textures);
-    void Draw(IShader &shader);
+    virtual ~IMesh() = default;
+    virtual void Draw(IShader &shader) = 0;
+};
+
+class GlMesh : public IMesh {
+public:
+    GlMesh(std::vector<Vertex> &vertices, std::vector<uint32_t> &indices, std::vector<Texture> &textures);
+    ~GlMesh() override;
+    void Draw(IShader &shader) override;
 private:
-    unsigned int VAO, VBO, EBO;
-    void setupMesh();
+    uint32_t VAO, VBO, EBO; // OpenGL specific stuff, needs to be made into a subclass?
 };
 
 class IRenderer {
@@ -52,7 +58,7 @@ public:
     virtual void beginFrame() = 0;
     virtual void endFrame() = 0;
 
-    virtual void drawMesh(const Mesh& mesh, IShader& shader, glm::mat4 transform) = 0;
+    virtual void drawMesh(const GlMesh& mesh, IShader& shader, glm::mat4 transform) = 0;
 
     virtual void clear(const glm::vec4& colour) = 0;
 };

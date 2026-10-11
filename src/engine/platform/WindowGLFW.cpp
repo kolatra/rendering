@@ -1,7 +1,11 @@
 #include <glad/gl.h>
-#include <exception>
 #include "../Application.hpp"
 #include "WindowGLFW.hpp"
+
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
+#include <exception>
 #include <iostream>
 
 class Application;
@@ -29,7 +33,7 @@ namespace {
 }
 
 WindowGLFW::WindowGLFW(Backend backend, int width, int height, std::string& title, Application *app) {
-    this->rendering_backend = backend;
+    this->backend = backend;
     if (!glfwInit()) {
         std::cout << "Couldn't load glfw!\n";
         throw std::exception();
@@ -40,32 +44,35 @@ WindowGLFW::WindowGLFW(Backend backend, int width, int height, std::string& titl
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+    } else if (backend == Backend::Vulkan) {
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        throw std::exception("not implemented");
+    }
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE);
 
-        handle = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-        if (!handle) {
-            glfwTerminate();
-            throw std::exception();
-        }
+    handle = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+    if (!handle) {
+        glfwTerminate();
+        throw std::exception();
+    }
+    glfwMakeContextCurrent(handle);
+    glfwSwapInterval(0);
 
-        glfwSetErrorCallback(errors);
-        glfwSetFramebufferSizeCallback(handle, resize);
-        glfwSetKeyCallback(handle, keys);
-        glfwSetCursorPosCallback(handle, cursor);
-        glfwSetMouseButtonCallback(handle, mouse);
-
-        glfwMakeContextCurrent(handle);
-        glfwSwapInterval(0);
-
+    if (backend == Backend::OpenGL) {
         if (!gladLoadGL(glfwGetProcAddress)) {
             std::cout << "Couldn't load OpenGL with glad!\n";
             throw std::exception();
         }
-
-        glfwSetWindowUserPointer(handle, app);
-    } else {
-        // Vulkan/Metal etc.
-        throw std::exception("Unsupported backend!");
     }
+
+    glfwSetErrorCallback(errors);
+    glfwSetFramebufferSizeCallback(handle, resize);
+    glfwSetKeyCallback(handle, keys);
+    glfwSetCursorPosCallback(handle, cursor);
+    glfwSetMouseButtonCallback(handle, mouse);
+    glfwSetWindowUserPointer(handle, app);
 }
 
 WindowGLFW::~WindowGLFW() {
@@ -79,5 +86,29 @@ void *WindowGLFW::CreateSurface(void *apiContext) {
         return nullptr;
     }
 
+    if (backend == Backend::Vulkan) {
+        // create surface and other shit and return
+    }
+
     return nullptr;
+}
+
+void WindowGLFW::Show() {
+    glfwShowWindow(handle);
+}
+
+void WindowGLFW::PollEvents() {
+    glfwPollEvents();
+}
+
+void WindowGLFW::SwapBuffers() {
+    glfwSwapBuffers(handle);
+}
+
+void *WindowGLFW::GetNativeHandle() {
+    return handle;
+}
+
+bool WindowGLFW::ShouldClose() {
+    return glfwWindowShouldClose(handle);
 }

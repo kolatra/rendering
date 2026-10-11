@@ -3,7 +3,7 @@
 
 class GLShader : public IShader {
 public:
-    unsigned int ID {};
+    uint32_t ID {};
 
     GLShader(const std::string& vertex_path, const std::string& fragment_path);
     ~GLShader() override;
@@ -18,8 +18,8 @@ public:
     void init(IWindow *window, int width, int height) override;
     void beginFrame() override;
     void endFrame() override;
-    void drawMesh(const Mesh &mesh, IShader &shader, glm::mat4 transform) override;
+    void drawMesh(const GlMesh &mesh, IShader &shader, glm::mat4 transform) override;
     void clear(const glm::vec4 &colour) override;
 };
 
-unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
+uint32_t TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
