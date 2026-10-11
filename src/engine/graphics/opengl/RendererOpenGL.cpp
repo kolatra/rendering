@@ -29,8 +29,8 @@ void RendererOpenGL::endFrame() {
 
 }
 
-void RendererOpenGL::drawMesh(const Mesh &mesh, const IShader &shader, glm::mat4 transform) {
-
+void RendererOpenGL::drawMesh(const Mesh &mesh, IShader &shader, glm::mat4 transform) {
+    auto gl_shader = static_cast<GLShader&>(shader);
 }
 
 void RendererOpenGL::clear(const glm::vec4 &colour) {

@@ -18,7 +18,7 @@ public:
     void init(IWindow *window, int width, int height) override;
     void beginFrame() override;
     void endFrame() override;
-    void drawMesh(const Mesh &mesh, const IShader &shader, glm::mat4 transform) override;
+    void drawMesh(const Mesh &mesh, IShader &shader, glm::mat4 transform) override;
     void clear(const glm::vec4 &colour) override;
 };
 
