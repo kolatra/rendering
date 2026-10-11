@@ -20,7 +20,7 @@ public:
         << "        Vertices: " << meshes[0].vertices.size() << "\n"
         << "        Indices: " << meshes[0].indices.size() << "\n";
     }
-    void Draw(GLShader &shader);
+    void Draw(IShader &shader);
 
     // model data
     std::vector<Texture> textures_loaded;

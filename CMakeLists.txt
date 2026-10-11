@@ -32,7 +32,6 @@ add_executable(engine_v29090909 src/main.cpp
         src/engine/graphics/opengl/RendererOpenGL.cpp
         src/engine/graphics/opengl/RendererOpenGL.hpp
         include/glad/gl.c
-        src/engine/graphics/IShader.hpp
         src/engine/graphics/Model.cpp
         src/engine/graphics/Model.hpp
 )

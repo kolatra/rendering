@@ -29,7 +29,7 @@ void RendererOpenGL::endFrame() {
 
 }
 
-void RendererOpenGL::drawMesh(const Mesh &mesh, const GLShader &shader, glm::mat4 transform) {
+void RendererOpenGL::drawMesh(const Mesh &mesh, const IShader &shader, glm::mat4 transform) {
 
 }
 
@@ -134,7 +134,7 @@ void Mesh::setupMesh() {
     glBindVertexArray(0);
 }
 
-void Mesh::Draw(GLShader &shader) {
+void Mesh::Draw(IShader &shader) {
     unsigned int diffuseNr = 1;
     unsigned int specularNr = 1;
     for (unsigned int i = 0; i < textures.size(); i++) {

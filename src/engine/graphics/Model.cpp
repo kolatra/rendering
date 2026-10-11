@@ -3,7 +3,7 @@
 
 #include "opengl/RendererOpenGL.hpp"
 
-void Model::Draw(GLShader &shader) {
+void Model::Draw(IShader &shader) {
     for (uint32_t i = 0; i < meshes.size(); i++) {
         meshes[i].Draw(shader);
     }

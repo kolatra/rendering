@@ -27,11 +27,6 @@ Application::Application(uint32_t width, uint32_t height, std::string &title) {
 
     renderer->init(window.get(), width, height);
     std::cout << "Renderer created.\n";
-
-    if (rendering_backend != window->rendering_backend) {
-        std::cout << "State mismatch from application to window!\n";
-        throw std::exception();
-    }
 }
 
 void Application::run() {

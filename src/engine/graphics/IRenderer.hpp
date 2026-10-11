@@ -5,7 +5,14 @@
 #include <string>
 #include <vector>
 
-#include "IShader.hpp"
+class IShader {
+public:
+    virtual ~IShader() = default;
+    virtual void use() = 0;
+    virtual void setBool(const std::string &name, bool value) = 0;
+    virtual void setInt(const std::string &name, int value) = 0;
+    virtual void setFloat(const std::string &name, float value) = 0;
+};
 
 #define MAX_BONE_INFLUENCE 4
 
@@ -25,25 +32,13 @@ struct Texture {
     std::string path;
 };
 
-class GLShader : public IShader {
-public:
-    unsigned int ID {};
-
-    GLShader(const std::string& vertex_path, const std::string& fragment_path);
-    ~GLShader() override;
-    void use() override;
-    void setBool(const std::string &name, bool value) override;
-    void setInt(const std::string &name, int value) override;
-    void setFloat(const std::string &name, float value) override;
-};
-
 class Mesh {
 public:
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
     std::vector<Texture> textures;
     Mesh(std::vector<Vertex> &vertices, std::vector<unsigned int> &indices, std::vector<Texture> &textures);
-    void Draw(GLShader &shader);
+    void Draw(IShader &shader);
 private:
     unsigned int VAO, VBO, EBO;
     void setupMesh();
@@ -57,7 +52,7 @@ public:
     virtual void beginFrame() = 0;
     virtual void endFrame() = 0;
 
-    virtual void drawMesh(const Mesh& mesh, const GLShader& shader, glm::mat4 transform) = 0;
+    virtual void drawMesh(const Mesh& mesh, const IShader& shader, glm::mat4 transform) = 0;
 
     virtual void clear(const glm::vec4& colour) = 0;
 };
