@@ -7,6 +7,7 @@ using LoadFunctionPointer = void(*)();
 
 class WindowGLFW : public IWindow {
     GLFWwindow *handle = nullptr;
+    Backend backend = Backend::None;
 public:
     WindowGLFW(Backend backend, int width, int height);
     ~WindowGLFW() override;
@@ -14,6 +15,7 @@ public:
     void SwapBuffers() override { glfwSwapBuffers(handle); }
     void *GetNativeHandle() override { return handle; }
     bool ShouldClose() override { return glfwWindowShouldClose(handle); }
-    void SetUserPointer(void *t) override { glfwSetWindowUserPointer(handle, t); }
-    void SetMouseGrab(bool flag) override;
+
+    void* CreateSurface(void* apiContext) override;
+    Backend GetBackend() const override { return backend; }
 };

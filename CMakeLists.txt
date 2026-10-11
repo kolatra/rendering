@@ -15,6 +15,11 @@ set(SPDLOG_DIR "C:\\Users\\tlouk\\Programming\\spdlog")
 set(SPDLOG_INCLUDE_DIR ${SPDLOG_DIR}/include)
 set(SPDLOG_LIB_DIR ${SPDLOG_DIR}/build/Debug)
 
+set(ASSIMP_DIR "C:\\Users\\tlouk\\git\\assimp")
+set(ASSIMP_INCLUDE_DIR ${ASSIMP_DIR}/include)
+set(ASSIMP_LIB_DIR "C:\\Users\\tlouk\\git\\assimp\\lib\\Debug")
+set(ASSIMP_BIN_DIR "C:\\Users\\tlouk\\git\\assimp\\bin\\Debug")
+
 add_compile_options(/utf-8)
 
 add_executable(engine_v29090909 src/main.cpp
@@ -27,7 +32,6 @@ add_executable(engine_v29090909 src/main.cpp
         src/engine/graphics/opengl/RendererOpenGL.cpp
         src/engine/graphics/opengl/RendererOpenGL.hpp
         include/glad/gl.c
-        src/engine/graphics/IShader.cpp
         src/engine/graphics/IShader.hpp
         src/engine/graphics/Model.cpp
         src/engine/graphics/Model.hpp
@@ -41,15 +45,19 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/imgui
         ${CMAKE_CURRENT_SOURCE_DIR}/imgui/backends
         ${SPDLOG_INCLUDE_DIR}
+        ${ASSIMP_INCLUDE_DIR}
 )
 
 target_link_directories(${PROJECT_NAME}
         PRIVATE ${GLFW_LIB_DIR}
         PRIVATE ${FREETYPE_LIB_DIR}
         ${SPDLOG_LIB_DIR}
+        ${ASSIMP_LIB_DIR}
+        ${ASSIMP_BIN_DIR}
 )
 
 target_link_libraries(${PROJECT_NAME}
         PRIVATE glfw3
         PRIVATE freetype
+        assimp-vc145-mtd
 )

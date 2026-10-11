@@ -1,15 +1,23 @@
 #include "RendererOpenGL.hpp"
 
+#include <iostream>
 #include <print>
+
+#include "../../Application.hpp"
 #include "glad/gl.h"
+#include "../../platform/WindowGLFW.hpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+#include <sstream>
+#include <fstream>
 
 void RendererOpenGL::init(IWindow *window, int width, int height) {
-    window->SetUserPointer(this);
-
+    // glfw has already initialized OpenGL in the background, so here we can
+    // set our application specific settings
     glEnable(GL_BLEND);
     glEnable(GL_PROGRAM_POINT_SIZE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     glViewport(0, 0, width, height);
 }
 
@@ -30,8 +38,52 @@ void RendererOpenGL::clear(const glm::vec4 &colour) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-GLShader::GLShader() {
+GLShader::GLShader(const std::string& vertex_path, const std::string& fragment_path) {
+    std::string vCode, fCode;
+    std::ifstream vertexFile, fragmentFile;
+    vertexFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    fragmentFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try {
+        vertexFile.open(vertex_path);
+        fragmentFile.open(fragment_path);
+        std::stringstream vertexStream, fragmentStream;
+        vertexStream << vertexFile.rdbuf();
+        fragmentStream << fragmentFile.rdbuf();
+        vertexFile.close();
+        fragmentFile.close();
+        vCode = vertexStream.str();
+        fCode = fragmentStream.str();
+    } catch (std::ifstream::failure &e) {
+        // spdlog::error("COULD NOT FIND SHADER FILE!!! vertexPath: {} fragmentPath: {}", vertexPath, fragmentPath);
+    }
 
+    const char* vertexCode = vCode.c_str();
+    const char* fragmentCode = fCode.c_str();
+
+    uint32_t vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexCode, NULL);
+    glCompileShader(vertexShader);
+    // sanityCheck(vertexShader);
+
+    uint32_t fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentCode, NULL);
+    glCompileShader(fragmentShader);
+    // sanityCheck(fragmentShader);
+
+    ID = glCreateProgram();
+    glAttachShader(ID, vertexShader);
+    glAttachShader(ID, fragmentShader);
+    glLinkProgram(ID);
+    // programSanityCheck(program_id);
+
+    // delete shader objects from RAM, as they're on the GPU
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+}
+
+GLShader::~GLShader() {
+    glDeleteProgram(ID);
 }
 
 void GLShader::use() {
@@ -101,4 +153,43 @@ void Mesh::Draw(GLShader &shader) {
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+}
+
+unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma) {
+    std::string filename = std::string(path);
+    filename = directory + '/' + filename;
+
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+
+    int width, height, nrComponents;
+    unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+    if (data)
+    {
+        GLenum format = 0;
+        if (nrComponents == 1)
+            format = GL_RED;
+        else if (nrComponents == 3)
+            format = GL_RGB;
+        else if (nrComponents == 4)
+            format = GL_RGBA;
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        stbi_image_free(data);
+    }
+    else
+    {
+        std::cout << "Texture failed to load at path: " << path << std::endl;
+        stbi_image_free(data);
+    }
+
+    return textureID;
 }

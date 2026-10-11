@@ -1,5 +1,4 @@
-#ifndef ENGINE_V29090909_IRENDERER_HPP
-#define ENGINE_V29090909_IRENDERER_HPP
+#pragma once
 #include "../platform/IWindow.hpp"
 
 #include <glm/glm.hpp>
@@ -8,22 +7,30 @@
 
 #include "IShader.hpp"
 
+#define MAX_BONE_INFLUENCE 4
+
 struct Vertex {
     glm::vec3 Position;
     glm::vec3 Normal;
     glm::vec2 TexCoords;
+    glm::vec3 Tangent;
+    glm::vec3 Bitangent;
+    int m_BoneIDs[MAX_BONE_INFLUENCE];
+    float m_Weights[MAX_BONE_INFLUENCE];
 };
 
 struct Texture {
     unsigned int id;
     std::string type;
+    std::string path;
 };
 
 class GLShader : public IShader {
 public:
     unsigned int ID {};
 
-    GLShader();
+    GLShader(const std::string& vertex_path, const std::string& fragment_path);
+    ~GLShader() override;
     void use() override;
     void setBool(const std::string &name, bool value) override;
     void setInt(const std::string &name, int value) override;
@@ -54,5 +61,3 @@ public:
 
     virtual void clear(const glm::vec4& colour) = 0;
 };
-
-#endif //ENGINE_V29090909_IRENDERER_HPP
