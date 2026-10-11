@@ -1,16 +1,14 @@
 #include "Application.hpp"
-
-#include <iostream>
-
 #include "graphics/Model.hpp"
 #include "graphics/opengl/RendererOpenGL.hpp"
 #include "platform/WindowGLFW.hpp"
+#include <iostream>
 
 Application::Application(uint32_t width, uint32_t height, std::string &title) {
     // TODO: Default for now, configurable somehow later.
     rendering_backend = Backend::OpenGL;
 
-    window = std::make_unique<WindowGLFW>(rendering_backend, width, height, title);
+    window = std::make_unique<WindowGLFW>(rendering_backend, width, height, title, this);
     std::cout << "Window created.\n";
 
     switch (rendering_backend) {

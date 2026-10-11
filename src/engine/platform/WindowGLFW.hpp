@@ -3,13 +3,13 @@
 
 #include <GLFW/glfw3.h>
 
-using LoadFunctionPointer = void(*)();
+class Application;
 
 class WindowGLFW : public IWindow {
     GLFWwindow *handle = nullptr;
     Backend backend = Backend::None;
 public:
-    WindowGLFW(Backend backend, int width, int height, std::string& title);
+    WindowGLFW(Backend backend, int width, int height, std::string& title, Application *app);
     ~WindowGLFW() override;
     void PollEvents() override { glfwPollEvents(); }
     void SwapBuffers() override { glfwSwapBuffers(handle); }

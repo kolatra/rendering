@@ -4,6 +4,8 @@
 #include "WindowGLFW.hpp"
 #include <iostream>
 
+class Application;
+
 namespace {
     void keys(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
@@ -26,7 +28,7 @@ namespace {
     }
 }
 
-WindowGLFW::WindowGLFW(Backend backend, int width, int height, std::string& title) {
+WindowGLFW::WindowGLFW(Backend backend, int width, int height, std::string& title, Application *app) {
     this->rendering_backend = backend;
     if (!glfwInit()) {
         std::cout << "Couldn't load glfw!\n";
@@ -58,6 +60,8 @@ WindowGLFW::WindowGLFW(Backend backend, int width, int height, std::string& titl
             std::cout << "Couldn't load OpenGL with glad!\n";
             throw std::exception();
         }
+
+        glfwSetWindowUserPointer(handle, app);
     } else {
         // Vulkan/Metal etc.
         throw std::exception("Unsupported backend!");

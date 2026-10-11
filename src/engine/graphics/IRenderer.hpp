@@ -52,7 +52,7 @@ public:
     virtual void beginFrame() = 0;
     virtual void endFrame() = 0;
 
-    virtual void drawMesh(const Mesh& mesh, const IShader& shader, glm::mat4 transform) = 0;
+    virtual void drawMesh(const Mesh& mesh, IShader& shader, glm::mat4 transform) = 0;
 
     virtual void clear(const glm::vec4& colour) = 0;
 };
