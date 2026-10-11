@@ -26,7 +26,8 @@ namespace {
     }
 }
 
-WindowGLFW::WindowGLFW(Backend backend, int width, int height) {
+WindowGLFW::WindowGLFW(Backend backend, int width, int height, std::string& title) {
+    this->rendering_backend = backend;
     if (!glfwInit()) {
         std::cout << "Couldn't load glfw!\n";
         throw std::exception();
@@ -38,7 +39,7 @@ WindowGLFW::WindowGLFW(Backend backend, int width, int height) {
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
-        handle = glfwCreateWindow(width, height, "GLFW Window", nullptr, nullptr);
+        handle = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
         if (!handle) {
             glfwTerminate();
             throw std::exception();

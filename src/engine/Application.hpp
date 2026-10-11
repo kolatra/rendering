@@ -10,7 +10,8 @@ class Application {
     std::unique_ptr<IRenderer> renderer;
     Backend rendering_backend = Backend::None;
 public:
-    void run(uint32_t width, uint32_t height);
+    Application(uint32_t width, uint32_t height, std::string& title);
+    void run();
     void setBackend(const Backend choice) { rendering_backend = choice; }
 };
 

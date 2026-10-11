@@ -6,8 +6,11 @@
 #include "graphics/opengl/RendererOpenGL.hpp"
 #include "platform/WindowGLFW.hpp"
 
-void Application::run(uint32_t width, uint32_t height) {
-    window = std::make_unique<WindowGLFW>(rendering_backend, width, height);
+Application::Application(uint32_t width, uint32_t height, std::string &title) {
+    // TODO: Default for now, configurable somehow later.
+    rendering_backend = Backend::OpenGL;
+
+    window = std::make_unique<WindowGLFW>(rendering_backend, width, height, title);
     std::cout << "Window created.\n";
 
     switch (rendering_backend) {
@@ -25,6 +28,13 @@ void Application::run(uint32_t width, uint32_t height) {
     renderer->init(window.get(), width, height);
     std::cout << "Renderer created.\n";
 
+    if (rendering_backend != window->rendering_backend) {
+        std::cout << "State mismatch from application to window!\n";
+        throw std::exception();
+    }
+}
+
+void Application::run() {
     GLShader shader("shaders/triangle.vsh", "shaders/triangle.fsh");
     Model penger("penger-obj-main/penger/penger.obj", false);
 

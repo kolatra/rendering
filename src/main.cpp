@@ -3,11 +3,10 @@
 #include "engine/Application.hpp"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    std::string title = "video";
+    auto *app = new Application(1280, 720, title);
 
-    auto *app = new Application();
-    app->setBackend(Backend::OpenGL);
-    app->run(1280, 720);
+    app->run();
 
     return 0;
 }

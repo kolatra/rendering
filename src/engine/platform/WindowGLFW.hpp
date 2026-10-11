@@ -9,7 +9,7 @@ class WindowGLFW : public IWindow {
     GLFWwindow *handle = nullptr;
     Backend backend = Backend::None;
 public:
-    WindowGLFW(Backend backend, int width, int height);
+    WindowGLFW(Backend backend, int width, int height, std::string& title);
     ~WindowGLFW() override;
     void PollEvents() override { glfwPollEvents(); }
     void SwapBuffers() override { glfwSwapBuffers(handle); }
