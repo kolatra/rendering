@@ -5,13 +5,23 @@
 #include "graphics/IRenderer.hpp"
 #include "platform/IWindow.hpp"
 
+struct Configuration {
+    Backend rendering_api = Backend::None;
+
+    struct {
+        uint32_t width;
+        uint32_t height;
+    } window_size;
+
+    bool Load();
+};
+
 class Application {
+    std::unique_ptr<Configuration> config;
     std::unique_ptr<IWindow> window;
     std::unique_ptr<IRenderer> renderer;
-    Backend rendering_backend = Backend::None;
 public:
     Application(uint32_t width, uint32_t height, std::string& title);
-    void run();
-    void setBackend(const Backend choice) { rendering_backend = choice;  }
+    void Run();
 };
 

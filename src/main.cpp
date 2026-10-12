@@ -5,8 +5,7 @@
 int main() {
     std::string title = "video";
     auto *app = new Application(1280, 720, title);
-
-    app->run();
+    app->Run();
 
     return 0;
 }

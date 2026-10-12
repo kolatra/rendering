@@ -40,6 +40,8 @@ add_executable(engine_v29090909 src/main.cpp
         src/engine/graphics/Model.hpp
         src/engine/objects/Penger.cpp
         src/engine/objects/Penger.hpp
+        src/engine/ecs/ECS.cpp
+        src/engine/ecs/ECS.hpp
 )
 
 target_include_directories(${PROJECT_NAME}

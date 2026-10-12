@@ -6,14 +6,21 @@
 
 #include "objects/Penger.hpp"
 
-Application::Application(uint32_t width, uint32_t height, std::string &title) {
-    // TODO: Default for now, configurable somehow later.
-    rendering_backend = Backend::OpenGL;
+bool Configuration::Load() {
+    return false;
+}
 
-    window = std::make_unique<WindowGLFW>(rendering_backend, width, height, title, this);
+Application::Application(uint32_t width, uint32_t height, std::string &title) {
+    config = std::make_unique<Configuration>();
+    config->window_size.width = width;
+    config->window_size.height = height;
+    config->rendering_api = Backend::OpenGL;
+    config->Load();
+
+    window = std::make_unique<WindowGLFW>(*config, title, this);
     std::cout << "Window created.\n";
 
-    switch (rendering_backend) {
+    switch (config->rendering_api) {
         case Backend::OpenGL:
             renderer = std::make_unique<RendererOpenGL>();
             break;
@@ -29,7 +36,7 @@ Application::Application(uint32_t width, uint32_t height, std::string &title) {
     std::cout << "Renderer created.\n";
 }
 
-void Application::run() {
+void Application::Run() {
     GLShader shader("shaders/triangle.vsh", "shaders/triangle.fsh");
     Penger penger;
 

@@ -32,8 +32,11 @@ namespace {
     }
 }
 
-WindowGLFW::WindowGLFW(Backend backend, int width, int height, std::string& title, Application *app) {
-    this->backend = backend;
+WindowGLFW::WindowGLFW(Configuration &config, std::string& title, Application *app) {
+    this->backend = config.rendering_api;
+    const auto width = config.window_size.width;
+    const auto height = config.window_size.height;
+
     if (!glfwInit()) {
         std::cout << "Couldn't load glfw!\n";
         throw std::exception();

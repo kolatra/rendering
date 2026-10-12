@@ -2,7 +2,7 @@
 
 ## Overview
 
-This folder contains a small C++ rendering-engine prototype named **Luna Rendering Engine** in `ARCHITECTURE.md`. The code is organized around an `Application` that owns a platform window and a renderer through interfaces. The currently selected implementation is GLFW + OpenGL. Vulkan and Metal appear in the backend enum, but are not implemented in the active code.
+This folder contains a small C++ rendering-engine prototype named **Luna Rendering Engine**. The code is organized around an `Application` that owns a platform window and a renderer through interfaces. The currently selected implementation is GLFW + OpenGL. Vulkan and Metal appear in the backend enum, but are not implemented in the active code.
 
 ## Source layout
 
