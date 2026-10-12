@@ -2,9 +2,7 @@
 #include "../../Application.hpp"
 #include "../glfw/WindowGLFW.hpp"
 
-#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-#include <vulkan/vulkan.h>
 #include <exception>
 #include <iostream>
 

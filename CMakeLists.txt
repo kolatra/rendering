@@ -1,73 +1,92 @@
 cmake_minimum_required(VERSION 4.3)
-project(engine_v29090909)
+project(engine_v29090909 LANGUAGES C CXX)
 
+option(ENGINE_ENABLE_VULKAN "Find and link Vulkan backend dependencies" OFF)
+option(BUILD_SHARED_LIBS "Build GLFW and Assimp as shared libraries" OFF)
+
+add_subdirectory(external/glfw)
+
+# Assimp is included as a submodule so the project does not depend on a
+# separately installed Assimp package.
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "Build Assimp tests" FORCE)
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "Build Assimp tools" FORCE)
+set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "Build Assimp samples" FORCE)
+set(ASSIMP_INSTALL OFF CACHE BOOL "Install Assimp" FORCE)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/assimp/CMakeLists.txt")
+    add_subdirectory(external/assimp)
+else()
+    message(FATAL_ERROR
+        "The Assimp submodule is missing. Initialize external/assimp before configuring the project."
+    )
+endif()
+
+add_executable(${PROJECT_NAME}
+    src/main.cpp
+    src/engine/platform/IWindow.hpp
+    src/engine/platform/glfw/WindowGLFW.cpp
+    src/engine/platform/glfw/WindowGLFW.hpp
+    src/engine/Application.cpp
+    src/engine/Application.hpp
+    src/engine/graphics/IRenderer.hpp
+    src/engine/graphics/opengl/RendererOpenGL.cpp
+    src/engine/graphics/opengl/RendererOpenGL.hpp
+    src/engine/graphics/Model.cpp
+    src/engine/graphics/Model.hpp
+    src/engine/objects/Penger.cpp
+    src/engine/objects/Penger.hpp
+    src/engine/ecs/ECS.cpp
+    src/engine/ecs/ECS.hpp
+    include/glad/gl.c
+)
+
+include(CheckCXXSourceCompiles)
 set(CMAKE_CXX_STANDARD 26)
+set(CMAKE_CXX_STANDARD_REQUIRED YES)
+set(CMAKE_CXX_EXTENSIONS NO)
+check_cxx_source_compiles("int main() { return 0; }" ENGINE_COMPILER_SUPPORTS_CXX26)
 
-set(GLFW_DIR "D:\\Deps\\glfw-3.4.bin.WIN64")
-set(GLFW_INCLUDE_DIR ${GLFW_DIR}/include)
-set(GLFW_LIB_DIR ${GLFW_DIR}/lib-vc2022)
+if(ENGINE_COMPILER_SUPPORTS_CXX26)
+    set(ENGINE_CXX_STANDARD 26)
+    message(STATUS "Using C++26")
+else()
+    set(ENGINE_CXX_STANDARD 23)
+    message(STATUS "Compiler does not support C++26; falling back to C++23")
+endif()
 
-set(FREETYPE_DIR "D:\\Deps\\freetype-2.9")
-set(FREETYPE_INCLUDE_DIR ${FREETYPE_DIR}/include)
-set(FREETYPE_LIB_DIR ${FREETYPE_DIR}/objs)
-
-set(SPDLOG_DIR "C:\\Users\\tlouk\\Programming\\spdlog")
-set(SPDLOG_INCLUDE_DIR ${SPDLOG_DIR}/include)
-set(SPDLOG_LIB_DIR ${SPDLOG_DIR}/build/Debug)
-
-set(ASSIMP_DIR "C:\\Users\\tlouk\\git\\assimp")
-set(ASSIMP_INCLUDE_DIR ${ASSIMP_DIR}/include)
-set(ASSIMP_LIB_DIR "C:\\Users\\tlouk\\git\\assimp\\lib\\Debug")
-set(ASSIMP_BIN_DIR "C:\\Users\\tlouk\\git\\assimp\\bin\\Debug")
-
-if (MSVC)
-    add_compile_options(/utf-8 /bigobj)
-endif ()
-
-find_package(Vulkan REQUIRED COMPONENTS volk shaderc_combined)
-
-add_executable(engine_v29090909 src/main.cpp
-        src/engine/platform/IWindow.hpp
-        src/engine/platform/glfw/WindowGLFW.cpp
-        src/engine/platform/glfw/WindowGLFW.hpp
-        src/engine/Application.cpp
-        src/engine/Application.hpp
-        src/engine/graphics/IRenderer.hpp
-        src/engine/graphics/opengl/RendererOpenGL.cpp
-        src/engine/graphics/opengl/RendererOpenGL.hpp
-        include/glad/gl.c
-        src/engine/graphics/Model.cpp
-        src/engine/graphics/Model.hpp
-        src/engine/objects/Penger.cpp
-        src/engine/objects/Penger.hpp
-        src/engine/ecs/ECS.cpp
-        src/engine/ecs/ECS.hpp
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    CXX_STANDARD ${ENGINE_CXX_STANDARD}
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
 )
 
-target_include_directories(${PROJECT_NAME}
-        PRIVATE ${GLFW_DIR}/include
-        PRIVATE ${FREETYPE_INCLUDE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${FREETYPE_INCLUDE_DIRS}
-        ${CMAKE_CURRENT_SOURCE_DIR}/imgui
-        ${CMAKE_CURRENT_SOURCE_DIR}/imgui/backends
-        ${SPDLOG_INCLUDE_DIR}
-        ${ASSIMP_INCLUDE_DIR}
-)
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /utf-8 /bigobj)
+endif()
 
-target_link_directories(${PROJECT_NAME}
-        PRIVATE ${GLFW_LIB_DIR}
-        PRIVATE ${FREETYPE_LIB_DIR}
-        ${SPDLOG_LIB_DIR}
-        ${ASSIMP_LIB_DIR}
-        ${ASSIMP_BIN_DIR}
+target_include_directories(${PROJECT_NAME} PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        glfw3
-        freetype
-        assimp-vc145-mtd
+    glfw
+    assimp::assimp
+)
+
+if(ENGINE_ENABLE_VULKAN)
+    find_package(Vulkan REQUIRED COMPONENTS volk shaderc_combined)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
         Vulkan::Vulkan
         Vulkan::volk
         Vulkan::shaderc_combined
-)
+    )
+endif()
+
+if(WIN32 AND BUILD_SHARED_LIBS)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}>
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND_EXPAND_LISTS
+        COMMENT "Copying runtime DLL dependencies"
+    )
+endif()

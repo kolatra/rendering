@@ -20,6 +20,8 @@ src/
     │   ├── Model.hpp / Model.cpp
     │   └── opengl/
     │       └── RendererOpenGL.hpp / RendererOpenGL.cpp
+    ├── ecs/
+    │   └── ECS.hpp / ECS.cpp
     └── objects/
         └── Penger.hpp / Penger.cpp
 
@@ -39,7 +41,7 @@ shaders/
 
 ### Application — `src/engine/Application.hpp`, `src/engine/Application.cpp`
 
-The top-level coordinator owns `std::unique_ptr<IWindow>` and `std::unique_ptr<IRenderer>`. It chooses the rendering backend, wires the window and renderer together, and controls the frame loop. The backend is currently hard-coded to OpenGL in the constructor; `setBackend()` exists but is not used to configure construction.
+The top-level coordinator owns a `Configuration`, an `IWindow`, and an `IRenderer`. The constructor currently selects OpenGL, creates the GLFW window and OpenGL renderer, then initializes the renderer. `Configuration::Load()` is a stub. `Application::Run()` owns the current frame loop and directly creates and draws the `Penger` object.
 
 ### Platform window — `src/engine/platform/`
 
@@ -66,7 +68,7 @@ The top-level coordinator owns `std::unique_ptr<IWindow>` and `std::unique_ptr<I
 
 ## Build and bundled dependencies
 
-The root `CMakeLists.txt` builds one executable from `src/main.cpp` and the engine sources. It requests C++26, finds Vulkan components, and links GLFW, FreeType, Assimp, and Vulkan libraries using configured local paths. The source tree also contains bundled headers under `include/`, including GLAD, GLM, stb_image, tinyobjloader, and CLI11. `include/glad/gl.c` is compiled into the executable. The existence of a library in the build configuration does not imply a corresponding implemented engine subsystem.
+The root `CMakeLists.txt` builds one executable from `src/main.cpp` and the engine sources. It checks whether the active compiler accepts C++26 and falls back to C++23 otherwise. GLFW and Assimp are built from the `external/` submodules, and the bundled GLAD C source is compiled into the executable. `BUILD_SHARED_LIBS` controls whether the GLFW and Assimp libraries are shared (off by default). Assimp tests, tools, samples, and install rules are disabled because it is embedded as a subproject. Vulkan dependencies are opt-in with `ENGINE_ENABLE_VULKAN`; the backend itself remains unimplemented. GLM, stb_image, and other vendored headers live under `include/`. FreeType, spdlog, and ImGui are not currently wired into the build because the listed engine sources do not use them.
 
 ## Current boundaries and caveats
 
@@ -75,7 +77,8 @@ The root `CMakeLists.txt` builds one executable from `src/main.cpp` and the engi
 - `beginFrame()` and `endFrame()` are empty in `RendererOpenGL`; the current loop clears and draws directly.
 - The renderer's `drawMesh()` currently only casts the shader type, and the shader uniform setters are commented out. Consequently, the model/shader path is only partially connected.
 - Shader compilation/link checks are commented out, and the text shaders have no corresponding C++ text renderer in this source tree.
-- Build configuration uses machine-specific dependency paths. Consult `CMakeLists.txt` for the exact dependency setup.
+- The ECS source files are an early stub and are not connected to `Application` or rendering yet.
+- `IRenderer::drawMesh()` still accepts `GlMesh`, so graphics resources are not yet backend-neutral even though the build can optionally discover Vulkan dependencies.
 
 ## Suggested reading order
 

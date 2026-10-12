@@ -53,8 +53,9 @@ GLShader::GLShader(const std::string& vertex_path, const std::string& fragment_p
         fragmentFile.close();
         vCode = vertexStream.str();
         fCode = fragmentStream.str();
-    } catch (std::ifstream::failure &e) {
-        // spdlog::error("COULD NOT FIND SHADER FILE!!! vertexPath: {} fragmentPath: {}", vertexPath, fragmentPath);
+    } catch (const std::ifstream::failure &) {
+        std::cerr << "Could not open shader files: " << vertex_path
+                  << " and " << fragment_path << '\n';
     }
 
     const char* vertexCode = vCode.c_str();
