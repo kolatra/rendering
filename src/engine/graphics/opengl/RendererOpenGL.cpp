@@ -5,7 +5,7 @@
 
 #include "../../Application.hpp"
 #include "glad/gl.h"
-#include "../../platform/WindowGLFW.hpp"
+#include "../../platform/glfw/WindowGLFW.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -87,19 +87,19 @@ GLShader::~GLShader() {
 }
 
 void GLShader::use() {
-
+    glUseProgram(ID);
 }
 
 void GLShader::setBool(const std::string &name, bool value) {
-
+    // glUniform1i(glGetUniformLocation(ID, name.c_str()), static_cast<int>(value));
 }
 
 void GLShader::setFloat(const std::string &name, float value) {
-
+    // glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 
 void GLShader::setInt(const std::string &name, int value) {
-    
+    // glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
 
 GlMesh::GlMesh(std::vector<Vertex> &vertices, std::vector<uint32_t> &indices, std::vector<Texture> &textures) {

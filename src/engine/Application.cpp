@@ -1,7 +1,7 @@
 #include "Application.hpp"
 #include "graphics/Model.hpp"
 #include "graphics/opengl/RendererOpenGL.hpp"
-#include "platform/WindowGLFW.hpp"
+#include "platform/glfw/WindowGLFW.hpp"
 #include <iostream>
 
 #include "objects/Penger.hpp"

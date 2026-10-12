@@ -1,6 +1,6 @@
 #include <glad/gl.h>
-#include "../Application.hpp"
-#include "WindowGLFW.hpp"
+#include "../../Application.hpp"
+#include "../glfw/WindowGLFW.hpp"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -63,6 +63,7 @@ WindowGLFW::WindowGLFW(Backend backend, int width, int height, std::string& titl
     if (backend == Backend::OpenGL) {
         if (!gladLoadGL(glfwGetProcAddress)) {
             std::cout << "Couldn't load OpenGL with glad!\n";
+            glfwTerminate();
             throw std::exception();
         }
     }

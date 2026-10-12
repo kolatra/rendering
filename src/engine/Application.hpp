@@ -12,6 +12,6 @@ class Application {
 public:
     Application(uint32_t width, uint32_t height, std::string& title);
     void run();
-    void setBackend(const Backend choice) { rendering_backend = choice; }
+    void setBackend(const Backend choice) { rendering_backend = choice;  }
 };
 

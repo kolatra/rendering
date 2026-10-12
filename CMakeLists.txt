@@ -28,8 +28,8 @@ find_package(Vulkan REQUIRED COMPONENTS volk shaderc_combined)
 
 add_executable(engine_v29090909 src/main.cpp
         src/engine/platform/IWindow.hpp
-        src/engine/platform/WindowGLFW.cpp
-        src/engine/platform/WindowGLFW.hpp
+        src/engine/platform/glfw/WindowGLFW.cpp
+        src/engine/platform/glfw/WindowGLFW.hpp
         src/engine/Application.cpp
         src/engine/Application.hpp
         src/engine/graphics/IRenderer.hpp
