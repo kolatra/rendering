@@ -4,9 +4,9 @@
 class Application;
 struct GLFWwindow;
 
+namespace Luna {
 class WindowGLFW : public IWindow {
     GLFWwindow *handle = nullptr;
-    Backend backend = Backend::None;
 public:
     WindowGLFW(Configuration &config, std::string& title, Application *app);
     ~WindowGLFW() override;
@@ -17,5 +17,5 @@ public:
     void Show() override;
 
     void* CreateSurface(void* apiContext) override;
-    Backend GetBackend() const override { return backend; }
 };
+}

@@ -11,6 +11,9 @@
 #include "IRenderer.hpp"
 #include <iostream>
 
+#include "opengl/RendererOpenGL.hpp"
+
+namespace Luna {
 class Model {
 public:
     explicit Model(const std::string &path, bool gamma = false) : gammaCorrection(gamma) {
@@ -33,3 +36,4 @@ public:
     GlMesh processMesh(aiMesh *mesh, const aiScene *scene);
     std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 };
+}

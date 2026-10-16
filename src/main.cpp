@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "engine/Application.hpp"
+using namespace Luna;
 
 int main() {
     std::string title = "video";

@@ -1,5 +1,6 @@
 #pragma once
 
+namespace Luna {
 enum class Backend {
     None,
     OpenGL,
@@ -8,6 +9,7 @@ enum class Backend {
 };
 
 class IWindow {
+    Backend backend = Backend::None;
 public:
     virtual ~IWindow() = default;
     virtual void PollEvents() = 0;
@@ -17,5 +19,7 @@ public:
     virtual void Show() = 0;
 
     virtual void* CreateSurface(void* apiContext) = 0;
-    virtual Backend GetBackend() const = 0;
+    Backend GetBackend() const { return backend; }
+    void SetBackend(Backend b) { this->backend = b; }
 };
+}

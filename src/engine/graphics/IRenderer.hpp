@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+namespace Luna {
 class IShader {
 public:
     virtual ~IShader() = default;
@@ -41,14 +42,6 @@ public:
     virtual void Draw(IShader &shader) = 0;
 };
 
-class GlMesh : public IMesh {
-public:
-    GlMesh(std::vector<Vertex> &vertices, std::vector<uint32_t> &indices, std::vector<Texture> &textures);
-    ~GlMesh() override;
-    void Draw(IShader &shader) override;
-private:
-    uint32_t VAO, VBO, EBO; // OpenGL specific stuff, needs to be made into a subclass?
-};
 
 class IRenderer {
 public:
@@ -58,7 +51,8 @@ public:
     virtual void beginFrame() = 0;
     virtual void endFrame() = 0;
 
-    virtual void drawMesh(const GlMesh& mesh, IShader& shader, glm::mat4 transform) = 0;
+    virtual void drawMesh(IMesh& mesh, IShader& shader, glm::mat4 transform) = 0;
 
     virtual void clear(const glm::vec4& colour) = 0;
 };
+}

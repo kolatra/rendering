@@ -6,6 +6,7 @@
 #include <exception>
 #include <iostream>
 
+namespace Luna {
 class Application;
 
 namespace {
@@ -31,21 +32,21 @@ namespace {
 }
 
 WindowGLFW::WindowGLFW(Configuration &config, std::string& title, Application *app) {
-    this->backend = config.rendering_api;
     const auto width = config.window_size.width;
     const auto height = config.window_size.height;
+    SetBackend(config.rendering_api);
 
     if (!glfwInit()) {
         std::cout << "Couldn't load glfw!\n";
         throw std::exception();
     }
 
-    if (backend == Backend::OpenGL) {
+    if (GetBackend() == Backend::OpenGL) {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-    } else if (backend == Backend::Vulkan) {
+    } else if (GetBackend() == Backend::Vulkan) {
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         throw std::exception("not implemented");
@@ -61,7 +62,7 @@ WindowGLFW::WindowGLFW(Configuration &config, std::string& title, Application *a
     glfwMakeContextCurrent(handle);
     glfwSwapInterval(0);
 
-    if (backend == Backend::OpenGL) {
+    if (GetBackend() == Backend::OpenGL) {
         if (!gladLoadGL(glfwGetProcAddress)) {
             std::cout << "Couldn't load OpenGL with glad!\n";
             glfwTerminate();
@@ -83,12 +84,12 @@ WindowGLFW::~WindowGLFW() {
 }
 
 void *WindowGLFW::CreateSurface(void *apiContext) {
-    if (backend == Backend::OpenGL) {
+    if (GetBackend() == Backend::OpenGL) {
         // glfw already handles this when the window is created for OpenGL contexts
         return nullptr;
     }
 
-    if (backend == Backend::Vulkan) {
+    if (GetBackend() == Backend::Vulkan) {
         // create surface and other shit and return
     }
 
@@ -113,4 +114,5 @@ void *WindowGLFW::GetNativeHandle() {
 
 bool WindowGLFW::ShouldClose() {
     return glfwWindowShouldClose(handle);
+}
 }

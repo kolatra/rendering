@@ -6,7 +6,9 @@
 
 #include "objects/Penger.hpp"
 
+namespace Luna {
 bool Configuration::Load() {
+    // TODO: implement loading config from a file on disk
     return false;
 }
 
@@ -36,7 +38,7 @@ Application::Application(uint32_t width, uint32_t height, std::string &title) {
     std::cout << "Renderer created.\n";
 }
 
-void Application::Run() {
+void Application::Run() const {
     GLShader shader("shaders/triangle.vsh", "shaders/triangle.fsh");
     Penger penger;
 
@@ -49,4 +51,5 @@ void Application::Run() {
         window->SwapBuffers();
         window->PollEvents();
     }
+}
 }

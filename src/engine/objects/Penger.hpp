@@ -1,6 +1,7 @@
 #pragma once
 #include "../graphics/Model.hpp"
 
+namespace Luna {
 class Penger {
 public:
     Model model { "penger-obj-main/penger/penger.obj", false };
@@ -8,3 +9,4 @@ public:
     ~Penger();
     void Draw(IShader &shader);
 };
+}

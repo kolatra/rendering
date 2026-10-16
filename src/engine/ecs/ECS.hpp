@@ -17,10 +17,8 @@ namespace Luna::ECS {
 
     typedef std::vector<Entity> Entities;
 
-    // The central Entity Component System
-    struct System {
+    struct EntityComponentSystem {
         std::unique_ptr<std::map<Entity, std::vector<EntityComponent>>> entities;
-        System();
         void AddComponent(Entity &entity, EntityComponent component);
     };
 }

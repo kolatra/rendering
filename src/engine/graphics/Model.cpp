@@ -3,6 +3,7 @@
 
 #include "opengl/RendererOpenGL.hpp"
 
+namespace Luna {
 void Model::Draw(IShader &shader) {
     for (uint32_t i = 0; i < meshes.size(); i++) {
         meshes[i].Draw(shader);
@@ -152,4 +153,4 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType 
     }
     return textures;
 }
-
+}

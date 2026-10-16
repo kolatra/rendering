@@ -12,6 +12,7 @@
 #include <sstream>
 #include <fstream>
 
+namespace Luna {
 void RendererOpenGL::init(IWindow *window, int width, int height) {
     // glfw has already initialized OpenGL in the background, so here we can
     // set our application specific settings
@@ -29,8 +30,9 @@ void RendererOpenGL::endFrame() {
 
 }
 
-void RendererOpenGL::drawMesh(const GlMesh &mesh, IShader &shader, glm::mat4 transform) {
+void RendererOpenGL::drawMesh(IMesh &mesh, IShader &shader, glm::mat4 transform) {
     auto gl_shader = static_cast<GLShader&>(shader);
+    auto gl_mesh = static_cast<GlMesh&>(mesh);
 }
 
 void RendererOpenGL::clear(const glm::vec4 &colour) {
@@ -193,4 +195,5 @@ uint32_t TextureFromFile(const char *path, const std::string &directory, bool ga
     }
 
     return textureID;
+}
 }
