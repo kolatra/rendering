@@ -3,9 +3,8 @@
 #include <iostream>
 #include <print>
 
-#include "engine/Application.hpp"
+#include "engine/core/Application.hpp"
 #include "glad/gl.h"
-#include "engine/platform/WindowGLFW.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -20,6 +19,9 @@ void RendererOpenGL::init(IWindow *window, int width, int height) {
     glEnable(GL_PROGRAM_POINT_SIZE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glViewport(0, 0, width, height);
+
+    auto *shader = new GLShader("shaders/triangle.vsh", "shaders/triangle.fsh");
+    this->shaders.push_back(shader);
 }
 
 void RendererOpenGL::beginFrame() {

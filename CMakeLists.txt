@@ -25,7 +25,7 @@ add_executable(${PROJECT_NAME}
         include/engine/platform/IWindow.hpp
         src/engine/platform/WindowGLFW.cpp
         include/engine/platform/WindowGLFW.hpp
-        include/engine/Application.hpp
+        include/engine/core/Application.hpp
         include/engine/graphics/IRenderer.hpp
     src/engine/graphics/opengl/RendererOpenGL.cpp
         include/engine/graphics/opengl/RendererOpenGL.hpp
@@ -36,6 +36,7 @@ add_executable(${PROJECT_NAME}
         src/engine/systems/entity/ECS.cpp
         include/engine/systems/entity/ECS.hpp
     include/glad/gl.c
+        src/engine/core/Application.cpp
 )
 
 include(CheckCXXSourceCompiles)

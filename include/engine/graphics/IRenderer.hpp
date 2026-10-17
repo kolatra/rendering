@@ -45,6 +45,7 @@ public:
 
 class IRenderer {
 public:
+    std::vector<IShader*> shaders;
     virtual ~IRenderer() = default;
 
     virtual void init(IWindow *window, int width, int height) = 0;

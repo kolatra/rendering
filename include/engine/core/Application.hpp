@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "graphics/IRenderer.hpp"
-#include "platform/IWindow.hpp"
+#include "../graphics/IRenderer.hpp"
+#include "../platform/IWindow.hpp"
 
 namespace Luna {
     struct Configuration {
@@ -20,6 +20,7 @@ namespace Luna {
         std::shared_ptr<Configuration> config;
         std::unique_ptr<IWindow> window;
         std::unique_ptr<IRenderer> renderer;
+        // Implemented in your main.cpp to run the app
         void Run() const;
     };
 

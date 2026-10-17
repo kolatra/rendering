@@ -1,5 +1,5 @@
 #include <glad/gl.h>
-#include "engine/Application.hpp"
+#include "../../../include/engine/core/Application.hpp"
 #include "engine/platform/WindowGLFW.hpp"
 
 #include <GLFW/glfw3.h>
@@ -7,27 +7,27 @@
 #include <iostream>
 
 namespace Luna {
-void keys(GLFWwindow* window, int key, int scancode, int action, int mods) {
+static void keys(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
 }
 
-void resize(GLFWwindow *window, int32_t w, int32_t h) {
+static void resize(GLFWwindow *window, int32_t w, int32_t h) {
     glViewport(0, 0, w, h);
 }
 
-void cursor(GLFWwindow* window, double x, double y) {
+static void cursor(GLFWwindow* window, double x, double y) {
 
 }
 
-void mouse(GLFWwindow* window, int32_t button, int32_t action, int32_t mods) {
+static void mouse(GLFWwindow* window, int32_t button, int32_t action, int32_t mods) {
 
 }
 
-void errors(int32_t error, const char *description) {
+static void errors(int32_t error, const char *description) {
     std::fprintf(stderr, "Code: %d\nError: %s\n", error, description);
 }
 
-WindowGLFW::WindowGLFW(std::shared_ptr<Configuration> config, Application *app) {
+WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, Application *app) {
     this->config = config;
     const auto width = config->width;
     const auto height = config->height;
@@ -55,10 +55,10 @@ WindowGLFW::WindowGLFW(std::shared_ptr<Configuration> config, Application *app) 
         glfwTerminate();
         throw std::exception();
     }
-    glfwMakeContextCurrent(handle);
-    glfwSwapInterval(0);
 
     if (config->rendering_api == Backend::OpenGL) {
+        glfwMakeContextCurrent(handle);
+        glfwSwapInterval(0);
         if (!gladLoadGL(glfwGetProcAddress)) {
             std::cout << "Couldn't load OpenGL with glad!\n";
             glfwTerminate();
