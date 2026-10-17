@@ -1,11 +1,11 @@
-#include "RendererOpenGL.hpp"
+#include "engine/graphics/opengl/RendererOpenGL.hpp"
 
 #include <iostream>
 #include <print>
 
-#include "../../Application.hpp"
+#include "engine/Application.hpp"
 #include "glad/gl.h"
-#include "../../platform/glfw/WindowGLFW.hpp"
+#include "engine/platform/WindowGLFW.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 

@@ -21,21 +21,20 @@ else()
 endif()
 
 add_executable(${PROJECT_NAME}
-    src/main.cpp
-    src/engine/platform/IWindow.hpp
-    src/engine/platform/glfw/WindowGLFW.cpp
-    src/engine/platform/glfw/WindowGLFW.hpp
-    src/engine/Application.cpp
-    src/engine/Application.hpp
-    src/engine/graphics/IRenderer.hpp
+        src/app/main.cpp
+        include/engine/platform/IWindow.hpp
+        src/engine/platform/WindowGLFW.cpp
+        include/engine/platform/WindowGLFW.hpp
+        include/engine/Application.hpp
+        include/engine/graphics/IRenderer.hpp
     src/engine/graphics/opengl/RendererOpenGL.cpp
-    src/engine/graphics/opengl/RendererOpenGL.hpp
+        include/engine/graphics/opengl/RendererOpenGL.hpp
     src/engine/graphics/Model.cpp
-    src/engine/graphics/Model.hpp
+        include/engine/graphics/Model.hpp
     src/engine/objects/Penger.cpp
     src/engine/objects/Penger.hpp
-    src/engine/ecs/ECS.cpp
-    src/engine/ecs/ECS.hpp
+        src/engine/systems/entity/ECS.cpp
+        include/engine/systems/entity/ECS.hpp
     include/glad/gl.c
 )
 

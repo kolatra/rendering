@@ -1,5 +1,5 @@
 #pragma once
-#include "../graphics/Model.hpp"
+#include "engine/graphics/Model.hpp"
 
 namespace Luna {
 class Penger {

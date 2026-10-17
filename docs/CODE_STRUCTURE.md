@@ -63,7 +63,7 @@ The dashed ECS connection is a future direction, not an existing runtime path. A
 
 ### Entry point
 
-[`src/main.cpp`](../src/main.cpp) creates a 1280×720 application and starts it:
+[`../src/app/main.cpp`](../src/app/main.cpp) creates a 1280×720 application and starts it:
 
 ```cpp
 std::string title = "video";
@@ -107,7 +107,7 @@ The loop clears and draws directly. `beginFrame()` and `endFrame()` exist on `IR
 
 ## Platform window
 
-[`IWindow.hpp`](../src/engine/platform/IWindow.hpp) defines the window-facing API and the `Backend` enum (`None`, `OpenGL`, `Vulkan`, `Metal`). [`WindowGLFW`](../src/engine/platform/glfw/WindowGLFW.cpp) implements the API using GLFW. It creates the window/context, loads OpenGL functions with GLAD, installs callbacks, shows the window, polls events, swaps buffers, and checks the close flag.
+[`IWindow.hpp`](../include/engine/platform/IWindow.hpp) defines the window-facing API and the `Backend` enum (`None`, `OpenGL`, `Vulkan`, `Metal`). [`WindowGLFW`](../src/engine/platform/WindowGLFW.cpp) implements the API using GLFW. It creates the window/context, loads OpenGL functions with GLAD, installs callbacks, shows the window, polls events, swaps buffers, and checks the close flag.
 
 For OpenGL, GLFW creates the context and the implementation loads GL functions after making it current:
 
@@ -124,7 +124,7 @@ The keyboard, cursor, and mouse callbacks are currently empty. The framebuffer r
 
 ### Interfaces and OpenGL classes
 
-[`IRenderer.hpp`](../src/engine/graphics/IRenderer.hpp) declares `IShader`, `IMesh`, `IRenderer`, plus shared `Vertex` and `Texture` data structures. `RendererOpenGL` implements renderer initialization and framebuffer clearing. `GLShader` loads, compiles, and links a vertex/fragment shader program. `GlMesh` owns OpenGL vertex, index, and array buffer handles, uploads geometry, and issues indexed triangle draws.
+[`IRenderer.hpp`](../include/engine/graphics/IRenderer.hpp) declares `IShader`, `IMesh`, `IRenderer`, plus shared `Vertex` and `Texture` data structures. `RendererOpenGL` implements renderer initialization and framebuffer clearing. `GLShader` loads, compiles, and links a vertex/fragment shader program. `GlMesh` owns OpenGL vertex, index, and array buffer handles, uploads geometry, and issues indexed triangle draws.
 
 The mesh setup binds position, normal, and texture-coordinate attributes:
 
@@ -155,7 +155,7 @@ Material texture references are cached per `Model`. `TextureFromFile()` in `Rend
 
 ## ECS: current stub and a possible next step
 
-[`ECS.hpp`](../src/engine/ecs/ECS.hpp) is only a sketch today. `EntityComponent` is empty; `Entity` contains a numeric ID and a vector of those empty components. `System` declares a map-based storage and `AddComponent()`, but neither has a working implementation. `ECS.cpp` is empty apart from a `Luna::Registry` namespace, which does not match the `Luna::ECS` namespace in the header. `Application` and `Penger` do not use this code.
+[`ECS.hpp`](../include/engine/systems/entity/ECS.hpp) is only a sketch today. `EntityComponent` is empty; `Entity` contains a numeric ID and a vector of those empty components. `System` declares a map-based storage and `AddComponent()`, but neither has a working implementation. `ECS.cpp` is empty apart from a `Luna::Registry` namespace, which does not match the `Luna::ECS` namespace in the header. `Application` and `Penger` do not use this code.
 
 A useful next step is to make the Penger an entity whose data is held in small, independent components, then have a system interpret those components. For example, this is a **design sketch only**; these types and APIs are not implemented in the repository:
 
@@ -207,10 +207,10 @@ CMake tests whether the selected compiler accepts the C++26 dialect and falls ba
 
 ## Suggested reading order
 
-1. [`src/main.cpp`](../src/main.cpp) — entry point.
+1. [`../src/app/main.cpp`](../src/app/main.cpp) — entry point.
 2. [`src/engine/Application.cpp`](../src/engine/Application.cpp) — startup and loop.
-3. [`src/engine/platform/IWindow.hpp`](../src/engine/platform/IWindow.hpp) and [`WindowGLFW.cpp`](../src/engine/platform/glfw/WindowGLFW.cpp) — window contract and GLFW implementation.
-4. [`src/engine/graphics/IRenderer.hpp`](../src/engine/graphics/IRenderer.hpp) and [`RendererOpenGL.cpp`](../src/engine/graphics/opengl/RendererOpenGL.cpp) — graphics interfaces and current backend.
+3. [`../include/engine/platform/IWindow.hpp`](../include/engine/platform/IWindow.hpp) and [`WindowGLFW.cpp`](../src/engine/platform/WindowGLFW.cpp) — window contract and GLFW implementation.
+4. [`../include/engine/graphics/IRenderer.hpp`](../include/engine/graphics/IRenderer.hpp) and [`RendererOpenGL.cpp`](../src/engine/graphics/opengl/RendererOpenGL.cpp) — graphics interfaces and current backend.
 5. [`src/engine/graphics/Model.cpp`](../src/engine/graphics/Model.cpp) — Assimp import and mesh conversion.
 6. [`src/engine/objects/Penger.cpp`](../src/engine/objects/Penger.cpp) — model wrapper.
-7. [`src/engine/ecs/ECS.hpp`](../src/engine/ecs/ECS.hpp) — ECS starting point and gaps.
+7. [`../include/engine/systems/entity/ECS.hpp`](../include/engine/systems/entity/ECS.hpp) — ECS starting point and gaps.

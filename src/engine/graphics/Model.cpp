@@ -1,7 +1,7 @@
-#include "Model.hpp"
+#include "engine/graphics/Model.hpp"
 #include <iostream>
 
-#include "opengl/RendererOpenGL.hpp"
+#include "engine/graphics/opengl/RendererOpenGL.hpp"
 
 namespace Luna {
 void Model::Draw(IShader &shader) {
