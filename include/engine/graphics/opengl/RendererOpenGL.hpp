@@ -1,14 +1,46 @@
 #pragma once
 #include "../IRenderer.hpp"
 
-namespace Luna {
+namespace Luna::OpenGL {
 class GlMesh : public IMesh {
 public:
+    GlMesh(const GlMesh&) = delete;
+    GlMesh& operator=(const GlMesh&) = delete;
+
+    GlMesh(GlMesh &&other) noexcept :
+    VAO(std::exchange(other.VAO, 0)),
+    VBO(std::exchange(other.VBO, 0)),
+    EBO(std::exchange(other.EBO, 0))
+    {
+        vertices = std::move(other.vertices);
+        indices = std::move(other.indices);
+        textures = std::move(other.textures);
+    }
+
+    GlMesh &operator=(GlMesh &&other) noexcept {
+        if (this == &other) {
+            return *this;
+        }
+
+        Release();
+
+        this->VAO = std::exchange(other.VAO, 0);
+        this->VBO = std::exchange(other.VBO, 0);
+        this->EBO = std::exchange(other.EBO, 0);
+        this->vertices = std::move(other.vertices);
+        this->indices = std::move(other.indices);
+        this->textures = std::move(other.textures);
+        return *this;
+    }
+
     GlMesh(std::vector<Vertex> &vertices, std::vector<uint32_t> &indices, std::vector<Texture> &textures);
     ~GlMesh() override;
     void Draw(IShader &shader) override;
+    void SetupMesh() override;
 private:
-    uint32_t VAO, VBO, EBO; // OpenGL specific stuff, needs to be made into a subclass?
+    void Release() noexcept;
+
+    uint32_t VAO {}, VBO {}, EBO {}; // OpenGL specific stuff, needs to be made into a subclass?
 };
 
 class GLShader : public IShader {
@@ -21,14 +53,15 @@ public:
     void setBool(const std::string &name, bool value) override;
     void setInt(const std::string &name, int value) override;
     void setFloat(const std::string &name, float value) override;
+    void setMat4(const std::string &name, const glm::mat4 &value) override;
 };
 
-class RendererOpenGL : public IRenderer {
+class Implementation : public IRenderer {
 public:
     void init(IWindow *window, int width, int height) override;
+    ~Implementation() override;
     void beginFrame() override;
     void endFrame() override;
-    void drawMesh(IMesh &mesh, IShader &shader, glm::mat4 transform) override;
     void clear(const glm::vec4 &colour) override;
 };
 

@@ -7,7 +7,7 @@
 
 namespace Luna {
     struct Configuration {
-        Backend rendering_api = Backend::None;
+        Backend rendering_api = Backend::OpenGL;
         const char *name = "Luna Application";
         uint32_t width;
         uint32_t height;
@@ -24,6 +24,6 @@ namespace Luna {
         void Run() const;
     };
 
-    Application* CreateApp(uint32_t width, uint32_t height);
+    Application* CreateApp(uint32_t width = 1280, uint32_t height = 720);
 }
 

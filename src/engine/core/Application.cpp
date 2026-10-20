@@ -13,7 +13,6 @@ namespace Luna {
         const auto config = std::make_shared<Configuration>();
         config->width = width;
         config->height = height;
-        config->rendering_api = Backend::OpenGL;
         config->Load();
 
         auto *app = new Application();
@@ -24,7 +23,7 @@ namespace Luna {
 
         switch (config->rendering_api) {
             case Backend::OpenGL:
-                app->renderer = std::make_unique<RendererOpenGL>();
+                app->renderer = std::make_unique<OpenGL::Implementation>();
                 break;
             case Backend::Vulkan:
                 throw std::exception("Vulkan is not implemented!");

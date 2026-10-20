@@ -37,6 +37,7 @@ add_executable(${PROJECT_NAME}
         include/engine/systems/entity/ECS.hpp
     include/glad/gl.c
         src/engine/core/Application.cpp
+        src/engine/graphics/opengl/GlMesh.cpp
 )
 
 include(CheckCXXSourceCompiles)

@@ -12,16 +12,11 @@
 
 #include "opengl/RendererOpenGL.hpp"
 
-namespace Luna {
+namespace Luna::OpenGL {
 class Model {
 public:
-    explicit Model(const std::string &path, bool gamma = false) : gammaCorrection(gamma) {
-        loadModel(path);
-        std::cout << "Model loaded: " << path << "\n"
-        << "    Meshes: " << meshes.size() << "\n"
-        << "        Vertices: " << meshes[0].vertices.size() << "\n"
-        << "        Indices: " << meshes[0].indices.size() << "\n";
-    }
+    explicit Model(const std::string &path, bool gamma = false) : gammaCorrection(gamma) { loadModel(path); }
+    ~Model();
     void Draw(IShader &shader);
 
     // model data

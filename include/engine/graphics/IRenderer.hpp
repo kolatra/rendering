@@ -13,6 +13,7 @@ public:
     virtual void setBool(const std::string &name, bool value) = 0;
     virtual void setInt(const std::string &name, int value) = 0;
     virtual void setFloat(const std::string &name, float value) = 0;
+    virtual void setMat4(const std::string &name, const glm::mat4 &value) = 0;
 };
 
 #define MAX_BONE_INFLUENCE 4
@@ -40,8 +41,8 @@ public:
     std::vector<Texture> textures;
     virtual ~IMesh() = default;
     virtual void Draw(IShader &shader) = 0;
+    virtual void SetupMesh() = 0;
 };
-
 
 class IRenderer {
 public:
@@ -51,8 +52,6 @@ public:
     virtual void init(IWindow *window, int width, int height) = 0;
     virtual void beginFrame() = 0;
     virtual void endFrame() = 0;
-
-    virtual void drawMesh(IMesh& mesh, IShader& shader, glm::mat4 transform) = 0;
 
     virtual void clear(const glm::vec4& colour) = 0;
 };
