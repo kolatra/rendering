@@ -2,7 +2,8 @@
 #include <memory>
 
 namespace Luna {
-    struct Configuration;
+struct Configuration;
+
 enum class Backend {
     None,
     OpenGL,

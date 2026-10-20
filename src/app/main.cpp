@@ -1,4 +1,4 @@
-#include "../../include/engine/core/Application.hpp"
+#include "engine/core/Application.hpp"
 #include "engine/graphics/Model.hpp"
 #include "engine/graphics/opengl/RendererOpenGL.hpp"
 
