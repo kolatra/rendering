@@ -7,6 +7,19 @@ option(BUILD_SHARED_LIBS "Build GLFW and Assimp as shared libraries" OFF)
 add_subdirectory(external/glfw)
 add_subdirectory(external/spdlog)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
+set(CMAKE_OBJCXX_FLAGS "${CMAKE_OBJCXX_FLAGS} -fobjc-arc")
+
+if(APPLE)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        message(STATUS "Configuring for macOS")
+
+        find_library(METAL_FRAMEWORK Metal REQUIRED)
+        find_library(QUARTZCORE_FRAMEWORK QuartzCore REQUIRED)
+        find_library(APPKIT_FRAMEWORK AppKit REQUIRED)
+    endif()
+endif()
+
 # Assimp is included as a submodule so the project does not depend on a
 # separately installed Assimp package.
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "Build Assimp tests" FORCE)
@@ -39,6 +52,7 @@ add_executable(${PROJECT_NAME}
         src/engine/graphics/opengl/GlMesh.cpp
         src/engine/core/Config.cpp
         include/engine/core/Config.hpp
+        include/engine/graphics/metal/MetalRenderer.hpp
 )
 
 include(CheckCXXSourceCompiles)
@@ -63,6 +77,25 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /utf-8 /bigobj)
+endif()
+
+if(APPLE)
+    target_include_directories(${PROJECT_NAME} PRIVATE
+            ${CMAKE_SOURCE_DIR}/external/metal-cpp
+    )
+
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            ${METAL_FRAMEWORK}
+            ${QUARTZCORE_FRAMEWORK}
+            ${APPKIT_FRAMEWORK}
+    )
+
+    target_sources(${PROJECT_NAME} PRIVATE
+            src/engine/graphics/metal/MetalRenderer.cpp
+    )
+
+    target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_EXPOSE_NATIVE_COCOA)
+    target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:OBJCXX>:-fobjc-arc>)
 endif()
 
 target_include_directories(${PROJECT_NAME} PRIVATE
