@@ -22,7 +22,7 @@ namespace {
 
 static Penger *penger = nullptr;
 
-static void setup_view(IRenderer *renderer, Configuration *config) {
+static void setup_view(const IRenderer *renderer, const Configuration *config) {
     const auto shader = renderer->shaders[0];
     constexpr glm::mat4 model(1.0f);
     const auto view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -34,8 +34,18 @@ static void setup_view(IRenderer *renderer, Configuration *config) {
 }
 
 void Application::Setup() const {
+    // Compile our shader
+    auto *shader = new OpenGL::GLShader("shaders/triangle.vsh", "shaders/triangle.fsh");
+
+    // Give the shader to the engine so it's cleaned up for us afterwards and we
+    // can use it everywhere.
+    shader->name = "Triangles";
+    renderer->shaders.push_back(shader);
+
+    // Setup initial camera view
     setup_view(renderer.get(), config.get());
 
+    // Initialize objects
     penger = new Penger();
 }
 

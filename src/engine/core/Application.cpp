@@ -52,5 +52,6 @@ int main() {
         window->PollEvents();
         renderer->endFrame();
     }
+    delete app;
     return 0;
 }

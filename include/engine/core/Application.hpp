@@ -17,7 +17,7 @@ namespace Luna {
 
         explicit Application();
 
-        // Initialize needed objects for runtime and setup app etc.
+        // Initialize needed objects for runtime, setup app, etc.
         void Setup() const;
 
         // Called every frame by the engine.

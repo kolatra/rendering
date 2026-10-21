@@ -14,9 +14,6 @@
 
 namespace Luna::OpenGL {
     Implementation::Implementation() {
-        auto *shader = new GLShader("shaders/triangle.vsh", "shaders/triangle.fsh");
-        shader->name = "Triangles";
-        this->shaders.push_back(shader);
     }
 
     void Implementation::init(IWindow *window, Configuration *config) {
@@ -27,6 +24,9 @@ namespace Luna::OpenGL {
 
         // The Penger OBJ includes an inverted hull for its outline. Cull its
         // back faces so the hull does not cover the textured body.
+        //
+        // TODO: This also breaks the floor rendering, need to enable/disable
+        // for only the penguin.
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         glFrontFace(GL_CCW);
