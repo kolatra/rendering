@@ -1,0 +1,5 @@
+[general]
+backend = "OpenGL"
+window_name = "Luna Application"
+width = 1280
+height = 720

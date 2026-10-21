@@ -28,11 +28,15 @@ namespace Luna {
     }
 }
 
+
 int main() {
     auto *app = new Luna::Application();
     const auto &window = app->window;
     const auto &renderer = app->renderer;
     app->Setup();
+
+    auto *floor = new Luna::OpenGL::Floor();
+    floor->Setup();
 
     window->Show();
     while (!window->ShouldClose()) {
@@ -42,6 +46,7 @@ int main() {
         renderer->clear({0.2f, 0.3f, 0.3f, 1.0f});
 
         app->Loop();
+        floor->Render();
 
         window->SwapBuffers();
         window->PollEvents();

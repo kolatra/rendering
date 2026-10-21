@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <string>
 
 namespace Luna {
 struct Configuration;
@@ -10,6 +11,23 @@ enum class Backend {
     Vulkan,
     Metal
 };
+
+inline Backend be_from_string(const std::string& in) {
+    if (in == "OpenGL") {
+        return Backend::OpenGL;
+    }
+
+    if (in == "Vulkan") {
+        return Backend::Vulkan;
+    }
+
+    if (in == "Metal") {
+        return Backend::Metal;
+    }
+
+    // Default
+    return Backend::OpenGL;
+}
 
 class IWindow {
 public:

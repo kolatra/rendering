@@ -5,6 +5,7 @@ option(ENGINE_ENABLE_VULKAN "Find and link Vulkan backend dependencies" OFF)
 option(BUILD_SHARED_LIBS "Build GLFW and Assimp as shared libraries" OFF)
 
 add_subdirectory(external/glfw)
+add_subdirectory(external/spdlog)
 
 # Assimp is included as a submodule so the project does not depend on a
 # separately installed Assimp package.
@@ -21,19 +22,19 @@ else()
 endif()
 
 add_executable(${PROJECT_NAME}
-        src/app/example.cpp
+        example-app/example.cpp
         include/engine/platform/IWindow.hpp
         src/engine/platform/WindowGLFW.cpp
         include/engine/platform/WindowGLFW.hpp
         include/engine/core/Application.hpp
         include/engine/graphics/IRenderer.hpp
-    src/engine/graphics/opengl/RendererOpenGL.cpp
+        src/engine/graphics/opengl/RendererOpenGL.cpp
         include/engine/graphics/opengl/RendererOpenGL.hpp
-    src/engine/graphics/Model.cpp
-        include/engine/graphics/Model.hpp
+        src/engine/graphics/IModel.cpp
+        include/engine/graphics/opengl/GlModel.hpp
         src/engine/systems/entity/ECS.cpp
         include/engine/systems/entity/ECS.hpp
-    include/glad/gl.c
+        external/glad/gl.c
         src/engine/core/Application.cpp
         src/engine/graphics/opengl/GlMesh.cpp
         src/engine/core/Config.cpp
@@ -65,6 +66,8 @@ endif()
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/external"
+    "${CMAKE_CURRENT_SOURCE_DIR}/external/spdlog/include"
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE

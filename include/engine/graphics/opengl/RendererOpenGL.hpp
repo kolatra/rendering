@@ -2,7 +2,7 @@
 #include <engine/graphics/IRenderer.hpp>
 
 namespace Luna::OpenGL {
-class GlMesh : public IMesh {
+    class GlMesh : public IMesh {
 public:
     GlMesh(const GlMesh&) = delete;
     GlMesh& operator=(const GlMesh&) = delete;
@@ -67,4 +67,19 @@ public:
 };
 
 uint32_t TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
+
+struct Floor {
+    Texture texture;
+    GLShader shader;
+    uint32_t VAO{}, VBO{}, EBO{};
+
+    Floor() :
+    texture(TextureFromFile("floor.png", "assets")),
+    shader("shaders/floor.vsh", "shaders/floor.fsh"){}
+    ~Floor();
+
+    void Setup();
+
+    void Render();
+};
 }

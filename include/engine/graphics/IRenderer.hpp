@@ -54,16 +54,16 @@ public:
 class IModel {
 public:
     virtual ~IModel() = default;
-    virtual void Draw(IShader &shader) = 0;
     std::vector<Texture> textures_loaded;
     std::vector<IMesh*> meshes;
     std::string directory;
     bool gammaCorrection;
 
-    virtual void Load(std::string &path) = 0;
-    virtual void ProcessNode(aiNode *node, const aiScene *scene) = 0;
-    virtual IMesh* ProcessMesh(aiMesh *mesh, const aiScene *scene) = 0;
-    virtual std::vector<Texture> LoadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName) = 0;
+    void Load(std::string &path);
+    void ProcessNode(aiNode *node, const aiScene *scene);
+    IMesh* ProcessMesh(aiMesh *mesh, const aiScene *scene);
+    std::vector<Texture> LoadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
+    void Draw(IShader &shader) const;
 };
 
 class IRenderer {
