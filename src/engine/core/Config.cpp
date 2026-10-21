@@ -1,12 +1,11 @@
 #include <filesystem>
-#include <engine/core/Application.hpp>
-
-#include <tomlplusplus/toml.hpp>
 #include <spdlog/spdlog.h>
+#include <engine/core/Config.hpp>
+
+using namespace std::literals;
 
 namespace Luna {
     bool Configuration::Load() {
-        toml::parse_result config;
         try {
              config = toml::parse_file("config.toml");
         } catch (std::filesystem::filesystem_error& _) {
@@ -18,8 +17,8 @@ namespace Luna {
             this->rendering_api = be_from_string(api);
         }
 
-        if (const std::string window_name = config["general"]["window_name"].value_or(""); window_name != "") {
-            this->name = window_name.c_str();
+        if (const std::string_view window_name = config["general"]["window_name"].value_or(""sv); window_name != "") {
+            this->name = window_name.data();
         }
 
         if (const uint32_t w = config["general"]["width"].value_or(0); w != 0) {

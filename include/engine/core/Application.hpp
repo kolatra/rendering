@@ -4,17 +4,9 @@
 
 #include "../graphics/IRenderer.hpp"
 #include "../platform/IWindow.hpp"
+#include "Config.hpp"
 
 namespace Luna {
-    struct Configuration {
-        Backend rendering_api = Backend::OpenGL;
-        const char *name = "Luna Application";
-        uint32_t width = 1280;
-        uint32_t height = 720;
-
-        bool Load();
-    };
-
     class Application {
     public:
         std::shared_ptr<Configuration> config;
