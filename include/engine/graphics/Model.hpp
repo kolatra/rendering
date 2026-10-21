@@ -10,11 +10,12 @@
 
 #include <iostream>
 
-#include "opengl/RendererOpenGL.hpp"
+#include <engine/graphics/opengl/RendererOpenGL.hpp>
 
 namespace Luna::OpenGL {
 class Model {
 public:
+    Model() = default;
     explicit Model(const std::string &path, bool gamma = false) : gammaCorrection(gamma) { loadModel(path); }
     ~Model();
     void Draw(IShader &shader);

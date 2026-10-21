@@ -20,8 +20,8 @@ namespace Luna {
         std::shared_ptr<Configuration> config;
         std::unique_ptr<IWindow> window;
         std::unique_ptr<IRenderer> renderer;
-        // Implemented in your main.cpp to run the app
-        void Run() const;
+        void Loop() const;
+        void Setup() const;
     };
 
     Application* CreateApp(uint32_t width = 1280, uint32_t height = 720);

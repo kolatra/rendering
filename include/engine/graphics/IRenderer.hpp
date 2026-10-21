@@ -6,6 +6,8 @@
 #include <vector>
 
 namespace Luna {
+class Penger;
+
 class IShader {
 public:
     virtual ~IShader() = default;
@@ -47,6 +49,7 @@ public:
 class IRenderer {
 public:
     std::vector<IShader*> shaders;
+    std::vector<Penger*> pengers;
     virtual ~IRenderer() = default;
 
     virtual void init(IWindow *window, int width, int height) = 0;

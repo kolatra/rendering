@@ -2,13 +2,14 @@
 #include "engine/graphics/Model.hpp"
 #include "engine/graphics/opengl/RendererOpenGL.hpp"
 
-#include "../engine/objects/Penger.hpp"
 #include <glm/gtc/matrix_transform.hpp>
+
+#include "../engine/objects/Penger.hpp"
 
 using namespace Luna;
 
-void Application::Run() const {
-    Penger penger;
+void Application::Setup() const {
+    // General application setup goes here
     const auto shader = renderer->shaders[0];
     constexpr glm::mat4 model(1.0f);
     const auto view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -18,23 +19,14 @@ void Application::Run() const {
     shader->setMat4("view", view);
     shader->setMat4("projection", projection);
 
-    window->Show();
-    while (!window->ShouldClose()) {
-        renderer->beginFrame();
-        renderer->clear({0.2f, 0.3f, 0.3f, 1.0f});
-
-        penger.Draw(*shader);
-
-        window->SwapBuffers();
-        window->PollEvents();
-        renderer->endFrame();
-    }
+    // Resource initialization
+    auto *penger = new Penger;
+    renderer->pengers.push_back(penger);
 }
 
-int main() {
-    const auto *app = CreateApp();
-    app->Run();
-
-    delete app;
-    return 0;
+// Called every frame by the engine.
+void Application::Loop() const {
+    const auto shader = renderer->shaders[0];
+    const auto penger = renderer->pengers[0];
+    penger->Draw(*shader);
 }

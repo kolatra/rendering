@@ -4,11 +4,6 @@
 #include <iostream>
 
 namespace Luna {
-    bool Configuration::Load() {
-        // TODO: implement loading config from a file on disk
-        return false;
-    }
-
     Application *CreateApp(uint32_t width, uint32_t height) {
         const auto config = std::make_shared<Configuration>();
         config->width = width;
@@ -37,4 +32,25 @@ namespace Luna {
         std::cout << "Renderer created.\n";
         return app;
     }
+}
+
+int main() {
+    const auto *app = Luna::CreateApp();
+    const auto &window = app->window;
+    const auto &renderer = app->renderer;
+    app->Setup();
+
+    std::cout << "Showing window now with " << renderer->pengers.size() << " render objects.\n";
+    window->Show();
+    while (!window->ShouldClose()) {
+        renderer->beginFrame();
+        renderer->clear({0.2f, 0.3f, 0.3f, 1.0f});
+
+        app->Loop();
+
+        window->SwapBuffers();
+        window->PollEvents();
+        renderer->endFrame();
+    }
+    return 0;
 }

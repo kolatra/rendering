@@ -21,7 +21,7 @@ else()
 endif()
 
 add_executable(${PROJECT_NAME}
-        src/app/main.cpp
+        src/app/example.cpp
         include/engine/platform/IWindow.hpp
         src/engine/platform/WindowGLFW.cpp
         include/engine/platform/WindowGLFW.hpp
@@ -38,6 +38,7 @@ add_executable(${PROJECT_NAME}
     include/glad/gl.c
         src/engine/core/Application.cpp
         src/engine/graphics/opengl/GlMesh.cpp
+        src/engine/core/Config.cpp
 )
 
 include(CheckCXXSourceCompiles)

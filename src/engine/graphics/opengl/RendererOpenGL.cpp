@@ -13,6 +13,11 @@
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Luna::OpenGL {
+    Implementation::Implementation() {
+        auto *shader = new GLShader("shaders/triangle.vsh", "shaders/triangle.fsh");
+        this->shaders.push_back(shader);
+    }
+
     void Implementation::init(IWindow *window, int width, int height) {
         // glfw has already initialized OpenGL in the background, so here we can
         // set our application specific settings
@@ -28,9 +33,6 @@ namespace Luna::OpenGL {
         glEnable(GL_PROGRAM_POINT_SIZE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glViewport(0, 0, width, height);
-
-        auto *shader = new GLShader("shaders/triangle.vsh", "shaders/triangle.fsh");
-        this->shaders.push_back(shader);
     }
 
     void Implementation::beginFrame() {
@@ -42,7 +44,8 @@ namespace Luna::OpenGL {
     }
 
     Implementation::~Implementation() {
-        for (auto *shader : shaders) {
+        // TODO: i still need to cleanup other resources here
+        for (const auto *shader : shaders) {
             delete shader;
         }
     }

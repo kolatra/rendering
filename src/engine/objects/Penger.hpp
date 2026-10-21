@@ -4,7 +4,7 @@
 namespace Luna {
 class Penger {
 public:
-    OpenGL::Model model { "penger-obj-main/penger/penger.obj", false };
+    OpenGL::Model model;
     Penger();
     ~Penger();
     void Draw(IShader &shader);

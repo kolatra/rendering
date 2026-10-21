@@ -1,5 +1,5 @@
 #pragma once
-#include "../IRenderer.hpp"
+#include <engine/graphics/IRenderer.hpp>
 
 namespace Luna::OpenGL {
 class GlMesh : public IMesh {
@@ -58,6 +58,7 @@ public:
 
 class Implementation : public IRenderer {
 public:
+    Implementation();
     void init(IWindow *window, int width, int height) override;
     ~Implementation() override;
     void beginFrame() override;
