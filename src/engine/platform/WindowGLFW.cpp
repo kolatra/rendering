@@ -111,4 +111,8 @@ void *WindowGLFW::GetNativeHandle() {
 bool WindowGLFW::ShouldClose() {
     return glfwWindowShouldClose(handle);
 }
+
+double WindowGLFW::GetTime() {
+    return glfwGetTime();
+}
 }

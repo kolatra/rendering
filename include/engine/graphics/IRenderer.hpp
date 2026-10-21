@@ -5,9 +5,13 @@
 #include <string>
 #include <vector>
 
-namespace Luna {
-class Penger;
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
+namespace Luna {
 class IShader {
 public:
     std::string name = "Unknown";
@@ -47,10 +51,24 @@ public:
     virtual void SetupMesh() = 0;
 };
 
+class IModel {
+public:
+    virtual ~IModel() = default;
+    virtual void Draw(IShader &shader) = 0;
+    std::vector<Texture> textures_loaded;
+    std::vector<IMesh*> meshes;
+    std::string directory;
+    bool gammaCorrection;
+
+    virtual void Load(std::string &path) = 0;
+    virtual void ProcessNode(aiNode *node, const aiScene *scene) = 0;
+    virtual IMesh* ProcessMesh(aiMesh *mesh, const aiScene *scene) = 0;
+    virtual std::vector<Texture> LoadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName) = 0;
+};
+
 class IRenderer {
 public:
     std::vector<IShader*> shaders;
-    std::vector<Penger*> pengers;
     virtual ~IRenderer() = default;
 
     virtual void init(IWindow *window, Configuration *config) = 0;

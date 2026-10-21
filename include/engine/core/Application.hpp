@@ -21,6 +21,8 @@ namespace Luna {
         std::unique_ptr<IWindow> window;
         std::unique_ptr<IRenderer> renderer;
 
+        double currentTime = 0;
+
         explicit Application();
 
         // Initialize needed objects for runtime and setup app etc.

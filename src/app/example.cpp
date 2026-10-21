@@ -4,9 +4,22 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "../engine/objects/Penger.hpp"
-
 using namespace Luna;
+
+class Penger {
+public:
+    IModel* model;
+
+    Penger() : model(new OpenGL::Model("penger-obj-main/penger/penger.obj", false)) {}
+
+    ~Penger() {}
+
+    void Draw(IShader &shader) {
+        model->Draw(shader);
+    }
+};
+
+static Penger *penger = nullptr;
 
 static void setup_view(IRenderer *renderer, Configuration *config) {
     const auto shader = renderer->shaders[0];
@@ -22,13 +35,11 @@ static void setup_view(IRenderer *renderer, Configuration *config) {
 void Application::Setup() const {
     setup_view(renderer.get(), config.get());
 
-    auto *penger = new Penger;
-    renderer->pengers.push_back(penger);
+    penger = new Penger();
 }
 
 void Application::Loop() const {
     const auto shader = renderer->shaders[0];
-    const auto penger = renderer->pengers[0];
 
     penger->Draw(*shader);
 }

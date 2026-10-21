@@ -29,14 +29,15 @@ namespace Luna {
 }
 
 int main() {
-    const auto *app = new Luna::Application();
+    auto *app = new Luna::Application();
     const auto &window = app->window;
     const auto &renderer = app->renderer;
     app->Setup();
 
-    std::cout << "Showing window now with " << renderer->pengers.size() << " render objects.\n";
     window->Show();
     while (!window->ShouldClose()) {
+        app->currentTime = window->GetTime();
+
         renderer->beginFrame();
         renderer->clear({0.2f, 0.3f, 0.3f, 1.0f});
 

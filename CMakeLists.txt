@@ -31,8 +31,6 @@ add_executable(${PROJECT_NAME}
         include/engine/graphics/opengl/RendererOpenGL.hpp
     src/engine/graphics/Model.cpp
         include/engine/graphics/Model.hpp
-    src/engine/objects/Penger.cpp
-    src/engine/objects/Penger.hpp
         src/engine/systems/entity/ECS.cpp
         include/engine/systems/entity/ECS.hpp
     include/glad/gl.c
