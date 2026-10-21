@@ -9,8 +9,8 @@ namespace Luna {
     struct Configuration {
         Backend rendering_api = Backend::OpenGL;
         const char *name = "Luna Application";
-        uint32_t width;
-        uint32_t height;
+        uint32_t width = 1280;
+        uint32_t height = 720;
 
         bool Load();
     };
@@ -20,10 +20,14 @@ namespace Luna {
         std::shared_ptr<Configuration> config;
         std::unique_ptr<IWindow> window;
         std::unique_ptr<IRenderer> renderer;
-        void Loop() const;
-        void Setup() const;
-    };
 
-    Application* CreateApp(uint32_t width = 1280, uint32_t height = 720);
+        explicit Application();
+
+        // Initialize needed objects for runtime and setup app etc.
+        void Setup() const;
+
+        // Called every frame by the engine.
+        void Loop() const;
+    };
 }
 

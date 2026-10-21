@@ -4,21 +4,16 @@
 #include <iostream>
 
 namespace Luna {
-    Application *CreateApp(uint32_t width, uint32_t height) {
-        const auto config = std::make_shared<Configuration>();
-        config->width = width;
-        config->height = height;
+    Application::Application() {
+        config = std::make_shared<Configuration>();
         config->Load();
 
-        auto *app = new Application();
-        app->config = config;
-
-        app->window = std::make_unique<WindowGLFW>(config, app);
+        window = std::make_unique<WindowGLFW>(config, this);
         std::cout << "Window created.\n";
 
         switch (config->rendering_api) {
             case Backend::OpenGL:
-                app->renderer = std::make_unique<OpenGL::Implementation>();
+                renderer = std::make_unique<OpenGL::Implementation>();
                 break;
             case Backend::Vulkan:
                 throw std::exception("Vulkan is not implemented!");
@@ -28,14 +23,13 @@ namespace Luna {
                 throw std::exception("Invalid state!");
         }
 
-        app->renderer->init(app->window.get(), width, height);
+        renderer->init(window.get(), config.get());
         std::cout << "Renderer created.\n";
-        return app;
     }
 }
 
 int main() {
-    const auto *app = Luna::CreateApp();
+    const auto *app = new Luna::Application();
     const auto &window = app->window;
     const auto &renderer = app->renderer;
     app->Setup();

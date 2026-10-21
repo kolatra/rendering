@@ -19,7 +19,7 @@ namespace Luna::OpenGL {
         this->shaders.push_back(shader);
     }
 
-    void Implementation::init(IWindow *window, int width, int height) {
+    void Implementation::init(IWindow *window, Configuration *config) {
         // glfw has already initialized OpenGL in the background, so here we can
         // set our application specific settings
         glEnable(GL_BLEND);
@@ -33,7 +33,7 @@ namespace Luna::OpenGL {
 
         glEnable(GL_PROGRAM_POINT_SIZE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glViewport(0, 0, width, height);
+        glViewport(0, 0, config->width, config->height);
     }
 
     void Implementation::beginFrame() {

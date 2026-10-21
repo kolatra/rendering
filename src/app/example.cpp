@@ -20,17 +20,15 @@ static void setup_view(IRenderer *renderer, Configuration *config) {
 }
 
 void Application::Setup() const {
-    // General application setup goes here
     setup_view(renderer.get(), config.get());
 
-    // Resource initialization
     auto *penger = new Penger;
     renderer->pengers.push_back(penger);
 }
 
-// Called every frame by the engine.
 void Application::Loop() const {
     const auto shader = renderer->shaders[0];
     const auto penger = renderer->pengers[0];
+
     penger->Draw(*shader);
 }

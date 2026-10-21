@@ -59,7 +59,7 @@ public:
 class Implementation : public IRenderer {
 public:
     Implementation();
-    void init(IWindow *window, int width, int height) override;
+    void init(IWindow *window, Configuration *config) override;
     ~Implementation() override;
     void beginFrame() override;
     void endFrame() override;

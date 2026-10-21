@@ -53,7 +53,7 @@ public:
     std::vector<Penger*> pengers;
     virtual ~IRenderer() = default;
 
-    virtual void init(IWindow *window, int width, int height) = 0;
+    virtual void init(IWindow *window, Configuration *config) = 0;
     virtual void beginFrame() = 0;
     virtual void endFrame() = 0;
 
