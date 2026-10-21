@@ -15,6 +15,7 @@
 namespace Luna::OpenGL {
     Implementation::Implementation() {
         auto *shader = new GLShader("shaders/triangle.vsh", "shaders/triangle.fsh");
+        shader->name = "Triangles";
         this->shaders.push_back(shader);
     }
 

@@ -10,6 +10,7 @@ class Penger;
 
 class IShader {
 public:
+    std::string name = "Unknown";
     virtual ~IShader() = default;
     virtual void use() = 0;
     virtual void setBool(const std::string &name, bool value) = 0;

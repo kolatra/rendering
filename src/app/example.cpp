@@ -8,8 +8,7 @@
 
 using namespace Luna;
 
-void Application::Setup() const {
-    // General application setup goes here
+static void setup_view(IRenderer *renderer, Configuration *config) {
     const auto shader = renderer->shaders[0];
     constexpr glm::mat4 model(1.0f);
     const auto view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -18,6 +17,11 @@ void Application::Setup() const {
     shader->setMat4("model", model);
     shader->setMat4("view", view);
     shader->setMat4("projection", projection);
+}
+
+void Application::Setup() const {
+    // General application setup goes here
+    setup_view(renderer.get(), config.get());
 
     // Resource initialization
     auto *penger = new Penger;
