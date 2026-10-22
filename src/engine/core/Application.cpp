@@ -62,8 +62,8 @@ int main() {
         app->Loop();
 
         // disable back-face culling for the floor render
-        // renderer->setCulling(false);
-        // floor->Render(*renderer->camera);
+        renderer->setCulling(false);
+        floor->Render(*renderer->camera);
 
         window->SwapBuffers();
         window->PollEvents();

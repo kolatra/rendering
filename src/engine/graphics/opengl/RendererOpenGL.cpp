@@ -197,10 +197,10 @@ namespace Luna::OpenGL {
         // Set of vertices for a single square
         constexpr float vertices[] = {
             // positions          // colors           // texture coords
-            0.25f,  0.44f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-            0.25f, -0.44f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-           -0.25f, -0.44f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-           -0.25f,  0.44f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
+            0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+            0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+           -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+           -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
        };
 
         constexpr uint32_t indices[] = {
@@ -240,14 +240,12 @@ namespace Luna::OpenGL {
 
         auto model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.f, 0.f, 0.f));
-        model = glm::rotate(model, glm::radians(0.f), glm::vec3(1.0f, 0.3f, 0.5f));
+        model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         shader.setMat4("model", model);
 
         glBindTexture(GL_TEXTURE_2D, texture.id);
         glBindVertexArray(VAO);
 
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 }

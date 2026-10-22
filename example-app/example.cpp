@@ -28,7 +28,6 @@ void Application::Setup() const {
     // can use it everywhere.
     shader->name = "Triangles";
     renderer->shaders.push_back(shader);
-    renderer->setCulling(true);
 
     // Initialize objects
     penger = new Penger();
@@ -43,5 +42,6 @@ void Application::Loop() const {
     shader->setMat4("projection", renderer->camera->projection);
 
     // enable back-face culling for the penguin render
-    penger->Draw(*shader);
+    // renderer->setCulling(true);
+    // penger->Draw(*shader);
 }
