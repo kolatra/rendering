@@ -45,7 +45,7 @@ WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, Application
     } else if (config->rendering_api == Backend::Vulkan) {
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        throw std::exception("not implemented");
+        throw std::runtime_error("not implemented");
     }
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
     glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE);

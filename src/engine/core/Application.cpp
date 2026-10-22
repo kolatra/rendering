@@ -3,6 +3,10 @@
 #include <engine/graphics/opengl/RendererOpenGL.hpp>
 #include <iostream>
 
+#ifdef __APPLE__
+#include <engine/graphics/metal/MetalRenderer.hpp>
+#endif
+
 namespace Luna {
     Application::Application() {
         config = std::make_shared<Configuration>();
@@ -16,11 +20,17 @@ namespace Luna {
                 renderer = std::make_unique<OpenGL::Implementation>(config.get());
                 break;
             case Backend::Vulkan:
-                throw std::exception("Vulkan is not implemented!");
+                throw std::runtime_error("Vulkan is not implemented");
             case Backend::Metal:
-                throw std::exception("Metal is not implemented!");
+#ifdef __APPLE__
+                renderer = std::make_unique<Metal::Implementation>();
+                break;
+#else
+                spdlog::error("Metal is not available on this device");
+                exit(1);
+#endif
             default:
-                throw std::exception("Invalid state!");
+                throw std::runtime_error("Invalid state!");
         }
 
         renderer->init(window.get(), config.get());
