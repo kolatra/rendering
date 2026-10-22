@@ -13,7 +13,7 @@ namespace Luna {
 
         switch (config->rendering_api) {
             case Backend::OpenGL:
-                renderer = std::make_unique<OpenGL::Implementation>();
+                renderer = std::make_unique<OpenGL::Implementation>(config.get());
                 break;
             case Backend::Vulkan:
                 throw std::exception("Vulkan is not implemented!");
@@ -50,7 +50,7 @@ int main() {
 
         // disable back-face culling for the floor render
         renderer->setCulling(false);
-        floor->Render();
+        floor->Render(*renderer->camera);
 
         window->SwapBuffers();
         window->PollEvents();

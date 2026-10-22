@@ -11,6 +11,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "engine/core/Camera.hpp"
+
 namespace Luna {
 class IShader {
 public:
@@ -69,6 +71,7 @@ public:
 class IRenderer {
 public:
     std::vector<IShader*> shaders;
+    std::unique_ptr<EngineCamera> camera;
     virtual ~IRenderer() = default;
 
     virtual void init(IWindow *window, Configuration *config) = 0;

@@ -13,7 +13,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Luna::OpenGL {
-    Implementation::Implementation() {
+    Implementation::Implementation(Configuration *config) {
+        camera = std::make_unique<EngineCamera>(config);
     }
 
     void Implementation::init(IWindow *window, Configuration *config) {
@@ -231,11 +232,20 @@ namespace Luna::OpenGL {
         glBindVertexArray(0);
     }
 
-    void Floor::Render() {
+    void Floor::Render(EngineCamera &camera) {
         shader.use();
+
+        shader.setMat4("view", camera.view);
+        shader.setMat4("projection", camera.projection);
+
+        auto model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.f, 0.f, 0.f));
+        model = glm::rotate(model, glm::radians(0.f), glm::vec3(1.0f, 0.3f, 0.5f));
+        shader.setMat4("model", model);
 
         glBindTexture(GL_TEXTURE_2D, texture.id);
         glBindVertexArray(VAO);
+
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

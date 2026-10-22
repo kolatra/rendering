@@ -39,6 +39,8 @@ add_executable(${PROJECT_NAME}
         src/engine/graphics/opengl/GlMesh.cpp
         src/engine/core/Config.cpp
         include/engine/core/Config.hpp
+        include/engine/core/Camera.hpp
+        src/engine/core/Camera.cpp
 )
 
 include(CheckCXXSourceCompiles)

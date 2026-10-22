@@ -58,7 +58,7 @@ public:
 
 class Implementation : public IRenderer {
 public:
-    Implementation();
+    Implementation(Configuration *config);
     void init(IWindow *window, Configuration *config) override;
     ~Implementation() override;
     void beginFrame() override;
@@ -82,6 +82,6 @@ struct Floor {
 
     void Setup();
 
-    void Render();
+    void Render(EngineCamera &camera);
 };
 }

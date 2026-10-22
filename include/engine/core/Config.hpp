@@ -1,6 +1,6 @@
 #pragma once
 
-#include <engine/core/Application.hpp>
+#include <engine/platform/IWindow.hpp>
 #include <tomlplusplus/toml.hpp>
 
 namespace Luna {
