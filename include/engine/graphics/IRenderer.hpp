@@ -11,6 +11,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "engine/core/Camera.hpp"
+
 namespace Luna {
 class IShader {
 public:
@@ -69,6 +71,8 @@ public:
 class IRenderer {
 public:
     std::vector<IShader*> shaders;
+    std::unique_ptr<EngineCamera> camera;
+    float deltaTime;
     virtual ~IRenderer() = default;
 
     virtual void init(IWindow *window, Configuration *config) = 0;
@@ -76,5 +80,6 @@ public:
     virtual void endFrame() = 0;
 
     virtual void clear(const glm::vec4& colour) = 0;
+    virtual void setCulling(bool flag) = 0;
 };
 }

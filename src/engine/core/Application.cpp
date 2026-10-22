@@ -18,7 +18,7 @@ namespace Luna {
 
         switch (config->rendering_api) {
             case Backend::OpenGL:
-                renderer = std::make_unique<OpenGL::Implementation>();
+                renderer = std::make_unique<OpenGL::Implementation>(config.get());
                 break;
             case Backend::Vulkan:
                 throw std::runtime_error("Vulkan is not implemented");
@@ -26,7 +26,7 @@ namespace Luna {
 #ifndef __APPLE__
                 spdlog::error("Metal is not available on this device");
 #else
-                renderer = std::make_unique<Metal::Implementation>();
+//                renderer = std::make_unique<Metal::Implementation>();
                 break;
 #endif
             default:
@@ -47,22 +47,30 @@ int main() {
 
     auto *floor = new Luna::OpenGL::Floor();
     floor->Setup();
+    auto last_time = window->GetTime();
 
     window->Show();
     while (!window->ShouldClose()) {
         app->currentTime = window->GetTime();
+        renderer->deltaTime = static_cast<float>(app->currentTime - last_time);
+        renderer->camera->Update(*window, renderer->deltaTime);
 
         renderer->beginFrame();
         renderer->clear({0.2f, 0.3f, 0.3f, 1.0f});
 
         app->Loop();
-        floor->Render();
+
+        // disable back-face culling for the floor render
+        renderer->setCulling(false);
+        floor->Render(*renderer->camera);
 
         window->SwapBuffers();
         window->PollEvents();
         renderer->endFrame();
+        last_time = window->GetTime();
     }
     delete app;
+    spdlog::info("Exited successfully!");
     return 0;
 }
 #endif

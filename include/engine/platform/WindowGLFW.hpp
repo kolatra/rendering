@@ -16,6 +16,7 @@ public:
     void *GetNativeHandle() override;
     bool ShouldClose() override;
     void Show() override;
+    void HandleInput(EngineCamera *camera, float delta) override;
 
     void* CreateSurface(void* apiContext) override;
 };

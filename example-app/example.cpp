@@ -1,37 +1,18 @@
 #include "engine/core/Application.hpp"
 #include "engine/graphics/opengl/GlModel.hpp"
 
-#include <glm/gtc/matrix_transform.hpp>
-
 using namespace Luna;
 
 namespace {
     class Penger {
     public:
         IModel* model;
-
-        Penger() : model(new OpenGL::GlModel("penger-obj-main/penger/penger.obj", false)) {}
-
+        Penger() : model(new OpenGL::GlModel("assets/penger-obj-main/penger/penger.obj", false)) {}
         ~Penger() {}
-
-        void Draw(IShader &shader) const {
-            model->Draw(shader);
-        }
     };
 }
 
 static Penger *penger = nullptr;
-
-static void setup_view(const IRenderer *renderer, const Configuration *config) {
-    const auto shader = renderer->shaders[0];
-    constexpr glm::mat4 model(1.0f);
-    const auto view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    const auto projection = glm::perspective(glm::radians(45.0f), static_cast<float>(config->width) / static_cast<float>(config->height), 0.1f, 100.0f);
-    shader->use();
-    shader->setMat4("model", model);
-    shader->setMat4("view", view);
-    shader->setMat4("projection", projection);
-}
 
 void Application::Setup() const {
     // Compile our shader
@@ -42,15 +23,19 @@ void Application::Setup() const {
     shader->name = "Triangles";
     renderer->shaders.push_back(shader);
 
-    // Setup initial camera view
-    setup_view(renderer.get(), config.get());
-
     // Initialize objects
     penger = new Penger();
 }
 
 void Application::Loop() const {
     const auto shader = renderer->shaders[0];
+    constexpr glm::mat4 model(1.0f);
+    shader->use();
+    shader->setMat4("model", model);
+    shader->setMat4("view", renderer->camera->view);
+    shader->setMat4("projection", renderer->camera->projection);
 
-    penger->Draw(*shader);
+    // enable back-face culling for the penguin render
+    renderer->setCulling(true);
+    penger->model->Draw(*shader);
 }
