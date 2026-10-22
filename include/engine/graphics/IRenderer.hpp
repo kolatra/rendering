@@ -76,5 +76,6 @@ public:
     virtual void endFrame() = 0;
 
     virtual void clear(const glm::vec4& colour) = 0;
+    virtual void setCulling(bool flag) = 0;
 };
 }

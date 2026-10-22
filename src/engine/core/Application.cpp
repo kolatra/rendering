@@ -33,6 +33,7 @@ int main() {
     auto *app = new Luna::Application();
     const auto &window = app->window;
     const auto &renderer = app->renderer;
+    const auto &config = app->config;
     app->Setup();
 
     auto *floor = new Luna::OpenGL::Floor();
@@ -46,6 +47,9 @@ int main() {
         renderer->clear({0.2f, 0.3f, 0.3f, 1.0f});
 
         app->Loop();
+
+        // disable back-face culling for the floor render
+        renderer->setCulling(false);
         floor->Render();
 
         window->SwapBuffers();

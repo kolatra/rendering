@@ -22,18 +22,19 @@ namespace Luna::OpenGL {
         glEnable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
 
-        // The Penger OBJ includes an inverted hull for its outline. Cull its
-        // back faces so the hull does not cover the textured body.
-        //
-        // TODO: This also breaks the floor rendering, need to enable/disable
-        // for only the penguin.
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-        glFrontFace(GL_CCW);
-
         glEnable(GL_PROGRAM_POINT_SIZE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glViewport(0, 0, config->width, config->height);
+    }
+
+    void Implementation::setCulling(bool flag) {
+        if (flag) {
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
+            glFrontFace(GL_CCW);
+        } else {
+            glDisable(GL_CULL_FACE);
+        }
     }
 
     void Implementation::beginFrame() {
@@ -119,7 +120,7 @@ namespace Luna::OpenGL {
             exit(1);
         }
 
-        std::cout << "Shader " << ID << " created.\n";
+        std::cout << "Shader " << ID << " created from " << vertex_path << ".\n";
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
 
@@ -158,7 +159,7 @@ namespace Luna::OpenGL {
         glBindTexture(GL_TEXTURE_2D, textureID);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         int width, height, nrComponents;
@@ -192,13 +193,14 @@ namespace Luna::OpenGL {
     }
 
     void Floor::Setup() {
+        // Set of vertices for a single square
         constexpr float vertices[] = {
             // positions          // colors           // texture coords
-            0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-            0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-           -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-           -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
-        };
+            0.25f,  0.44f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+            0.25f, -0.44f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+           -0.25f, -0.44f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+           -0.25f,  0.44f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
+       };
 
         constexpr uint32_t indices[] = {
             0, 1, 3,
@@ -222,7 +224,7 @@ namespace Luna::OpenGL {
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
 
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void *>(6 * sizeof(float)));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void *>(6 * sizeof(float)));
         glEnableVertexAttribArray(2);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -230,11 +232,12 @@ namespace Luna::OpenGL {
     }
 
     void Floor::Render() {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture.id);
-
         shader.use();
+
+        glBindTexture(GL_TEXTURE_2D, texture.id);
         glBindVertexArray(VAO);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 }

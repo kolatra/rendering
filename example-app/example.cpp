@@ -52,5 +52,7 @@ void Application::Setup() const {
 void Application::Loop() const {
     const auto shader = renderer->shaders[0];
 
+    // enable back-face culling for the penguin render
+    renderer->setCulling(true);
     penger->Draw(*shader);
 }

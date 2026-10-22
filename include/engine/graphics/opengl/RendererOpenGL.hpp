@@ -40,7 +40,7 @@ public:
 private:
     void Release() noexcept;
 
-    uint32_t VAO {}, VBO {}, EBO {}; // OpenGL specific stuff, needs to be made into a subclass?
+    uint32_t VAO {}, VBO {}, EBO {};
 };
 
 class GLShader : public IShader {
@@ -64,6 +64,8 @@ public:
     void beginFrame() override;
     void endFrame() override;
     void clear(const glm::vec4 &colour) override;
+
+    void setCulling(bool flag) override;
 };
 
 uint32_t TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
