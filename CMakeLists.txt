@@ -7,12 +7,12 @@ option(BUILD_SHARED_LIBS "Build GLFW and Assimp as shared libraries" OFF)
 add_subdirectory(external/glfw)
 add_subdirectory(external/spdlog)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
-set(CMAKE_OBJCXX_FLAGS "${CMAKE_OBJCXX_FLAGS} -fobjc-arc")
-
 if(APPLE)
     if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         message(STATUS "Configuring for macOS")
+
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
+        set(CMAKE_OBJCXX_FLAGS "${CMAKE_OBJCXX_FLAGS} -fobjc-arc")
 
         find_library(METAL_FRAMEWORK Metal REQUIRED)
         find_library(QUARTZCORE_FRAMEWORK QuartzCore REQUIRED)

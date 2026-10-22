@@ -2,6 +2,7 @@
 #include <engine/platform/WindowGLFW.hpp>
 #include <engine/graphics/opengl/RendererOpenGL.hpp>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 #ifdef __APPLE__
 #include <engine/graphics/metal/MetalRenderer.hpp>
