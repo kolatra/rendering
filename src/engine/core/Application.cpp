@@ -73,4 +73,4 @@ int main() {
     spdlog::info("Exited successfully!");
     return 0;
 }
-#endif
+#endif // !__APPLE__

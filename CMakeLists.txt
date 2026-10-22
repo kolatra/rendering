@@ -17,6 +17,8 @@ if(APPLE)
     find_library(METAL_FRAMEWORK Metal REQUIRED)
     find_library(QUARTZCORE_FRAMEWORK QuartzCore REQUIRED)
     find_library(APPKIT_FRAMEWORK AppKit REQUIRED)
+    
+    
 endif()
 
 # Assimp is included as a submodule so the project does not depend on a
@@ -53,6 +55,7 @@ add_executable(${PROJECT_NAME}
         include/engine/core/Config.hpp
         include/engine/graphics/metal/MetalRenderer.hpp
         include/engine/core/Camera.hpp
+	include/engine/platform/WindowNS.hpp
         src/engine/core/Camera.cpp
 )
 
@@ -92,8 +95,9 @@ if(APPLE)
     )
 
     target_sources(${PROJECT_NAME} PRIVATE
-            src/engine/core/MetalApp.m
+            src/engine/core/MetalApp.mm
             src/engine/graphics/metal/MetalRenderer.cc
+            src/engine/platform/WindowMetal.mm
     )
 
     target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_EXPOSE_NATIVE_COCOA)
