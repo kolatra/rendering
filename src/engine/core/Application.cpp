@@ -2,6 +2,7 @@
 #include <engine/platform/WindowGLFW.hpp>
 #include <engine/graphics/opengl/RendererOpenGL.hpp>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 #ifdef __APPLE__
 #include <engine/graphics/metal/MetalRenderer.hpp>
@@ -22,12 +23,11 @@ namespace Luna {
             case Backend::Vulkan:
                 throw std::runtime_error("Vulkan is not implemented");
             case Backend::Metal:
-#ifdef __APPLE__
+#ifndef __APPLE__
+                spdlog::error("Metal is not available on this device");
+#else
                 renderer = std::make_unique<Metal::Implementation>();
                 break;
-#else
-                spdlog::error("Metal is not available on this device");
-                exit(1);
 #endif
             default:
                 throw std::runtime_error("Invalid state!");
@@ -38,7 +38,7 @@ namespace Luna {
     }
 }
 
-
+#ifndef __APPLE__ // MetalApp.m
 int main() {
     auto *app = new Luna::Application();
     const auto &window = app->window;
@@ -65,3 +65,4 @@ int main() {
     delete app;
     return 0;
 }
+#endif

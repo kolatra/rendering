@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 4.3)
-project(engine_v29090909 LANGUAGES C CXX)
+project(engine_v29090909 LANGUAGES C CXX OBJC OBJCXX)
 
 option(ENGINE_ENABLE_VULKAN "Find and link Vulkan backend dependencies" OFF)
 option(BUILD_SHARED_LIBS "Build GLFW and Assimp as shared libraries" OFF)
@@ -7,17 +7,16 @@ option(BUILD_SHARED_LIBS "Build GLFW and Assimp as shared libraries" OFF)
 add_subdirectory(external/glfw)
 add_subdirectory(external/spdlog)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
-set(CMAKE_OBJCXX_FLAGS "${CMAKE_OBJCXX_FLAGS} -fobjc-arc")
 
 if(APPLE)
-    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-        message(STATUS "Configuring for macOS")
+    message(STATUS "Configuring for macOS")
 
-        find_library(METAL_FRAMEWORK Metal REQUIRED)
-        find_library(QUARTZCORE_FRAMEWORK QuartzCore REQUIRED)
-        find_library(APPKIT_FRAMEWORK AppKit REQUIRED)
-    endif()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
+    set(CMAKE_OBJCXX_FLAGS "${CMAKE_OBJCXX_FLAGS} -fobjc-arc")
+
+    find_library(METAL_FRAMEWORK Metal REQUIRED)
+    find_library(QUARTZCORE_FRAMEWORK QuartzCore REQUIRED)
+    find_library(APPKIT_FRAMEWORK AppKit REQUIRED)
 endif()
 
 # Assimp is included as a submodule so the project does not depend on a
@@ -91,7 +90,8 @@ if(APPLE)
     )
 
     target_sources(${PROJECT_NAME} PRIVATE
-            src/engine/graphics/metal/MetalRenderer.cpp
+            src/engine/core/MetalApp.m
+            src/engine/graphics/metal/MetalRenderer.cc
     )
 
     target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_EXPOSE_NATIVE_COCOA)

@@ -3,8 +3,7 @@
 #include "engine/platform/WindowGLFW.hpp"
 
 #include <GLFW/glfw3.h>
-#include <exception>
-#include <iostream>
+#include <format>
 
 namespace Luna {
 static void keys(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -33,13 +32,17 @@ WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, Application
     const auto height = config->height;
 
     if (!glfwInit()) {
-        std::cout << "Couldn't load glfw!\n";
-        throw std::exception();
+        throw std::runtime_error("Couldn't load glfw!");
     }
 
     if (config->rendering_api == Backend::OpenGL) {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    // I hate that I even have to do this holy shit
+    #ifndef __APPLE__
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    #else
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    #endif
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
     } else if (config->rendering_api == Backend::Vulkan) {
@@ -52,17 +55,19 @@ WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, Application
 
     handle = glfwCreateWindow(width, height, config->name, nullptr, nullptr);
     if (!handle) {
+        const char *text = nullptr;
+        glfwGetError(&text);
         glfwTerminate();
-        throw std::exception();
+        const auto error = std::format("Could not create glfw window! Error: {}", text);
+        throw std::runtime_error(error);
     }
 
     if (config->rendering_api == Backend::OpenGL) {
         glfwMakeContextCurrent(handle);
         glfwSwapInterval(0);
         if (!gladLoadGL(glfwGetProcAddress)) {
-            std::cout << "Couldn't load OpenGL with glad!\n";
             glfwTerminate();
-            throw std::exception();
+            throw std::runtime_error("Couldn't load OpenGL with glad!");
         }
     }
 
