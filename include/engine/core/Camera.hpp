@@ -14,6 +14,6 @@ namespace Luna {
         glm::mat4 view {};
 
         explicit EngineCamera(Configuration *config);
-        void Update();
+        void Update(IWindow &window, float delta);
     };
 }

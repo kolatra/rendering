@@ -44,15 +44,17 @@ int main() {
     auto *app = new Luna::Application();
     const auto &window = app->window;
     const auto &renderer = app->renderer;
-    const auto &config = app->config;
     app->Setup();
 
     auto *floor = new Luna::OpenGL::Floor();
     floor->Setup();
+    auto last_time = window->GetTime();
 
     window->Show();
     while (!window->ShouldClose()) {
         app->currentTime = window->GetTime();
+        renderer->deltaTime = static_cast<float>(app->currentTime - last_time);
+        renderer->camera->Update(*window, renderer->deltaTime);
 
         renderer->beginFrame();
         renderer->clear({0.2f, 0.3f, 0.3f, 1.0f});
@@ -66,6 +68,7 @@ int main() {
         window->SwapBuffers();
         window->PollEvents();
         renderer->endFrame();
+        last_time = window->GetTime();
     }
     delete app;
     return 0;

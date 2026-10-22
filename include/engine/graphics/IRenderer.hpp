@@ -72,6 +72,7 @@ class IRenderer {
 public:
     std::vector<IShader*> shaders;
     std::unique_ptr<EngineCamera> camera;
+    float deltaTime;
     virtual ~IRenderer() = default;
 
     virtual void init(IWindow *window, Configuration *config) = 0;

@@ -35,8 +35,6 @@ void Application::Setup() const {
 }
 
 void Application::Loop() const {
-    renderer->camera->Update();
-
     const auto shader = renderer->shaders[0];
     constexpr glm::mat4 model(1.0f);
     shader->use();

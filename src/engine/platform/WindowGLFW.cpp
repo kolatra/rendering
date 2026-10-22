@@ -1,14 +1,26 @@
 #include <glad/gl.h>
-#include "../../../include/engine/core/Application.hpp"
+#include "engine/core/Application.hpp"
 #include "engine/platform/WindowGLFW.hpp"
 
 #include <GLFW/glfw3.h>
 #include <exception>
 #include <iostream>
 
+#include "spdlog/spdlog.h"
+
 namespace Luna {
 static void keys(GLFWwindow* window, int key, int scancode, int action, int mods) {
-
+    if (const auto app = static_cast<Application*>(glfwGetWindowUserPointer(window))) {
+        switch (action) {
+            case GLFW_PRESS:
+                app->window->held_input[key] = true;
+                break;
+            case GLFW_RELEASE:
+                app->window->held_input[key] = false;
+            default:
+                break;
+        }
+    }
 }
 
 static void resize(GLFWwindow *window, int32_t w, int32_t h) {
@@ -16,11 +28,15 @@ static void resize(GLFWwindow *window, int32_t w, int32_t h) {
 }
 
 static void cursor(GLFWwindow* window, double x, double y) {
+    if (const auto app = static_cast<Application*>(glfwGetWindowUserPointer(window))) {
 
+    }
 }
 
 static void mouse(GLFWwindow* window, int32_t button, int32_t action, int32_t mods) {
+    if (const auto app = static_cast<Application*>(glfwGetWindowUserPointer(window))) {
 
+    }
 }
 
 static void errors(int32_t error, const char *description) {
@@ -72,6 +88,31 @@ WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, Application
     glfwSetCursorPosCallback(handle, cursor);
     glfwSetMouseButtonCallback(handle, mouse);
     glfwSetWindowUserPointer(handle, app);
+}
+
+void WindowGLFW::HandleInput(EngineCamera *camera, const float delta) {
+    const auto sens = 1000.0f * delta;
+
+    if (held_input[GLFW_KEY_Q])
+        glfwSetWindowShouldClose(handle, true);
+
+    if (held_input[GLFW_KEY_SPACE])
+        camera->position += sens * camera->up;
+
+    if (held_input[GLFW_KEY_LEFT_CONTROL])
+        camera->position -= sens * camera->up;
+
+    if (held_input[GLFW_KEY_W])
+        camera->position += sens * camera->front;
+
+    if (held_input[GLFW_KEY_S])
+        camera->position -= sens * camera->front;
+
+    if (held_input[GLFW_KEY_D])
+        camera->position += glm::normalize(glm::cross(camera->front, camera->up)) * sens;
+
+    if (held_input[GLFW_KEY_A])
+        camera->position -= glm::normalize(glm::cross(camera->front, camera->up)) * sens;
 }
 
 WindowGLFW::~WindowGLFW() {

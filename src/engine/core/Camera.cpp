@@ -15,7 +15,10 @@ namespace Luna {
         view = glm::mat4(1.0f);
     }
 
-    void EngineCamera::Update() {
+    void EngineCamera::Update(IWindow &window, float delta) {
+        window.HandleInput(this, delta);
+
+        // update view
         view = glm::lookAt(position, position + front, up);
     }
 }

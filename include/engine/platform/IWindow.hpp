@@ -1,9 +1,11 @@
 #pragma once
+#include <bitset>
 #include <memory>
 #include <string>
 
 namespace Luna {
-struct Configuration;
+    struct EngineCamera;
+    struct Configuration;
 
 enum class Backend {
     None,
@@ -32,6 +34,7 @@ inline Backend be_from_string(const std::string& in) {
 class IWindow {
 public:
     std::shared_ptr<Configuration> config {};
+    std::bitset<1024> held_input {};
     virtual ~IWindow() = default;
     virtual void PollEvents() = 0;
     virtual void SwapBuffers() = 0;
@@ -39,6 +42,7 @@ public:
     virtual void *GetNativeHandle() = 0;
     virtual bool ShouldClose() = 0;
     virtual void Show() = 0;
+    virtual void HandleInput(EngineCamera *camera, float delta) = 0;
 
     virtual void* CreateSurface(void* apiContext) = 0;
 };
