@@ -71,5 +71,6 @@ int main() {
         last_time = window->GetTime();
     }
     delete app;
+    spdlog::info("Exited successfully!");
     return 0;
 }

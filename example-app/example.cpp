@@ -7,14 +7,8 @@ namespace {
     class Penger {
     public:
         IModel* model;
-
         Penger() : model(new OpenGL::GlModel("assets/penger-obj-main/penger/penger.obj", false)) {}
-
         ~Penger() {}
-
-        void Draw(IShader &shader) const {
-            model->Draw(shader);
-        }
     };
 }
 
@@ -42,6 +36,6 @@ void Application::Loop() const {
     shader->setMat4("projection", renderer->camera->projection);
 
     // enable back-face culling for the penguin render
-    // renderer->setCulling(true);
-    // penger->Draw(*shader);
+    renderer->setCulling(true);
+    penger->model->Draw(*shader);
 }

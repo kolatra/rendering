@@ -238,14 +238,22 @@ namespace Luna::OpenGL {
         shader.setMat4("view", camera.view);
         shader.setMat4("projection", camera.projection);
 
-        auto model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.f, 0.f, 0.f));
-        model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        shader.setMat4("model", model);
-
         glBindTexture(GL_TEXTURE_2D, texture.id);
         glBindVertexArray(VAO);
+        constexpr auto SquareCount = 9;
 
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+        // TODO: Could this be optimized into a single draw call?
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        for (uint32_t x = 0; x < SquareCount; x++) {
+            for (uint32_t z = 0; z < SquareCount; z++) {
+                auto model = glm::mat4(1.0f);
+                model = glm::translate(model, glm::vec3(x, 0, z));
+                model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+                shader.setMat4("model", model);
+
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+            }
+        }
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 }

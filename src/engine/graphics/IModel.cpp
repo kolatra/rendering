@@ -144,8 +144,7 @@ namespace Luna {
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
         // return a mesh object created from the extracted mesh data
-        auto *ret = new OpenGL::GlMesh(vertices, indices, textures);
-        return ret;
+        return new OpenGL::GlMesh(vertices, indices, textures);
     }
 
     std::vector<Texture> IModel::LoadMaterialTextures(
