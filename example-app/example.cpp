@@ -1,8 +1,6 @@
 #include "engine/core/Application.hpp"
 #include "engine/graphics/opengl/GlModel.hpp"
 
-#include <glm/gtc/matrix_transform.hpp>
-
 using namespace Luna;
 
 namespace {
@@ -30,17 +28,22 @@ void Application::Setup() const {
     // can use it everywhere.
     shader->name = "Triangles";
     renderer->shaders.push_back(shader);
-
-    const auto &camera = renderer->camera;
+    renderer->setCulling(true);
 
     // Initialize objects
     penger = new Penger();
 }
 
 void Application::Loop() const {
+    renderer->camera->Update();
+
     const auto shader = renderer->shaders[0];
+    constexpr glm::mat4 model(1.0f);
+    shader->use();
+    shader->setMat4("model", model);
+    shader->setMat4("view", renderer->camera->view);
+    shader->setMat4("projection", renderer->camera->projection);
 
     // enable back-face culling for the penguin render
-    renderer->setCulling(true);
     penger->Draw(*shader);
 }

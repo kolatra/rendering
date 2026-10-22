@@ -13,6 +13,7 @@ namespace Luna {
         glm::vec3 up {};
         glm::mat4 view {};
 
-        EngineCamera(Configuration *config);
+        explicit EngineCamera(Configuration *config);
+        void Update();
     };
 }
