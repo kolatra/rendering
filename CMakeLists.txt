@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 4.3)
-project(engine_v29090909 LANGUAGES C CXX OBJC OBJCXX)
 
+if(WIN32)
+    set(MY_LANGUAGES C CXX)
+elseif(APPLE)
+    set(MY_LANGUAGES C CXX OBJC OBJCXX)
+endif()
+
+project(engine_v29090909 LANGUAGES ${MY_LANGUAGES})
 option(ENGINE_ENABLE_VULKAN "Find and link Vulkan backend dependencies" OFF)
 option(BUILD_SHARED_LIBS "Build GLFW and Assimp as shared libraries" OFF)
 
