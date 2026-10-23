@@ -1,11 +1,10 @@
 #pragma once
 #include <engine/platform/IWindow.hpp>
-#include <engine/core/Application.hpp>
 
 namespace Luna {
 class MacOSWindow : public IWindow {
 public:
-    MacOSWindow(Configuration *config, Application *app);
+    MacOSWindow(Configuration *config);
     ~MacOSWindow() override;
     void PollEvents() override;
     void SwapBuffers() override;

@@ -1,10 +1,8 @@
-#include <engine/core/Application.hpp>
 #include <engine/platform/WindowNS.hpp>
 #include <engine/core/Config.hpp>
 #import <Cocoa/Cocoa.h>
 
 static bool willClose = false;
-static CFGregorianDate* timer;
 
 @interface WindowDelegate : NSObject<NSWindowDelegate>
 @end
@@ -17,7 +15,7 @@ static CFGregorianDate* timer;
 @end
 
 namespace Luna {
-MacOSWindow::MacOSWindow(Configuration *config, Application *app) {
+MacOSWindow::MacOSWindow(Configuration *config) {
     @autoreleasepool {
         NSRect frame = NSMakeRect(0, 0, config->width, config->height);
         
@@ -39,29 +37,15 @@ MacOSWindow::MacOSWindow(Configuration *config, Application *app) {
         
         nsWindow = (__bridge_retained void*)window;
 
-        timer = new CFGregorianDate();
+        [window makeKeyAndOrderFront:nil];
     }
-}
-
-MacOSWindow::~MacOSWindow() {
-
-}
-
-void MacOSWindow::HandleInput(EngineCamera *camera, float delta) {
-
-}
-
-void *MacOSWindow::CreateSurface(void *apiContext) {
-    return nullptr;
 }
 
 void MacOSWindow::PollEvents() {}
 
 void MacOSWindow::SwapBuffers() {}
 
-double MacOSWindow::GetTime() {
-    return timer->second;
-}
+double MacOSWindow::GetTime() {}
 
 void *MacOSWindow::GetNativeHandle() {
     return nsWindow;
@@ -72,7 +56,7 @@ bool MacOSWindow::ShouldClose() {
 }
 
 void MacOSWindow::Show() {
-    [(NSWindow*)CFBridgingRelease(nsWindow) makeKeyAndOrderFront:nil];
+
 }
 
 }
