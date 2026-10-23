@@ -4,10 +4,6 @@
 #include <iostream>
 #include <spdlog/spdlog.h>
 
-#ifdef __APPLE__
-#include <engine/graphics/metal/MetalRenderer.hpp>
-#endif
-
 namespace Luna {
     Application::Application() {
         config = std::make_shared<Configuration>();
@@ -24,11 +20,11 @@ namespace Luna {
                 throw std::runtime_error("Vulkan is not implemented");
             case Backend::Metal:
 #ifdef __APPLE__
+#include <engine/graphics/metal/MetalRenderer.hpp>
                 renderer = std::make_unique<Metal::Implementation>();
                 break;
 #else
                 spdlog::error("Metal is not available on this device");
-                exit(1);
 #endif
             default:
                 throw std::runtime_error("Invalid state!");
@@ -38,7 +34,6 @@ namespace Luna {
         std::cout << "Renderer created.\n";
     }
 }
-
 
 int main() {
     auto *app = new Luna::Application();

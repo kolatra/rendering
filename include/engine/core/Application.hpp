@@ -18,10 +18,18 @@ namespace Luna {
         explicit Application();
 
         // Initialize needed objects for runtime, setup app, etc.
+#ifndef LUNA_IMPLEMENTATION
+        void Setup() const {}
+#else
         void Setup() const;
+#endif
 
         // Called every frame by the engine.
+#ifndef LUNA_IMPLEMENTATION
+        void Loop() const {}
+#else
         void Loop() const;
+#endif
     };
 }
 

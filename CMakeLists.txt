@@ -1,23 +1,30 @@
 cmake_minimum_required(VERSION 4.3)
-project(engine_v29090909 LANGUAGES C CXX)
 
+if(WIN32)
+    set(MY_LANGUAGES C CXX)
+elseif(APPLE)
+    set(MY_LANGUAGES C CXX OBJC OBJCXX)
+endif()
+
+project(engine_v29090909 LANGUAGES ${MY_LANGUAGES})
 option(ENGINE_ENABLE_VULKAN "Find and link Vulkan backend dependencies" OFF)
 option(BUILD_SHARED_LIBS "Build GLFW and Assimp as shared libraries" OFF)
 
 add_subdirectory(external/glfw)
 add_subdirectory(external/spdlog)
 
+
 if(APPLE)
-    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-        message(STATUS "Configuring for macOS")
+    message(STATUS "Configuring for macOS")
 
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
-        set(CMAKE_OBJCXX_FLAGS "${CMAKE_OBJCXX_FLAGS} -fobjc-arc")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
+    set(CMAKE_OBJCXX_FLAGS "${CMAKE_OBJCXX_FLAGS} -fobjc-arc")
 
-        find_library(METAL_FRAMEWORK Metal REQUIRED)
-        find_library(QUARTZCORE_FRAMEWORK QuartzCore REQUIRED)
-        find_library(APPKIT_FRAMEWORK AppKit REQUIRED)
-    endif()
+    find_library(METAL_FRAMEWORK Metal REQUIRED)
+    find_library(QUARTZCORE_FRAMEWORK QuartzCore REQUIRED)
+    find_library(APPKIT_FRAMEWORK AppKit REQUIRED)
+    
+    
 endif()
 
 # Assimp is included as a submodule so the project does not depend on a
@@ -52,9 +59,10 @@ add_executable(${PROJECT_NAME}
         src/engine/graphics/opengl/GlMesh.cpp
         src/engine/core/Config.cpp
         include/engine/core/Config.hpp
-        include/engine/core/Camera.hpp
-        src/engine/core/Camera.cpp
         include/engine/graphics/metal/MetalRenderer.hpp
+        include/engine/core/Camera.hpp
+	include/engine/platform/WindowNS.hpp
+        src/engine/core/Camera.cpp
 )
 
 include(CheckCXXSourceCompiles)
@@ -93,7 +101,9 @@ if(APPLE)
     )
 
     target_sources(${PROJECT_NAME} PRIVATE
-            src/engine/graphics/metal/MetalRenderer.cpp
+            src/engine/core/MetalApp.mm
+            src/engine/graphics/metal/MetalRenderer.cc
+            src/engine/platform/WindowMetal.mm
     )
 
     target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_EXPOSE_NATIVE_COCOA)

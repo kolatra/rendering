@@ -43,7 +43,6 @@ public:
     virtual bool ShouldClose() = 0;
     virtual void Show() = 0;
     virtual void HandleInput(EngineCamera *camera, float delta) = 0;
-
     virtual void* CreateSurface(void* apiContext) = 0;
 };
 }
