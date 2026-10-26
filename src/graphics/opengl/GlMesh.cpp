@@ -1,4 +1,4 @@
-#include <engine/graphics/opengl/RendererOpenGL.hpp>
+#include "RendererOpenGL.hpp"
 
 #include "glad/gl.h"
 
@@ -68,7 +68,7 @@ namespace Luna::OpenGL {
             else if (name == "texture_specular")
                 number = std::to_string(specularNr++);
 
-            shader.setInt((name + number).c_str(), static_cast<int>(i));
+            shader.setInt((name + number).c_str(), i);
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
         glActiveTexture(GL_TEXTURE0);

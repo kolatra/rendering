@@ -1,6 +1,6 @@
-#include <engine/core/Application.hpp>
-#include <engine/platform/WindowNS.hpp>
-#include <engine/core/Config.hpp>
+#include "core/Application.hpp"
+#include "platform/WindowNS.hpp"
+#include "core/Config.hpp"
 #import <Cocoa/Cocoa.h>
 
 static bool willClose = false;

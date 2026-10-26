@@ -1,9 +1,11 @@
-#include <engine/core/Camera.hpp>
-#include "glm/ext/matrix_clip_space.hpp"
-#include "glm/ext/matrix_transform.hpp"
+#include "Camera.hpp"
+#include "Config.hpp"
+#include "../platform/IWindow.hpp"
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
 
 namespace Luna {
-    EngineCamera::EngineCamera(Configuration *config) {
+    EngineCamera::EngineCamera(const Configuration *config) {
         constexpr float fov = glm::radians(45.0f);
         const auto W = static_cast<float>(config->width);
         const auto H = static_cast<float>(config->height);

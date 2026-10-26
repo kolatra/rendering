@@ -2,13 +2,5 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/external/assimp" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/external/glfw" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/external/spdlog" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/rendering" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/rendering/external/assimp" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/rendering/external/glfw" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/rendering/external/metal-cpp" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/rendering/external/spdlog" vcs="Git" />
   </component>
 </project>

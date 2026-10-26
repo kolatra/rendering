@@ -1,21 +1,17 @@
 cmake_minimum_required(VERSION 4.3)
 
-if(WIN32)
-    set(MY_LANGUAGES C CXX)
-elseif(APPLE)
-    set(MY_LANGUAGES C CXX OBJC OBJCXX)
-endif()
+project(engine_v29090909 LANGUAGES C CXX)
 
-project(engine_v29090909 LANGUAGES ${MY_LANGUAGES})
-option(ENGINE_ENABLE_VULKAN "Find and link Vulkan backend dependencies" OFF)
+find_package(Vulkan REQUIRED COMPONENTS volk shaderc_combined)
 option(BUILD_SHARED_LIBS "Build GLFW and Assimp as shared libraries" OFF)
 
 add_subdirectory(external/glfw)
 add_subdirectory(external/spdlog)
 
-
 if(APPLE)
     message(STATUS "Configuring for macOS")
+
+    enable_language(Swift)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
     set(CMAKE_OBJCXX_FLAGS "${CMAKE_OBJCXX_FLAGS} -fobjc-arc")
@@ -23,12 +19,8 @@ if(APPLE)
     find_library(METAL_FRAMEWORK Metal REQUIRED)
     find_library(QUARTZCORE_FRAMEWORK QuartzCore REQUIRED)
     find_library(APPKIT_FRAMEWORK AppKit REQUIRED)
-    
-    
 endif()
 
-# Assimp is included as a submodule so the project does not depend on a
-# separately installed Assimp package.
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "Build Assimp tests" FORCE)
 set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "Build Assimp tools" FORCE)
 set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "Build Assimp samples" FORCE)
@@ -42,27 +34,27 @@ else()
 endif()
 
 add_executable(${PROJECT_NAME}
-        example-app/example.cpp
-        include/engine/platform/IWindow.hpp
-        src/engine/platform/WindowGLFW.cpp
-        include/engine/platform/WindowGLFW.hpp
-        include/engine/core/Application.hpp
-        include/engine/graphics/IRenderer.hpp
-        src/engine/graphics/opengl/RendererOpenGL.cpp
-        include/engine/graphics/opengl/RendererOpenGL.hpp
-        src/engine/graphics/IModel.cpp
-        include/engine/graphics/opengl/GlModel.hpp
-        src/engine/systems/entity/ECS.cpp
-        include/engine/systems/entity/ECS.hpp
+        src/core/Config.hpp
+        src/graphics/metal/MetalRenderer.hpp
+        src/core/Camera.hpp
+        src/platform/WindowMacOS.hpp
+        src/platform/IWindow.hpp
+        src/platform/WindowGLFW.hpp
+        src/core/EngineHeart.hpp
+        src/graphics/IRenderer.hpp
+        src/graphics/opengl/RendererOpenGL.hpp
+        src/graphics/opengl/GlModel.hpp
+        src/graphics/opengl/GlMesh.cpp
+        src/graphics/opengl/RendererOpenGL.cpp
+        src/graphics/IModel.cpp
+        src/core/EngineHeart.cpp
+        src/core/Config.cpp
+        src/core/Camera.cpp
+        src/platform/WindowGLFW.cpp
         external/glad/gl.c
-        src/engine/core/Application.cpp
-        src/engine/graphics/opengl/GlMesh.cpp
-        src/engine/core/Config.cpp
-        include/engine/core/Config.hpp
-        include/engine/graphics/metal/MetalRenderer.hpp
-        include/engine/core/Camera.hpp
-	include/engine/platform/WindowNS.hpp
-        src/engine/core/Camera.cpp
+        src/graphics/Renderer.cpp
+        src/graphics/vulkan/RendererVulkan.hpp
+        src/graphics/vulkan/RendererVulkan.cpp
 )
 
 include(CheckCXXSourceCompiles)
@@ -87,6 +79,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /utf-8 /bigobj)
+    target_sources(${PROJECT_NAME} PRIVATE
+            src/platform/bootstrap/win/windows_main.cpp
+            src/platform/bootstrap/win/windows_main.hpp
+    )
+    target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:WINDOWS")
+    target_link_options(${PROJECT_NAME} PRIVATE "/ENTRY:wWinMainCRTStartup")
+#    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE")
 endif()
 
 if(APPLE)
@@ -101,12 +100,10 @@ if(APPLE)
     )
 
     target_sources(${PROJECT_NAME} PRIVATE
-            src/engine/core/MetalApp.mm
-            src/engine/graphics/metal/MetalRenderer.cc
             src/engine/platform/WindowMetal.mm
     )
 
-    target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_EXPOSE_NATIVE_COCOA)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_EXPOSE_NATIVE_COCOA APP_HAS_SWIFT)
     target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:OBJCXX>:-fobjc-arc>)
 endif()
 
@@ -119,16 +116,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 target_link_libraries(${PROJECT_NAME} PRIVATE
     glfw
     assimp::assimp
+    Vulkan::Vulkan
+    Vulkan::volk
+    Vulkan::shaderc_combined
 )
-
-if(ENGINE_ENABLE_VULKAN)
-    find_package(Vulkan REQUIRED COMPONENTS volk shaderc_combined)
-    target_link_libraries(${PROJECT_NAME} PRIVATE
-        Vulkan::Vulkan
-        Vulkan::volk
-        Vulkan::shaderc_combined
-    )
-endif()
 
 if(WIN32 AND BUILD_SHARED_LIBS)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

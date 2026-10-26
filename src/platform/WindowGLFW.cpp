@@ -1,7 +1,10 @@
-#include <glad/gl.h>
-#include "engine/core/Application.hpp"
-#include "engine/platform/WindowGLFW.hpp"
+#include "../core/EngineHeart.hpp"
+#include "../platform/WindowGLFW.hpp"
+#include "../core/Config.hpp"
+#include "../core/Camera.hpp"
 
+#include <glad/gl.h>
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <format>
 
@@ -9,7 +12,7 @@
 
 namespace Luna {
 static void keys(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if (const auto app = static_cast<Application*>(glfwGetWindowUserPointer(window))) {
+    if (const auto app = static_cast<EngineHeart*>(glfwGetWindowUserPointer(window))) {
         switch (action) {
             case GLFW_PRESS:
                 app->window->held_input[key] = true;
@@ -27,13 +30,13 @@ static void resize(GLFWwindow *window, int32_t w, int32_t h) {
 }
 
 static void cursor(GLFWwindow* window, double x, double y) {
-    if (const auto app = static_cast<Application*>(glfwGetWindowUserPointer(window))) {
+    if (const auto app = static_cast<EngineHeart*>(glfwGetWindowUserPointer(window))) {
 
     }
 }
 
 static void mouse(GLFWwindow* window, int32_t button, int32_t action, int32_t mods) {
-    if (const auto app = static_cast<Application*>(glfwGetWindowUserPointer(window))) {
+    if (const auto app = static_cast<EngineHeart*>(glfwGetWindowUserPointer(window))) {
 
     }
 }
@@ -42,7 +45,7 @@ static void errors(int32_t error, const char *description) {
     std::fprintf(stderr, "Code: %d\nError: %s\n", error, description);
 }
 
-WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, Application *app) {
+WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, EngineHeart *app) {
     this->config = config;
     const auto width = config->width;
     const auto height = config->height;
@@ -82,6 +85,7 @@ WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, Application
         glfwMakeContextCurrent(handle);
         glfwSwapInterval(0);
         if (!gladLoadGL(glfwGetProcAddress)) {
+            glfwDestroyWindow(handle);
             glfwTerminate();
             throw std::runtime_error("Couldn't load OpenGL with glad!");
         }
@@ -96,7 +100,7 @@ WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, Application
 }
 
 void WindowGLFW::HandleInput(EngineCamera *camera, const float delta) {
-    const auto sens = 1000.0f * delta;
+    const auto sens = 2.0f * delta;
 
     if (held_input[GLFW_KEY_Q])
         glfwSetWindowShouldClose(handle, true);
@@ -133,6 +137,12 @@ void *WindowGLFW::CreateSurface(void *apiContext) {
 
     if (config->rendering_api == Backend::Vulkan) {
         // create surface and other shit and return
+        // TODO: needs vk instance
+        VkSurfaceKHR surface_khr;
+        auto err = glfwCreateWindowSurface(nullptr, handle, nullptr, &surface_khr);
+        if (err) {
+            throw;
+        }
     }
 
     return nullptr;
