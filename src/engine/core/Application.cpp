@@ -1,6 +1,7 @@
 #include <engine/core/Application.hpp>
 #include <engine/platform/WindowGLFW.hpp>
 #include <engine/graphics/opengl/RendererOpenGL.hpp>
+#include <engine/core/Config.hpp>
 #include <iostream>
 #include <spdlog/spdlog.h>
 
@@ -9,33 +10,27 @@ namespace Luna {
         config = std::make_shared<Configuration>();
         config->Load();
 
-        window = std::make_unique<WindowGLFW>(config, this);
-        std::cout << "Window created.\n";
-
         switch (config->rendering_api) {
             case Backend::OpenGL:
+                window = std::make_unique<WindowGLFW>(config, this);
                 renderer = std::make_unique<OpenGL::Implementation>(config.get());
                 break;
             case Backend::Vulkan:
-                throw std::runtime_error("Vulkan is not implemented");
+                spdlog::error("Vulkan is not implemented");
             case Backend::Metal:
-#ifdef __APPLE__
-#include <engine/graphics/metal/MetalRenderer.hpp>
-                renderer = std::make_unique<Metal::Implementation>();
-                break;
-#else
-                spdlog::error("Metal is not available on this device");
-#endif
+                spdlog::error("Metal is not implemented");
             default:
                 throw std::runtime_error("Invalid state!");
         }
 
         renderer->init(window.get(), config.get());
-        std::cout << "Renderer created.\n";
+        spdlog::info("Renderer initialized.");
     }
 }
 
 int main() {
+    spdlog::set_level(spdlog::level::trace);
+
     auto *app = new Luna::Application();
     const auto &window = app->window;
     const auto &renderer = app->renderer;

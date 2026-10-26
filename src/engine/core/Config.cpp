@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <spdlog/spdlog.h>
+
 #include <engine/core/Config.hpp>
 
 using namespace std::literals;

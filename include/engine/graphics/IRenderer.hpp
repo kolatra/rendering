@@ -1,5 +1,4 @@
 #pragma once
-#include "../platform/IWindow.hpp"
 
 #include <glm/glm.hpp>
 #include <string>
@@ -11,7 +10,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "engine/core/Camera.hpp"
+#include <engine/platform/IWindow.hpp>
+#include <engine/core/Camera.hpp>
 
 namespace Luna {
 class IShader {

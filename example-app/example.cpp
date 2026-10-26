@@ -1,20 +1,18 @@
 #include "engine/core/Application.hpp"
 #include "engine/graphics/opengl/GlModel.hpp"
 
-using namespace Luna;
-
 namespace {
     class Penger {
     public:
-        IModel* model;
-        Penger() : model(new OpenGL::GlModel("assets/penger-obj-main/penger/penger.obj", false)) {}
+        Luna::IModel* model;
+        Penger() : model(new Luna::OpenGL::GlModel("assets/penger-obj-main/suitger/suitedpenger.obj", false)) {}
         ~Penger() {}
     };
+
+    Penger *penger = nullptr;
 }
 
-static Penger *penger = nullptr;
-
-void Application::Setup() const {
+void Luna::Application::Setup() const {
     // Compile our shader
     auto *shader = new OpenGL::GLShader("shaders/triangle.vsh", "shaders/triangle.fsh");
 
@@ -27,15 +25,18 @@ void Application::Setup() const {
     penger = new Penger();
 }
 
-void Application::Loop() const {
+void Luna::Application::Loop() const {
+    glm::mat4 model(1.0f);
+    // oh boy he high up there
+    model = glm::translate(model, glm::vec3(0.0f, 2.0f, 0.0f));
+
     const auto shader = renderer->shaders[0];
-    constexpr glm::mat4 model(1.0f);
     shader->use();
     shader->setMat4("model", model);
     shader->setMat4("view", renderer->camera->view);
     shader->setMat4("projection", renderer->camera->projection);
 
-    // enable back-face culling for the penguin render
+    // enable back-face culling for his render
     renderer->setCulling(true);
     penger->model->Draw(*shader);
 }

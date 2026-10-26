@@ -1,4 +1,4 @@
-#include <../../../include/engine/graphics/opengl/GlModel.hpp>
+#include <engine/graphics/opengl/GlModel.hpp>
 #include <engine/graphics/IRenderer.hpp>
 #include <iostream>
 #include <glad/gl.h>
@@ -6,6 +6,8 @@
 #include <assimp/postprocess.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#include "spdlog/spdlog.h"
 
 // https://learnopengl.com/Model-Loading/Model
 namespace Luna {
@@ -29,15 +31,10 @@ namespace Luna {
     void IModel::Load(std::string &path) {
         // read file via ASSIMP
         Assimp::Importer importer;
-        const aiScene *scene = importer.ReadFile(
-            path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
-                  aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+        const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
         // check for errors
-        if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->
-            mRootNode) {
-            // if is Not Zero
-            std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() <<
-                    std::endl;
+        if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+            spdlog::error("ERROR::ASSIMP:: {}", importer.GetErrorString());
             return;
         }
         // retrieve the directory path of the filepath
@@ -85,9 +82,7 @@ namespace Luna {
                 vertex.Normal = vector;
             }
             // texture coordinates
-            if (mesh->mTextureCoords[0])
-            // does the mesh contain texture coordinates?
-            {
+            if (mesh->mTextureCoords[0]) {
                 glm::vec2 vec;
                 // a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't
                 // use models where a vertex can have multiple texture coordinates so we always take the first set (0).
@@ -104,8 +99,9 @@ namespace Luna {
                 vector.y = mesh->mBitangents[i].y;
                 vector.z = mesh->mBitangents[i].z;
                 vertex.Bitangent = vector;
-            } else
+            } else {
                 vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+            }
 
             vertices.push_back(vertex);
         }
@@ -126,21 +122,19 @@ namespace Luna {
         // normal: texture_normalN
 
         // 1. diffuse maps
-        std::vector<Texture> diffuseMaps = LoadMaterialTextures(
-            material, aiTextureType_DIFFUSE, "texture_diffuse");
+        std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+
         // 2. specular maps
-        std::vector<Texture> specularMaps = LoadMaterialTextures(
-            material, aiTextureType_SPECULAR, "texture_specular");
-        textures.insert(textures.end(), specularMaps.begin(),
-                        specularMaps.end());
+        std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+        textures.insert(textures.end(), specularMaps.begin(),specularMaps.end());
+
         // 3. normal maps
-        std::vector<Texture> normalMaps = LoadMaterialTextures(
-            material, aiTextureType_HEIGHT, "texture_normal");
+        std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+
         // 4. height maps
-        std::vector<Texture> heightMaps = LoadMaterialTextures(
-            material, aiTextureType_AMBIENT, "texture_height");
+        std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
         // return a mesh object created from the extracted mesh data

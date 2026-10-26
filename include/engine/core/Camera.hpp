@@ -2,9 +2,10 @@
 
 #include <glm/glm.hpp>
 
-#include "Config.hpp"
-
 namespace Luna {
+    struct Configuration;
+    class IWindow;
+
     struct EngineCamera {
         glm::mat4 projection {};
 
@@ -13,7 +14,7 @@ namespace Luna {
         glm::vec3 up {};
         glm::mat4 view {};
 
-        explicit EngineCamera(Configuration *config);
+        explicit EngineCamera(const Configuration *config);
         void Update(IWindow &window, float delta);
     };
 }

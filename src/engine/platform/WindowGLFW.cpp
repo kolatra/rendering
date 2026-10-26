@@ -1,6 +1,8 @@
 #include <glad/gl.h>
 #include "engine/core/Application.hpp"
 #include "engine/platform/WindowGLFW.hpp"
+#include "engine/core/Config.hpp"
+#include "engine/core/Camera.hpp"
 
 #include <GLFW/glfw3.h>
 #include <format>
@@ -82,6 +84,7 @@ WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, Application
         glfwMakeContextCurrent(handle);
         glfwSwapInterval(0);
         if (!gladLoadGL(glfwGetProcAddress)) {
+            glfwDestroyWindow(handle);
             glfwTerminate();
             throw std::runtime_error("Couldn't load OpenGL with glad!");
         }

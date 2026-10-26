@@ -1,21 +1,17 @@
 cmake_minimum_required(VERSION 4.3)
 
-if(WIN32)
-    set(MY_LANGUAGES C CXX)
-elseif(APPLE)
-    set(MY_LANGUAGES C CXX OBJC OBJCXX)
-endif()
+project(engine_v29090909 LANGUAGES C CXX)
 
-project(engine_v29090909 LANGUAGES ${MY_LANGUAGES})
 option(ENGINE_ENABLE_VULKAN "Find and link Vulkan backend dependencies" OFF)
 option(BUILD_SHARED_LIBS "Build GLFW and Assimp as shared libraries" OFF)
 
 add_subdirectory(external/glfw)
 add_subdirectory(external/spdlog)
 
-
 if(APPLE)
     message(STATUS "Configuring for macOS")
+
+    enable_language(Swift)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
     set(CMAKE_OBJCXX_FLAGS "${CMAKE_OBJCXX_FLAGS} -fobjc-arc")
@@ -23,8 +19,6 @@ if(APPLE)
     find_library(METAL_FRAMEWORK Metal REQUIRED)
     find_library(QUARTZCORE_FRAMEWORK QuartzCore REQUIRED)
     find_library(APPKIT_FRAMEWORK AppKit REQUIRED)
-    
-    
 endif()
 
 # Assimp is included as a submodule so the project does not depend on a
@@ -43,26 +37,26 @@ endif()
 
 add_executable(${PROJECT_NAME}
         example-app/example.cpp
-        include/engine/platform/IWindow.hpp
-        src/engine/platform/WindowGLFW.cpp
-        include/engine/platform/WindowGLFW.hpp
-        include/engine/core/Application.hpp
-        include/engine/graphics/IRenderer.hpp
-        src/engine/graphics/opengl/RendererOpenGL.cpp
-        include/engine/graphics/opengl/RendererOpenGL.hpp
-        src/engine/graphics/IModel.cpp
-        include/engine/graphics/opengl/GlModel.hpp
-        src/engine/systems/entity/ECS.cpp
-        include/engine/systems/entity/ECS.hpp
-        external/glad/gl.c
-        src/engine/core/Application.cpp
-        src/engine/graphics/opengl/GlMesh.cpp
-        src/engine/core/Config.cpp
         include/engine/core/Config.hpp
         include/engine/graphics/metal/MetalRenderer.hpp
         include/engine/core/Camera.hpp
-	include/engine/platform/WindowNS.hpp
+        include/engine/platform/WindowNS.hpp
+        include/engine/platform/IWindow.hpp
+        include/engine/platform/WindowGLFW.hpp
+        include/engine/core/Application.hpp
+        include/engine/graphics/IRenderer.hpp
+        include/engine/graphics/opengl/RendererOpenGL.hpp
+        include/engine/graphics/opengl/GlModel.hpp
+        include/engine/systems/entity/ECS.hpp
+        src/engine/graphics/opengl/GlMesh.cpp
+        src/engine/graphics/opengl/RendererOpenGL.cpp
+        src/engine/graphics/IModel.cpp
+        src/engine/core/Application.cpp
+        src/engine/core/Config.cpp
         src/engine/core/Camera.cpp
+        src/engine/platform/WindowGLFW.cpp
+        src/engine/systems/entity/ECS.cpp
+        external/glad/gl.c
 )
 
 include(CheckCXXSourceCompiles)
@@ -102,11 +96,10 @@ if(APPLE)
 
     target_sources(${PROJECT_NAME} PRIVATE
             src/engine/core/MetalApp.mm
-            src/engine/graphics/metal/MetalRenderer.cc
             src/engine/platform/WindowMetal.mm
     )
 
-    target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_EXPOSE_NATIVE_COCOA)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_EXPOSE_NATIVE_COCOA APP_HAS_SWIFT)
     target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:OBJCXX>:-fobjc-arc>)
 endif()
 

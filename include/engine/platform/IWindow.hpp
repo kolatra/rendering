@@ -7,30 +7,6 @@ namespace Luna {
     struct EngineCamera;
     struct Configuration;
 
-enum class Backend {
-    None,
-    OpenGL,
-    Vulkan,
-    Metal
-};
-
-inline Backend be_from_string(const std::string& in) {
-    if (in == "OpenGL") {
-        return Backend::OpenGL;
-    }
-
-    if (in == "Vulkan") {
-        return Backend::Vulkan;
-    }
-
-    if (in == "Metal") {
-        return Backend::Metal;
-    }
-
-    // Default
-    return Backend::OpenGL;
-}
-
 class IWindow {
 public:
     std::shared_ptr<Configuration> config {};

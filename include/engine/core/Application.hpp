@@ -2,34 +2,26 @@
 
 #include <memory>
 
-#include "../graphics/IRenderer.hpp"
-#include "../platform/IWindow.hpp"
-#include "Config.hpp"
-
 namespace Luna {
-    class Application {
-    public:
-        std::shared_ptr<Configuration> config;
-        std::unique_ptr<IWindow> window;
-        std::unique_ptr<IRenderer> renderer;
+    struct Configuration;
+    class IWindow;
+    class IRenderer;
 
-        double currentTime = 0;
+class Application {
+public:
+    std::shared_ptr<Configuration> config;
+    std::unique_ptr<IWindow> window;
+    std::unique_ptr<IRenderer> renderer;
 
-        explicit Application();
+    double currentTime = 0;
 
-        // Initialize needed objects for runtime, setup app, etc.
-#ifndef LUNA_IMPLEMENTATION
-        void Setup() const {}
-#else
-        void Setup() const;
-#endif
+    explicit Application();
 
-        // Called every frame by the engine.
-#ifndef LUNA_IMPLEMENTATION
-        void Loop() const {}
-#else
-        void Loop() const;
-#endif
-    };
+    // Initialize needed objects for runtime, setup app, etc.
+    void Setup() const;
+
+    // Called every frame by the engine.
+    void Loop() const;
+};
 }
 
