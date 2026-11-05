@@ -22,10 +22,10 @@ std::unique_ptr<IRenderer> StartBackend(Configuration *config) {
     throw std::runtime_error("No renderer backend was selected.");
 }
 
-IShader *IShader::Create(Configuration *config, const std::string &vertex, const std::string &fragment) {
+IShader *IShader::Create(Configuration *config, const std::string &name) {
     switch (config->rendering_api) {
         case Backend::OpenGL:
-            return new OpenGL::GLShader(vertex, fragment);
+            return new OpenGL::GLShader(name);
         case Backend::Vulkan:
             throw std::runtime_error("Vulkan is not implemented!");
         case Backend::Metal:
@@ -41,6 +41,21 @@ IModel *IModel::Create(Configuration *config, std::string path, bool gamma) {
     switch (config->rendering_api) {
         case Backend::OpenGL:
             return new OpenGL::GlModel(path, gamma);
+        case Backend::Vulkan:
+            throw std::runtime_error("Vulkan is not implemented!");
+        case Backend::Metal:
+            throw std::runtime_error("Metal is not implemented!");
+        case Backend::None:
+            break;
+    }
+
+    throw std::runtime_error("No renderer backend was selected.");
+}
+
+Floor* Floor::Create(Configuration *config) {
+    switch (config->rendering_api) {
+        case Backend::OpenGL:
+            return new OpenGL::GlFloor();
         case Backend::Vulkan:
             throw std::runtime_error("Vulkan is not implemented!");
         case Backend::Metal:

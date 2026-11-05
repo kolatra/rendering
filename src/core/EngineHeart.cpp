@@ -48,7 +48,7 @@ namespace Luna {
         renderer->init(window.get(), config.get());
         spdlog::info("Renderer initialized.");
 
-        auto *shader = IShader::Create(config.get(), "shaders/triangle.vsh", "shaders/triangle.fsh");
+        auto *shader = IShader::Create(config.get(), "triangle");
         shader->name = "Triangles";
         renderer->shaders.push_back(shader);
 
@@ -62,8 +62,8 @@ namespace Luna {
         const auto &window = app->window;
         const auto &renderer = app->renderer;
 
-        // auto *floor = new OpenGL::Floor();
-        // floor->Setup();
+        auto *floor = Floor::Create(app->config.get());
+        floor->Setup();
 
         window->Show();
         auto last_time = window->GetTime();
@@ -79,8 +79,8 @@ namespace Luna {
             app->Loop();
 
             // disable back-face culling for the floor render
-            // renderer->setCulling(false);
-            // floor->Render(*renderer->camera);
+            renderer->setCulling(false);
+            floor->Render(*renderer->camera);
 
             window->SwapBuffers();
             window->PollEvents();

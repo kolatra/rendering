@@ -53,7 +53,7 @@ class GLShader : public IShader {
 public:
     uint32_t ID {};
 
-    GLShader(const std::string& vertex_path, const std::string& fragment_path);
+    GLShader(const std::string& name);
     ~GLShader() override;
     void use() override;
     void setBool(const std::string &name, bool value) override;
@@ -76,15 +76,11 @@ public:
 
 uint32_t TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
 
-struct Floor {
-    Texture texture;
-    GLShader shader;
+struct GlFloor : public Floor {
     uint32_t VAO{}, VBO{}, EBO{};
 
-    Floor() :
-    texture(TextureFromFile("floor.png", "assets")),
-    shader("shaders/floor.vsh", "shaders/floor.fsh"){}
-    ~Floor();
+    GlFloor();
+    virtual ~GlFloor();
 
     void Setup();
 

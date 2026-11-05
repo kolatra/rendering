@@ -18,7 +18,7 @@ class IShader {
 public:
     std::string name = "Unknown";
 
-    static IShader* Create(Configuration *config, const std::string &vertex, const std::string &fragment);
+    static IShader* Create(Configuration *config, const std::string &name);
     virtual ~IShader() = default;
     virtual void use() = 0;
     virtual void setBool(const std::string &name, bool value) = 0;
@@ -85,6 +85,16 @@ public:
     virtual void clear(const glm::vec4& colour) = 0;
     virtual void setCulling(bool flag) = 0;
 };
+
+    struct Floor {
+        Texture texture;
+        IShader* shader;
+
+        static Floor* Create(Configuration *config);
+        virtual ~Floor() = default;
+        virtual void Setup() = 0;
+        virtual void Render(EngineCamera &camera) = 0;
+    };
 
     std::unique_ptr<IRenderer> StartBackend(Configuration *config);
 }

@@ -60,7 +60,9 @@ namespace Luna::OpenGL {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    GLShader::GLShader(const std::string& vertex_path, const std::string& fragment_path) {
+    GLShader::GLShader(const std::string& name) {
+        std::string vertex_path = "shaders/" + name + ".vsh";
+        std::string fragment_path = "shaders/" + name + ".fsh";
         std::string vCode, fCode;
         std::ifstream vertexFile, fragmentFile;
         vertexFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -189,13 +191,18 @@ namespace Luna::OpenGL {
         return textureID;
     }
 
-    Floor::~Floor() {
+    GlFloor::GlFloor() {
+        this->texture = Texture(TextureFromFile("floor.png", "assets"));
+        this->shader = new GLShader("floor");
+    }
+
+    GlFloor::~GlFloor() {
         glDeleteBuffers(1, &EBO);
         glDeleteVertexArrays(1, &VAO);
         glDeleteBuffers(1, &VBO);
     }
 
-    void Floor::Setup() {
+    void GlFloor::Setup() {
         // Set of vertices for a single square
         constexpr float vertices[] = {
             // positions          // colors           // texture coords
@@ -234,11 +241,11 @@ namespace Luna::OpenGL {
         glBindVertexArray(0);
     }
 
-    void Floor::Render(EngineCamera &camera) {
-        shader.use();
+    void GlFloor::Render(EngineCamera &camera) {
+        shader->use();
 
-        shader.setMat4("view", camera.view);
-        shader.setMat4("projection", camera.projection);
+        shader->setMat4("view", camera.view);
+        shader->setMat4("projection", camera.projection);
 
         glBindTexture(GL_TEXTURE_2D, texture.id);
         glBindVertexArray(VAO);
@@ -251,7 +258,7 @@ namespace Luna::OpenGL {
                 auto model = glm::mat4(1.0f);
                 model = glm::translate(model, glm::vec3(x, 0, z));
                 model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-                shader.setMat4("model", model);
+                shader->setMat4("model", model);
 
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
             }
