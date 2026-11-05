@@ -37,9 +37,8 @@ add_executable(${PROJECT_NAME}
         src/core/Config.hpp
         src/graphics/metal/MetalRenderer.hpp
         src/core/Camera.hpp
-        src/platform/WindowMacOS.hpp
         src/platform/IWindow.hpp
-        src/platform/WindowGLFW.hpp
+        src/platform/glfw/WindowGLFW.hpp
         src/core/EngineHeart.hpp
         src/graphics/IRenderer.hpp
         src/graphics/opengl/RendererOpenGL.hpp
@@ -50,11 +49,12 @@ add_executable(${PROJECT_NAME}
         src/core/EngineHeart.cpp
         src/core/Config.cpp
         src/core/Camera.cpp
-        src/platform/WindowGLFW.cpp
+        src/platform/glfw/WindowGLFW.cpp
         external/glad/gl.c
         src/graphics/Renderer.cpp
         src/graphics/vulkan/RendererVulkan.hpp
         src/graphics/vulkan/RendererVulkan.cpp
+        src/platform/Platform.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -87,6 +87,7 @@ if(APPLE)
 
     target_sources(${PROJECT_NAME} PRIVATE
             src/engine/platform/WindowMetal.mm
+            src/platform/macos/WindowMacOS.hpp
     )
 
     target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_EXPOSE_NATIVE_COCOA APP_HAS_SWIFT)

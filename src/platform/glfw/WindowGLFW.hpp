@@ -1,6 +1,6 @@
 #pragma once
-#include "IWindow.hpp"
-#include "../core/EngineHeart.hpp"
+#include "../IWindow.hpp"
+#include "../../core/EngineHeart.hpp"
 
 struct GLFWwindow;
 

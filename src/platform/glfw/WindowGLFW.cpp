@@ -1,7 +1,7 @@
-#include "../core/EngineHeart.hpp"
-#include "../platform/WindowGLFW.hpp"
-#include "../core/Config.hpp"
-#include "../core/Camera.hpp"
+#include "../../core/EngineHeart.hpp"
+#include "WindowGLFW.hpp"
+#include "../../core/Config.hpp"
+#include "../../core/Camera.hpp"
 
 #include <glad/gl.h>
 #define GLFW_INCLUDE_VULKAN

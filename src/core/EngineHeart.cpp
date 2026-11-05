@@ -1,6 +1,6 @@
 #include "Camera.hpp"
 #include "Config.hpp"
-#include "../platform/WindowGLFW.hpp"
+#include "../platform/IWindow.hpp"
 #include "../graphics/IRenderer.hpp"
 #include "EngineHeart.hpp"
 #include <spdlog/spdlog.h>
@@ -41,7 +41,7 @@ namespace Luna {
         config = std::make_shared<Configuration>();
         config->Load();
 
-        window = std::make_unique<WindowGLFW>(config, this);
+        window = CreateAppWindow(config, this);
         spdlog::info("Window initialized.");
 
         renderer = StartBackend(config.get());

@@ -3,8 +3,9 @@
 #include <memory>
 
 namespace Luna {
-    struct EngineCamera;
-    struct Configuration;
+class EngineHeart;
+struct EngineCamera;
+struct Configuration;
 
 class IWindow {
 public:
@@ -20,4 +21,6 @@ public:
     virtual void HandleInput(EngineCamera *camera, float delta) = 0;
     virtual void* CreateSurface(void* apiContext) = 0;
 };
+
+    std::unique_ptr<IWindow> CreateAppWindow(const std::shared_ptr<Configuration> &config, EngineHeart *application);
 }
