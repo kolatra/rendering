@@ -16,9 +16,6 @@ public:
     double currentTime = 0;
 
     explicit EngineHeart();
-
-    // Called every frame by the engine.
-    void Loop() const;
 };
 
 int EngineMain(int argc, char **argv);

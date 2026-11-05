@@ -46,15 +46,16 @@ add_executable(${PROJECT_NAME}
         src/graphics/opengl/GlMesh.cpp
         src/graphics/opengl/RendererOpenGL.cpp
         src/graphics/IModel.cpp
-        src/core/EngineHeart.cpp
+        src/core/EngineMain.cpp
         src/core/Config.cpp
         src/core/Camera.cpp
         src/platform/glfw/WindowGLFW.cpp
         external/glad/gl.c
-        src/graphics/Renderer.cpp
+        src/graphics/Graphics.cpp
         src/graphics/vulkan/RendererVulkan.hpp
         src/graphics/vulkan/RendererVulkan.cpp
         src/platform/Platform.cpp
+        src/Utilities.hpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
