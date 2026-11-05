@@ -1,3 +1,5 @@
 ![](assets/screenshot.png)
 
-Entry point for the Engine is `src/engine/core/Application.cpp`. `example-app/` is a sample of the required functions needed to hook into the Engine for injecting apps.
+Toying around with rendering and platform-specific programming.
+
+The architecture is designed such that the platform code is separate from the code running on screen. No matter what state the engine is in, platform work can be done and tested against current visuals.

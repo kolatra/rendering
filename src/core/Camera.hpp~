@@ -1,0 +1,35 @@
+#pragma once
+
+#include <bitset>
+#include <cstddef>
+#include <cstdint>
+#include <glm/glm.hpp>
+
+namespace Sedna {
+    struct Configuration;
+
+    enum class CameraControl : size_t {
+        Forward,
+        Backward,
+        Left,
+        Right,
+        Up,
+        Down,
+        Count
+    };
+
+    struct EngineCamera {
+        glm::mat4 projection {};
+
+        glm::vec3 position {};
+        glm::vec3 front {};
+        glm::vec3 up {};
+        glm::mat4 view {};
+        std::bitset<static_cast<size_t>(CameraControl::Count)> controls {};
+
+        explicit EngineCamera(const Configuration *config);
+        void SetControl(CameraControl control, bool pressed);
+        void Update(float delta);
+        void Resize(uint32_t width, uint32_t height);
+    };
+}

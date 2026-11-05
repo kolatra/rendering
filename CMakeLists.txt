@@ -57,24 +57,10 @@ add_executable(${PROJECT_NAME}
         src/graphics/vulkan/RendererVulkan.cpp
 )
 
-include(CheckCXXSourceCompiles)
-set(CMAKE_CXX_STANDARD 26)
-set(CMAKE_CXX_STANDARD_REQUIRED YES)
-set(CMAKE_CXX_EXTENSIONS NO)
-check_cxx_source_compiles("int main() { return 0; }" ENGINE_COMPILER_SUPPORTS_CXX26)
-
-if(ENGINE_COMPILER_SUPPORTS_CXX26)
-    set(ENGINE_CXX_STANDARD 26)
-    message(STATUS "Using C++26")
-else()
-    set(ENGINE_CXX_STANDARD 23)
-    message(STATUS "Compiler does not support C++26; falling back to C++23")
-endif()
-
 set_target_properties(${PROJECT_NAME} PROPERTIES
-    CXX_STANDARD ${ENGINE_CXX_STANDARD}
-    CXX_STANDARD_REQUIRED YES
-    CXX_EXTENSIONS NO
+        CXX_STANDARD 23
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO
 )
 
 if(MSVC)

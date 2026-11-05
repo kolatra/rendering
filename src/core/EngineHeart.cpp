@@ -1,8 +1,7 @@
 #include "Camera.hpp"
 #include "Config.hpp"
 #include "../platform/WindowGLFW.hpp"
-#include "../graphics/opengl/RendererOpenGL.hpp"
-#include "../graphics/opengl/GlModel.hpp"
+#include "../graphics/IRenderer.hpp"
 #include "EngineHeart.hpp"
 #include <spdlog/spdlog.h>
 
@@ -11,7 +10,11 @@ namespace Luna {
         class Penger {
         public:
             IModel* model;
-            Penger() : model(new OpenGL::GlModel("assets/penger-obj-main/penger/penger.obj", false)) {}
+
+            explicit Penger(Configuration *config) :
+            model(IModel::Create(config, "assets/penger-obj-main/penger/penger.obj", false))
+            {}
+
             ~Penger() {}
         };
 
@@ -45,16 +48,12 @@ namespace Luna {
         renderer->init(window.get(), config.get());
         spdlog::info("Renderer initialized.");
 
-        // Compile our shader
-        auto *shader = new OpenGL::GLShader("shaders/triangle.vsh", "shaders/triangle.fsh");
-
-        // Give the shader to the engine so it's cleaned up for us afterwards and we
-        // can use it everywhere.
+        auto *shader = IShader::Create(config.get(), "shaders/triangle.vsh", "shaders/triangle.fsh");
         shader->name = "Triangles";
         renderer->shaders.push_back(shader);
 
         // Initialize objects
-        penger = new Penger();
+        penger = new Penger(config.get());
     }
 
     int EngineMain(int argc, char **argv) {
@@ -63,8 +62,8 @@ namespace Luna {
         const auto &window = app->window;
         const auto &renderer = app->renderer;
 
-        auto *floor = new OpenGL::Floor();
-        floor->Setup();
+        // auto *floor = new OpenGL::Floor();
+        // floor->Setup();
 
         window->Show();
         auto last_time = window->GetTime();
@@ -80,8 +79,8 @@ namespace Luna {
             app->Loop();
 
             // disable back-face culling for the floor render
-            renderer->setCulling(false);
-            floor->Render(*renderer->camera);
+            // renderer->setCulling(false);
+            // floor->Render(*renderer->camera);
 
             window->SwapBuffers();
             window->PollEvents();
