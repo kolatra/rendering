@@ -12,9 +12,9 @@ namespace Luna {
 std::unique_ptr<IRenderer> StartBackend(Configuration *config) {
     switch (config->rendering_api) {
         case Backend::OpenGL:
-            return std::make_unique<OpenGL::Implementation>(config);
+            return std::make_unique<OpenGL::Implementation>();
         case Backend::Vulkan:
-            return std::make_unique<Vulkan::Implementation>(config);
+            return std::make_unique<Vulkan::Implementation>();
         case Backend::Metal:
             spdlog::error("Metal is not implemented!");
             exit(422);

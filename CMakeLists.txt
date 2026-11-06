@@ -33,6 +33,15 @@ else()
     )
 endif()
 
+if(TARGET assimp)
+    # it won't build for some reason even though the variables are used
+    target_compile_options(assimp PRIVATE
+            -Wno-error=unused-variable
+            -Wno-error=unused-but-set-variable
+            -Wno-unused-but-set-variable
+    )
+endif()
+
 add_executable(${PROJECT_NAME}
         src/core/Config.hpp
         src/graphics/metal/MetalRenderer.hpp
@@ -56,6 +65,7 @@ add_executable(${PROJECT_NAME}
         src/graphics/vulkan/RendererVulkan.cpp
         src/platform/Platform.cpp
         src/Utilities.hpp
+        src/platform/bootstrap/linux/main.cpp
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -63,6 +73,12 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         CXX_STANDARD_REQUIRED YES
         CXX_EXTENSIONS NO
 )
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    target_sources(${PROJECT_NAME} PRIVATE
+            src/platform/bootstrap/linux/main.cpp
+    )
+endif()
 
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /utf-8 /bigobj)
@@ -102,11 +118,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    glfw
-    assimp::assimp
-    Vulkan::Vulkan
-    Vulkan::volk
-    Vulkan::shaderc_combined
+        glfw
+        assimp::assimp
+        Vulkan::Vulkan
+        Vulkan::volk
+        Vulkan::shaderc_combined
 )
 
 if(WIN32 AND BUILD_SHARED_LIBS)
