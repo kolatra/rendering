@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <iostream>
 #include "RendererOpenGL.hpp"
 
 namespace Luna::OpenGL {
@@ -11,7 +10,7 @@ public:
     explicit GlModel(std::string path, bool gamma = false) {
         this->gammaCorrection = gamma;
         Load(path);
-    }
+    };
 
     ~GlModel() override;
 };

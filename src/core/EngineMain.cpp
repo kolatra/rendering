@@ -49,6 +49,7 @@ EngineHeart::EngineHeart() {
 
     renderer = StartBackend(config.get());
     renderer->init(window.get(), config.get());
+    renderer->camera = std::make_unique<EngineCamera>(config.get());
     spdlog::info("Renderer initialized.");
 
     auto *shader = IShader::Create(config.get(), "triangle");

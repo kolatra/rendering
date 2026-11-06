@@ -10,3 +10,6 @@
 [submodule "external/metal-cpp"]
     path = external/metal-cpp
     url = git@github.com:apple/metal-cpp.git
+[submodule "external/tomlplusplus"]
+	path = external/tomlplusplus
+	url = git@github.com:marzer/tomlplusplus.git

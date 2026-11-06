@@ -5,6 +5,8 @@
 #include <stdexcept>
 
 #include "opengl/GlModel.hpp"
+#include "spdlog/spdlog.h"
+#include "vulkan/RendererVulkan.hpp"
 
 namespace Luna {
 std::unique_ptr<IRenderer> StartBackend(Configuration *config) {
@@ -12,14 +14,15 @@ std::unique_ptr<IRenderer> StartBackend(Configuration *config) {
         case Backend::OpenGL:
             return std::make_unique<OpenGL::Implementation>(config);
         case Backend::Vulkan:
-            throw std::runtime_error("Vulkan is not implemented!");
+            return std::make_unique<Vulkan::Implementation>(config);
         case Backend::Metal:
-            throw std::runtime_error("Metal is not implemented!");
+            spdlog::error("Metal is not implemented!");
+            exit(422);
         case Backend::None:
             break;
     }
 
-    throw std::runtime_error("No renderer backend was selected.");
+    throw std::runtime_error("This should never happen.");
 }
 
 IShader *IShader::Create(Configuration *config, const std::string &name) {
@@ -34,7 +37,7 @@ IShader *IShader::Create(Configuration *config, const std::string &name) {
             break;
     }
 
-    throw std::runtime_error("No renderer backend was selected.");
+    throw std::runtime_error("This should never happen.");
 }
 
 IModel *IModel::Create(Configuration *config, std::string path, bool gamma) {
@@ -49,7 +52,7 @@ IModel *IModel::Create(Configuration *config, std::string path, bool gamma) {
             break;
     }
 
-    throw std::runtime_error("No renderer backend was selected.");
+    throw std::runtime_error("This should never happen.");
 }
 
 Floor* Floor::Create(Configuration *config) {
@@ -64,6 +67,6 @@ Floor* Floor::Create(Configuration *config) {
             break;
     }
 
-    throw std::runtime_error("No renderer backend was selected.");
+    throw std::runtime_error("This should never happen.");
 }
 }

@@ -1,14 +1,10 @@
-#include "RendererVulkan.hpp"
 #include <spdlog/spdlog.h>
-
-#define GLFW_INCLUDE_VULKAN
+#include "RendererVulkan.hpp"
+#define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 
 namespace Luna::Vulkan {
-    static inline VkApplicationInfo gAppInfo {};
-    static inline VkInstance gInstance {};
-
-    VkBool32 debugCallback(
+    static VkBool32 debugCallback(
         VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
         VkDebugUtilsMessageSeverityFlagsEXT messageType,
         const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
@@ -21,14 +17,40 @@ namespace Luna::Vulkan {
         return VK_FALSE;
     }
 
-    void Startup() {
+    Implementation::~Implementation() {
+
+    }
+
+    void Implementation::init(IWindow *window, Configuration *config) {
         spdlog::info("Checking for proper support in Vulkan");
         if (!glfwVulkanSupported()) {
             spdlog::error("glfw and Vulkan said no");
             throw std::runtime_error("");
         }
 
-        gAppInfo = {
+        if (this->CreateInstance() != VK_SUCCESS) {
+            spdlog::error("Could not create Vulkan instance!");
+            throw std::runtime_error("");
+        }
+
+        spdlog::info("Vulkan instance created successfully!");
+        exit(420);
+    }
+
+    void Implementation::beginFrame() {
+    }
+
+    void Implementation::endFrame() {
+    }
+
+    void Implementation::clear(const glm::vec4 &colour) {
+    }
+
+    void Implementation::setCulling(bool flag) {
+    }
+
+    VkResult Implementation::CreateInstance() {
+        appInfo = {
             .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
             .pApplicationName = "Luna Engine",
             .apiVersion = VK_API_VERSION_1_4
@@ -55,15 +77,13 @@ namespace Luna::Vulkan {
         VkInstanceCreateInfo ci {
             .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
             .pNext = &debugInfo,
-            .pApplicationInfo = &gAppInfo,
+            .pApplicationInfo = &appInfo,
             .enabledLayerCount = static_cast<uint32_t>(requestedLayers.size()),
             .ppEnabledLayerNames = requestedLayers.data(),
             .enabledExtensionCount = static_cast<uint32_t>(requestedExtensions.size()),
             .ppEnabledExtensionNames = requestedExtensions.data()
         };
-        if (vkCreateInstance(&ci, nullptr, &gInstance) != VK_SUCCESS) {
-            spdlog::error("Could not create Vulkan instance!");
-            throw std::runtime_error("");
-        }
+
+        return vkCreateInstance(&ci, nullptr, &appInstance);
     }
 }

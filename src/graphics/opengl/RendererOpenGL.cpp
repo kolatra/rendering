@@ -15,10 +15,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Luna::OpenGL {
-    Implementation::Implementation(Configuration *config) {
-        camera = std::make_unique<EngineCamera>(config);
-    }
-
     void Implementation::init(IWindow *window, Configuration *config) {
         // glfw has already initialized OpenGL in the background, so here we can
         // set our application specific settings
