@@ -1,4 +1,8 @@
-#include "windows_main.hpp"
+#include <Windows.h>
+
+namespace Luna {
+    int EngineMain(int argc, char **argv);
+}
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
     // windows apps are decoupled from a terminal by default, so we'll spawn one
@@ -8,9 +12,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         freopen_s(&fp, "CONOUT$", "w", stderr);
         std::ios::sync_with_stdio();
     }
-
-    spdlog::set_level(spdlog::level::trace);
-    spdlog::info("hello");
 
     return Luna::EngineMain(__argc, __argv);
 }

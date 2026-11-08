@@ -1,4 +1,4 @@
-#include "../../core/EngineHeart.hpp"
+#include "../../core/AppCore.hpp"
 #include "WindowGLFW.hpp"
 #include "../../core/Config.hpp"
 #include "../../core/Camera.hpp"
@@ -12,7 +12,7 @@
 
 namespace Luna {
 static void keys(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if (const auto app = static_cast<EngineHeart*>(glfwGetWindowUserPointer(window))) {
+    if (const auto app = static_cast<AppCore*>(glfwGetWindowUserPointer(window))) {
         switch (action) {
             case GLFW_PRESS:
                 app->window->held_input[key] = true;
@@ -30,13 +30,13 @@ static void resize(GLFWwindow *window, int32_t w, int32_t h) {
 }
 
 static void cursor(GLFWwindow* window, double x, double y) {
-    if (const auto app = static_cast<EngineHeart*>(glfwGetWindowUserPointer(window))) {
+    if (const auto app = static_cast<AppCore*>(glfwGetWindowUserPointer(window))) {
 
     }
 }
 
 static void mouse(GLFWwindow* window, int32_t button, int32_t action, int32_t mods) {
-    if (const auto app = static_cast<EngineHeart*>(glfwGetWindowUserPointer(window))) {
+    if (const auto app = static_cast<AppCore*>(glfwGetWindowUserPointer(window))) {
 
     }
 }
@@ -45,7 +45,7 @@ static void errors(int32_t error, const char *description) {
     std::fprintf(stderr, "Code: %d\nError: %s\n", error, description);
 }
 
-WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, EngineHeart *app) {
+WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, AppCore *app) {
     this->config = config;
     const auto width = config->width;
     const auto height = config->height;

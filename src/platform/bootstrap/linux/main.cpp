@@ -1,8 +1,7 @@
-#include <iostream>
-#include "../../../core/EngineHeart.hpp"
+namespace Luna {
+int EngineMain(int argc, char* argv[]);
+}
 
 int main(int argc, char **argv) {
-    std::cout << "Hello from linux!\n";
-
     return Luna::EngineMain(argc, argv);
 }

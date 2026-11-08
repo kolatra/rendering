@@ -3,7 +3,7 @@
 #include <memory>
 
 namespace Luna {
-class EngineHeart;
+class AppCore;
 struct EngineCamera;
 struct Configuration;
 
@@ -22,5 +22,5 @@ public:
     virtual void* CreateSurface(void* apiContext) = 0;
 };
 
-    std::unique_ptr<IWindow> CreateAppWindow(const std::shared_ptr<Configuration> &config, EngineHeart *application);
+    std::unique_ptr<IWindow> CreateAppWindow(const std::shared_ptr<Configuration> &config, AppCore *application);
 }

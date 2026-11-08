@@ -1,6 +1,6 @@
 #pragma once
 #include "../IWindow.hpp"
-#include "../../core/EngineHeart.hpp"
+#include "../../core/AppCore.hpp"
 
 struct GLFWwindow;
 
@@ -8,7 +8,7 @@ namespace Luna {
 class WindowGLFW : public IWindow {
     GLFWwindow *handle = nullptr;
 public:
-    WindowGLFW(const std::shared_ptr<Configuration> &config, EngineHeart *app);
+    WindowGLFW(const std::shared_ptr<Configuration> &config, AppCore *app);
     ~WindowGLFW() override;
     void PollEvents() override;
     void SwapBuffers() override;

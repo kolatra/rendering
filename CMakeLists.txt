@@ -48,7 +48,7 @@ add_executable(${PROJECT_NAME}
         src/core/Camera.hpp
         src/platform/IWindow.hpp
         src/platform/glfw/WindowGLFW.hpp
-        src/core/EngineHeart.hpp
+        src/core/AppCore.hpp
         src/graphics/IRenderer.hpp
         src/graphics/opengl/RendererOpenGL.hpp
         src/graphics/opengl/GlModel.hpp
@@ -66,6 +66,9 @@ add_executable(${PROJECT_NAME}
         src/platform/Platform.cpp
         src/Utilities.hpp
         src/platform/bootstrap/linux/main.cpp
+        src/core/AppCore.cpp
+        src/Penguin.cpp
+        src/Penguin.h
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -84,7 +87,6 @@ if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /utf-8 /bigobj)
     target_sources(${PROJECT_NAME} PRIVATE
             src/platform/bootstrap/win/windows_main.cpp
-            src/platform/bootstrap/win/windows_main.hpp
     )
     target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:WINDOWS")
     target_link_options(${PROJECT_NAME} PRIVATE "/ENTRY:wWinMainCRTStartup")

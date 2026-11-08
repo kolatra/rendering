@@ -18,7 +18,7 @@ class IShader {
 public:
     std::string name = "Unknown";
 
-    static IShader* Create(Configuration *config, const std::string &name);
+    static IShader* Create(AppCore *app, const std::string &name);
     virtual ~IShader() = default;
     virtual void use() = 0;
     virtual void setBool(const std::string &name, bool value) = 0;
@@ -90,7 +90,7 @@ public:
         Texture texture;
         IShader* shader;
 
-        static Floor* Create(Configuration *config);
+        static std::unique_ptr<Floor> Create(Configuration *config);
         virtual ~Floor() = default;
         virtual void Setup() = 0;
         virtual void Render(EngineCamera &camera) = 0;

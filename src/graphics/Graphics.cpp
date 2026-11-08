@@ -7,6 +7,7 @@
 #include "opengl/GlModel.hpp"
 #include "spdlog/spdlog.h"
 #include "vulkan/RendererVulkan.hpp"
+#include "../core/AppCore.hpp"
 
 namespace Luna {
 std::unique_ptr<IRenderer> StartBackend(Configuration *config) {
@@ -25,19 +26,23 @@ std::unique_ptr<IRenderer> StartBackend(Configuration *config) {
     throw std::runtime_error("This should never happen.");
 }
 
-IShader *IShader::Create(Configuration *config, const std::string &name) {
-    switch (config->rendering_api) {
+IShader *IShader::Create(AppCore *app, const std::string &name) {
+    IShader *out;
+    switch (app->config->rendering_api) {
         case Backend::OpenGL:
-            return new OpenGL::GLShader(name);
+            out = new OpenGL::GLShader(name);
+            break;
         case Backend::Vulkan:
             throw std::runtime_error("Vulkan is not implemented!");
         case Backend::Metal:
             throw std::runtime_error("Metal is not implemented!");
         case Backend::None:
-            break;
+        default:
+            throw std::runtime_error("Invalid state when creating shader!");
     }
 
-    throw std::runtime_error("This should never happen.");
+    app->renderer->shaders.push_back(out);
+    return out;
 }
 
 IModel *IModel::Create(Configuration *config, std::string path, bool gamma) {
@@ -55,10 +60,11 @@ IModel *IModel::Create(Configuration *config, std::string path, bool gamma) {
     throw std::runtime_error("This should never happen.");
 }
 
-Floor* Floor::Create(Configuration *config) {
+std::unique_ptr<Floor> Floor::Create(Configuration *config) {
+    std::unique_ptr<Floor> out;
     switch (config->rendering_api) {
         case Backend::OpenGL:
-            return new OpenGL::GlFloor();
+            out = std::make_unique<OpenGL::GlFloor>();
         case Backend::Vulkan:
             throw std::runtime_error("Vulkan is not implemented!");
         case Backend::Metal:
@@ -67,6 +73,7 @@ Floor* Floor::Create(Configuration *config) {
             break;
     }
 
-    throw std::runtime_error("This should never happen.");
+    out->Setup();
+    return out;
 }
 }

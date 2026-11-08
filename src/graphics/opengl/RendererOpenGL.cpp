@@ -1,6 +1,6 @@
 #include "RendererOpenGL.hpp"
 #include "../../core/Config.hpp"
-#include "../../core/EngineHeart.hpp"
+#include "../../core/AppCore.hpp"
 #include "../../core/Camera.hpp"
 
 #include <iostream>
@@ -38,7 +38,7 @@ namespace Luna::OpenGL {
     }
 
     void Implementation::beginFrame() {
-
+        this->clear({0.2f, 0.3f, 0.3f, 1.0f});
     }
 
     void Implementation::endFrame() {
@@ -207,7 +207,7 @@ namespace Luna::OpenGL {
             0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
            -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
-       };
+        };
 
         constexpr uint32_t indices[] = {
             0, 1, 3,
@@ -249,7 +249,7 @@ namespace Luna::OpenGL {
         constexpr auto SquareCount = 9;
 
         // TODO: Could this be optimized into a single draw call?
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         for (uint32_t x = 0; x < SquareCount; x++) {
             for (uint32_t z = 0; z < SquareCount; z++) {
                 auto model = glm::mat4(1.0f);
@@ -260,6 +260,6 @@ namespace Luna::OpenGL {
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
             }
         }
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 }
