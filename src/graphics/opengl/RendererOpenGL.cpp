@@ -50,6 +50,10 @@ namespace Luna::OpenGL {
         for (const auto *shader : shaders) {
             delete shader;
         }
+
+        for (const auto *object : objects) {
+            delete object;
+        }
     }
 
     void Implementation::clear(const glm::vec4 &colour) {
@@ -249,7 +253,7 @@ namespace Luna::OpenGL {
         constexpr auto SquareCount = 9;
 
         // TODO: Could this be optimized into a single draw call?
-        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         for (uint32_t x = 0; x < SquareCount; x++) {
             for (uint32_t z = 0; z < SquareCount; z++) {
                 auto model = glm::mat4(1.0f);
@@ -260,6 +264,6 @@ namespace Luna::OpenGL {
                 glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
             }
         }
-        // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 }

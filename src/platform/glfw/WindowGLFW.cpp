@@ -31,7 +31,7 @@ static void resize(GLFWwindow *window, int32_t w, int32_t h) {
 
 static void cursor(GLFWwindow* window, double x, double y) {
     if (const auto app = static_cast<AppCore*>(glfwGetWindowUserPointer(window))) {
-
+        app->UpdateMouse(x, y);
     }
 }
 
@@ -96,6 +96,9 @@ WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, AppCore *ap
     glfwSetCursorPosCallback(handle, cursor);
     glfwSetMouseButtonCallback(handle, mouse);
     glfwSetWindowUserPointer(handle, app);
+
+    glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    app->holdingMouse = true;
 }
 
 void WindowGLFW::HandleInput(EngineCamera *camera, const float delta) {

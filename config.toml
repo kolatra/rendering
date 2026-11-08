@@ -1,5 +1,5 @@
 [general]
 backend = "OpenGL"
-window_name = "Luna Application"
+window_name = "beep boop"
 width = 1280
 height = 720

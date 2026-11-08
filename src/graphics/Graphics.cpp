@@ -33,9 +33,9 @@ IShader *IShader::Create(AppCore *app, const std::string &name) {
             out = new OpenGL::GLShader(name);
             break;
         case Backend::Vulkan:
-            throw std::runtime_error("Vulkan is not implemented!");
+            throw std::runtime_error("Vulkan shaders are not implemented!");
         case Backend::Metal:
-            throw std::runtime_error("Metal is not implemented!");
+            throw std::runtime_error("Metal shaders not implemented!");
         case Backend::None:
         default:
             throw std::runtime_error("Invalid state when creating shader!");
@@ -50,9 +50,9 @@ IModel *IModel::Create(Configuration *config, std::string path, bool gamma) {
         case Backend::OpenGL:
             return new OpenGL::GlModel(path, gamma);
         case Backend::Vulkan:
-            throw std::runtime_error("Vulkan is not implemented!");
+            throw std::runtime_error("Vulkan models are not implemented!");
         case Backend::Metal:
-            throw std::runtime_error("Metal is not implemented!");
+            throw std::runtime_error("Metal models are not implemented!");
         case Backend::None:
             break;
     }
@@ -65,6 +65,7 @@ std::unique_ptr<Floor> Floor::Create(Configuration *config) {
     switch (config->rendering_api) {
         case Backend::OpenGL:
             out = std::make_unique<OpenGL::GlFloor>();
+            break;
         case Backend::Vulkan:
             throw std::runtime_error("Vulkan is not implemented!");
         case Backend::Metal:

@@ -14,6 +14,10 @@ namespace Luna {
         glm::vec3 up {};
         glm::mat4 view {};
 
+        float pitch = 0.f;
+        float yaw = -90.f;
+        bool firstMouse = true;
+
         explicit EngineCamera(const Configuration *config);
         void Update(IWindow &window, float delta);
     };

@@ -14,7 +14,9 @@
 #include "../core/Camera.hpp"
 
 namespace Luna {
-class IShader {
+    class IRenderer;
+
+    class IShader {
 public:
     std::string name = "Unknown";
 
@@ -71,10 +73,18 @@ public:
     void Draw(IShader &shader) const;
 };
 
+class GameObject {
+public:
+    virtual ~GameObject() = default;
+
+    virtual void Draw(const std::unique_ptr<IRenderer> &renderer) const = 0;
+};
+
 class IRenderer {
 public:
     std::vector<IShader*> shaders;
     std::unique_ptr<EngineCamera> camera;
+    std::vector<GameObject*> objects;
     float deltaTime;
     virtual ~IRenderer() = default;
 
@@ -84,17 +94,19 @@ public:
 
     virtual void clear(const glm::vec4& colour) = 0;
     virtual void setCulling(bool flag) = 0;
+
+    void RegisterObject(GameObject *object) { objects.push_back(object); }
 };
 
-    struct Floor {
-        Texture texture;
-        IShader* shader;
+struct Floor {
+    Texture texture;
+    IShader* shader;
 
-        static std::unique_ptr<Floor> Create(Configuration *config);
-        virtual ~Floor() = default;
-        virtual void Setup() = 0;
-        virtual void Render(EngineCamera &camera) = 0;
-    };
+    static std::unique_ptr<Floor> Create(Configuration *config);
+    virtual ~Floor() = default;
+    virtual void Setup() = 0;
+    virtual void Render(EngineCamera &camera) = 0;
+};
 
-    std::unique_ptr<IRenderer> StartBackend(Configuration *config);
+std::unique_ptr<IRenderer> StartBackend(Configuration *config);
 }

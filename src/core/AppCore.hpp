@@ -6,6 +6,7 @@ namespace Luna {
     struct Configuration;
     class IWindow;
     class IRenderer;
+    struct Floor;
 
 class AppCore {
 public:
@@ -15,10 +16,15 @@ public:
     std::unique_ptr<Floor> floor;
 
     double currentTime = 0;
+
+    double mouseX = 400;
+    double mouseY = 300;
+    bool holdingMouse = false;
+    void UpdateMouse(double x, double y);
 };
 
 inline std::tuple<std::shared_ptr<Configuration> &, std::unique_ptr<IWindow> &, std::unique_ptr<IRenderer> &>
-GetHandles(std::unique_ptr<AppCore> &app) {
+GetHandles(const std::unique_ptr<AppCore> &app) {
     auto cfg = std::ref(app->config);
     auto win = std::ref(app->window);
     auto ren = std::ref(app->renderer);
