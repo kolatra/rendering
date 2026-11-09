@@ -11,6 +11,7 @@
 
 namespace Luna {
 std::unique_ptr<IRenderer> StartBackend(Configuration *config) {
+    spdlog::info("Starting Backend");
     switch (config->rendering_api) {
         case Backend::OpenGL:
             return std::make_unique<OpenGL::Implementation>();
@@ -23,7 +24,7 @@ std::unique_ptr<IRenderer> StartBackend(Configuration *config) {
             break;
     }
 
-    throw std::runtime_error("This should never happen.");
+    throw std::runtime_error("StartBackend: This should never happen.");
 }
 
 IShader *IShader::Create(AppCore *app, const std::string &name) {
@@ -54,10 +55,9 @@ IModel *IModel::Create(Configuration *config, std::string path, bool gamma) {
         case Backend::Metal:
             throw std::runtime_error("Metal models are not implemented!");
         case Backend::None:
-            break;
+        default:
+            throw std::runtime_error("IModel: Backend was cleared!");
     }
-
-    throw std::runtime_error("This should never happen.");
 }
 
 std::unique_ptr<Floor> Floor::Create(Configuration *config) {

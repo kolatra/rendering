@@ -16,6 +16,8 @@ public:
     std::unique_ptr<IRenderer> renderer;
     std::unique_ptr<Floor> floor;
 
+    void Run();
+
     double currentTime = 0;
 
     double mouseX = 400;
@@ -26,12 +28,7 @@ public:
     void RegisterObject(GameObject *obj) const;
 };
 
-std::tuple<
-    std::unique_ptr<AppCore>&,
-    std::shared_ptr<Configuration>&,
-    std::unique_ptr<IWindow>&,
-    std::unique_ptr<IRenderer>&
-> Initialize();
+std::unique_ptr<AppCore> Initialize();
 
 void AddRenderingLayer(std::unique_ptr<AppCore> &app);
 

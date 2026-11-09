@@ -43,7 +43,6 @@ add_library(${PROJECT_NAME}
         src/graphics/opengl/GlMesh.cpp
         src/graphics/opengl/RendererOpenGL.cpp
         src/graphics/IModel.cpp
-        src/EngineMain.cpp
         src/core/Config.cpp
         src/core/Camera.cpp
         src/platform/glfw/WindowGLFW.cpp
@@ -52,21 +51,11 @@ add_library(${PROJECT_NAME}
         src/graphics/vulkan/RendererVulkan.cpp
         src/platform/Platform.cpp
         src/core/AppCore.cpp
-        src/Penguin.cpp
         src/graphics/opengl/GlFloor.cpp
 )
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    target_sources(${PROJECT_NAME} PRIVATE
-            src/platform/bootstrap/linux/main.cpp
-    )
-endif()
-
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /utf-8 /bigobj)
-    target_sources(${PROJECT_NAME} PRIVATE
-            engine/platform/bootstrap/win/windows_main.cpp
-    )
     target_link_options(${PROJECT_NAME} PRIVATE "/SUBSYSTEM:WINDOWS")
     target_link_options(${PROJECT_NAME} PRIVATE "/ENTRY:wWinMainCRTStartup")
     #    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE")

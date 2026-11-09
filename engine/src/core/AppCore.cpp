@@ -6,12 +6,7 @@
 #include "core/Config.hpp"
 
 namespace Luna {
-    std::tuple<
-        std::unique_ptr<AppCore>&,
-        std::shared_ptr<Configuration>&,
-        std::unique_ptr<IWindow>&,
-        std::unique_ptr<IRenderer>&
-    > Initialize() {
+    std::unique_ptr<AppCore> Initialize() {
         auto app = std::make_unique<AppCore>();
         app->config = std::make_shared<Configuration>();
         app->config->Load();
@@ -21,12 +16,7 @@ namespace Luna {
 
         AddRenderingLayer(app);
 
-        return std::make_tuple(
-            std::ref(app),
-            std::ref(app->config),
-            std::ref(app->window),
-            std::ref(app->renderer)
-        );
+        return app;
     }
 
     void AddRenderingLayer(std::unique_ptr<AppCore> &app) {
@@ -45,6 +35,35 @@ namespace Luna {
 
     void AppCore::RegisterObject(GameObject *obj) const {
         this->renderer->objects.push_back(obj);
+    }
+
+    void AppCore::Run() {
+        window->Show();
+        auto last_time = window->GetTime();
+        while (!window->ShouldClose()) {
+            currentTime = window->GetTime();
+            renderer->deltaTime = static_cast<float>(currentTime - last_time);
+            last_time = currentTime;
+            window->SetTitle(std::format("deltaTime = {}", renderer->deltaTime));
+
+            renderer->camera->Update(*window, renderer->deltaTime);
+
+            {
+                renderer->beginFrame();
+
+                for (const auto object : renderer->objects) {
+                    object->Draw(renderer);
+                }
+
+                renderer->setCulling(false);
+                floor->Render(*renderer->camera);
+
+                renderer->endFrame();
+            }
+
+            window->SwapBuffers();
+            window->PollEvents();
+        }
     }
 
     void AppCore::UpdateMouse(double x, double y) {
