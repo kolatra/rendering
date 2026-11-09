@@ -1,5 +1,0 @@
-[general]
-backend = "OpenGL"
-window_name = "beep boop"
-width = 1280
-height = 720

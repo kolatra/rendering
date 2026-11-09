@@ -28,8 +28,8 @@ inline Backend be_from_string(const std::string& in) {
 }
 
 struct Configuration {
-    Backend rendering_api;
-    const char *name = "Luna Application";
+    Backend rendering_api = Backend::OpenGL;
+    const char *name = "beep boop";
     uint32_t width = 1280;
     uint32_t height = 720;
     bool showFloor = true;

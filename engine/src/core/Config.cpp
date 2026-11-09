@@ -12,15 +12,16 @@ namespace Luna {
         } catch (std::filesystem::filesystem_error& _) {
             spdlog::warn("No config file found. Using defaults.");
             return false;
+        } catch (toml::v3::ex::parse_error& _) {
+            spdlog::warn("No config file found. Using defaults.");
+            return false;
         }
 
         if (const std::string api = config["general"]["backend"].value_or(""); api != "") {
-            spdlog::info("Selected backend: {}", api);
             this->rendering_api = be_from_string(api);
         }
 
         if (const std::string_view window_name = config["general"]["window_name"].value_or(""sv); window_name != "") {
-            spdlog::info("Window name: {}", window_name);
             this->name = window_name.data();
         }
 

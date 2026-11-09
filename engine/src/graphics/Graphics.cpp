@@ -46,7 +46,7 @@ IShader *IShader::Create(AppCore *app, const std::string &name) {
     return out;
 }
 
-std::shared_ptr<IModel> IModel::Create(std::shared_ptr<Configuration> &config, std::string path, bool gamma) {
+std::shared_ptr<IModel> IModel::Create(const std::shared_ptr<Configuration> &config, std::string path, bool gamma) {
     switch (config->rendering_api) {
         case Backend::OpenGL:
             return std::make_shared<OpenGL::GlModel>(path, gamma);

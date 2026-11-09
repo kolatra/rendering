@@ -1,11 +1,11 @@
 #pragma once
 
 #include <memory>
+#include <graphics/IRenderer.hpp>
 
 namespace Luna {
 struct Configuration;
 class IWindow;
-class IRenderer;
 class GameObject;
 struct Floor;
 
@@ -27,14 +27,13 @@ public:
     bool holdingMouse = false;
     void UpdateMouse(double x, double y);
 
-    void RegisterObject(const std::shared_ptr<GameObject> &obj) const;
+    template <typename T>
+    void RegisterObject() const {
+        const std::shared_ptr<GameObject> newObject = std::make_shared<T>(this->config);
+        this->renderer->objects.push_back(newObject);
+    }
 };
 
-template <typename T>
-static void RegisterObject(const std::unique_ptr<AppCore> &app) {
-    const std::shared_ptr<GameObject> newObject = std::make_shared<T>(app->config);
-    app->RegisterObject(newObject);
-}
 std::unique_ptr<AppCore> Initialize();
 
 void AddRenderingLayer(std::unique_ptr<AppCore> &app);

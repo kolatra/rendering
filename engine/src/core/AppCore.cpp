@@ -33,10 +33,6 @@ namespace Luna {
         spdlog::info("Renderer initialized.");
     }
 
-    void AppCore::RegisterObject(const std::shared_ptr<GameObject> &obj) const {
-        this->renderer->objects.push_back(obj);
-    }
-
     int AppCore::Run() {
         window->Show();
         auto last_time = window->GetTime();
