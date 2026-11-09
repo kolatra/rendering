@@ -1,5 +1,5 @@
-#include "../Penguin.h"
-#include "../graphics/IRenderer.hpp"
+#include "Penguin.h"
+#include "graphics/IRenderer.hpp"
 
 void Penger::Draw(const std::unique_ptr<Luna::IRenderer> &renderer) const {
     glm::mat4 pos(1.0f);

@@ -1,9 +1,9 @@
 #include "spdlog/spdlog.h"
-#include "../platform/IWindow.hpp"
-#include "../graphics/IRenderer.hpp"
-#include "AppCore.hpp"
-#include "Camera.hpp"
-#include "Config.hpp"
+#include "platform/IWindow.hpp"
+#include "graphics/IRenderer.hpp"
+#include "core/AppCore.hpp"
+#include "core/Camera.hpp"
+#include "core/Config.hpp"
 
 namespace Luna {
     std::tuple<

@@ -1,5 +1,5 @@
-#include "opengl/GlModel.hpp"
-#include "IRenderer.hpp"
+#include "graphics/opengl/GlModel.hpp"
+#include "graphics/IRenderer.hpp"
 #include <iostream>
 #include <glad/gl.h>
 

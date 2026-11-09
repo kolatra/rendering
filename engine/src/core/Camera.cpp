@@ -1,6 +1,6 @@
-#include "Camera.hpp"
-#include "Config.hpp"
-#include "../platform/IWindow.hpp"
+#include "core/Camera.hpp"
+#include "core/Config.hpp"
+#include "platform/IWindow.hpp"
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 

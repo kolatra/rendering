@@ -1,9 +1,9 @@
-#include "../core/Camera.hpp"
-#include "../core/Config.hpp"
-#include "../platform/IWindow.hpp"
-#include "../graphics/IRenderer.hpp"
-#include "../Penguin.h"
-#include "../core/AppCore.hpp"
+#include "core/Camera.hpp"
+#include "core/Config.hpp"
+#include "platform/IWindow.hpp"
+#include "graphics/IRenderer.hpp"
+#include "Penguin.h"
+#include "core/AppCore.hpp"
 #include <spdlog/spdlog.h>
 
 // ReSharper disable once CppUseInternalLinkage

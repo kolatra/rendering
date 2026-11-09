@@ -1,5 +1,5 @@
 #pragma once
-#include "../graphics/IRenderer.hpp"
+#include "graphics/IRenderer.hpp"
 
 class Penger : public Luna::GameObject {
 public:

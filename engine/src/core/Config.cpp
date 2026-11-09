@@ -1,7 +1,7 @@
 #include <filesystem>
 #include <spdlog/spdlog.h>
 
-#include "Config.hpp"
+#include "core/Config.hpp"
 
 using namespace std::literals;
 

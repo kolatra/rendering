@@ -1,5 +1,5 @@
-#include "IWindow.hpp"
-#include "glfw/WindowGLFW.hpp"
+#include "platform/IWindow.hpp"
+#include "platform/glfw/WindowGLFW.hpp"
 
 namespace Luna {
     std::unique_ptr<IWindow> CreateAppWindow(const std::shared_ptr<Configuration> &config, AppCore *application) {

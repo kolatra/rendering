@@ -1,4 +1,4 @@
-#include "RendererOpenGL.hpp"
+#include "graphics/opengl/RendererOpenGL.hpp"
 #include "glad/gl.h"
 
 namespace Luna::OpenGL {

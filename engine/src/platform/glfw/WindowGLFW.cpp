@@ -1,7 +1,7 @@
-#include "../../core/AppCore.hpp"
-#include "../../core/Config.hpp"
-#include "../../core/Camera.hpp"
-#include "WindowGLFW.hpp"
+#include "core/AppCore.hpp"
+#include "core/Config.hpp"
+#include "core/Camera.hpp"
+#include "platform/glfw/WindowGLFW.hpp"
 
 #include <glad/gl.h>
 #define GLFW_INCLUDE_VULKAN

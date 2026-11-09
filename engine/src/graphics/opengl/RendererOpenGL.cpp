@@ -1,13 +1,14 @@
-#include "RendererOpenGL.hpp"
-#include "../../core/Config.hpp"
-#include "../../Utilities.hpp"
 #include <iostream>
-#include <spdlog/spdlog.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <spdlog/spdlog.h>
 #define GLAD_GL_IMPLEMENTATION
 #include "glad/gl.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "graphics/opengl/RendererOpenGL.hpp"
+#include "core/Config.hpp"
+#include "Utilities.hpp"
+
 
 namespace Luna::OpenGL {
     void Implementation::init(IWindow *window, Configuration *config) {

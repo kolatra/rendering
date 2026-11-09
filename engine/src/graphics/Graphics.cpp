@@ -1,13 +1,13 @@
-#include "../core/Config.hpp"
-#include "IRenderer.hpp"
-#include "opengl/RendererOpenGL.hpp"
+#include "core/Config.hpp"
+#include "graphics/IRenderer.hpp"
+#include "graphics/opengl/RendererOpenGL.hpp"
 
 #include <stdexcept>
 
-#include "opengl/GlModel.hpp"
+#include "graphics/opengl/GlModel.hpp"
 #include "spdlog/spdlog.h"
-#include "vulkan/RendererVulkan.hpp"
-#include "../core/AppCore.hpp"
+#include "graphics/vulkan/RendererVulkan.hpp"
+#include "core/AppCore.hpp"
 
 namespace Luna {
 std::unique_ptr<IRenderer> StartBackend(Configuration *config) {
