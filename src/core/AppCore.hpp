@@ -6,6 +6,7 @@ namespace Luna {
     struct Configuration;
     class IWindow;
     class IRenderer;
+    class GameObject;
     struct Floor;
 
 class AppCore {
@@ -21,6 +22,8 @@ public:
     double mouseY = 300;
     bool holdingMouse = false;
     void UpdateMouse(double x, double y);
+
+    void RegisterObject(GameObject *obj) const;
 };
 
 inline std::tuple<std::shared_ptr<Configuration> &, std::unique_ptr<IWindow> &, std::unique_ptr<IRenderer> &>
@@ -32,4 +35,5 @@ GetHandles(const std::unique_ptr<AppCore> &app) {
 }
 
 std::unique_ptr<AppCore> Initialize();
+
 }

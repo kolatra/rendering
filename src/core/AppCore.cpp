@@ -18,6 +18,7 @@ namespace Luna {
         app->renderer->init(app->window.get(), app->config.get());
         // I think I want to keep the camera optional? Because maybe sometimes it'll just be a render without controls
         app->renderer->camera = std::make_unique<EngineCamera>(app->config.get());
+        app->holdingMouse = true;
         spdlog::info("Renderer initialized.");
 
         IShader::Create(app.get(), "triangle");
@@ -25,6 +26,10 @@ namespace Luna {
         app->floor = Floor::Create(app->config.get());
 
         return app;
+    }
+
+    void AppCore::RegisterObject(GameObject *obj) const {
+        this->renderer->objects.push_back(obj);
     }
 
     void AppCore::UpdateMouse(double x, double y) {

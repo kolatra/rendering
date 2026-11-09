@@ -17,7 +17,7 @@ public:
     bool ShouldClose() override;
     void Show() override;
     void HandleInput(EngineCamera *camera, float delta) override;
-
     void* CreateSurface(void* apiContext) override;
+    void SetTitle(const std::string& title) override;
 };
 }

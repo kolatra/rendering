@@ -55,7 +55,7 @@ add_executable(${PROJECT_NAME}
         src/graphics/opengl/GlMesh.cpp
         src/graphics/opengl/RendererOpenGL.cpp
         src/graphics/IModel.cpp
-        src/core/EngineMain.cpp
+        src/EngineMain.cpp
         src/core/Config.cpp
         src/core/Camera.cpp
         src/platform/glfw/WindowGLFW.cpp

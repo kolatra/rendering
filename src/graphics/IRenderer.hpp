@@ -74,10 +74,13 @@ public:
 };
 
 class GameObject {
+    uint32_t renderPriority = 0;
 public:
     virtual ~GameObject() = default;
 
     virtual void Draw(const std::unique_ptr<IRenderer> &renderer) const = 0;
+
+    uint32_t GetPriority() const { return renderPriority; }
 };
 
 class IRenderer {
@@ -95,7 +98,6 @@ public:
     virtual void clear(const glm::vec4& colour) = 0;
     virtual void setCulling(bool flag) = 0;
 
-    void RegisterObject(GameObject *object) { objects.push_back(object); }
 };
 
 struct Floor {

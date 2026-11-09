@@ -28,10 +28,10 @@ namespace Luna::Vulkan {
             throw std::runtime_error("");
         }
 
-        if (this->CreateInstance() != VK_SUCCESS) {
-            spdlog::error("Could not create Vulkan instance!");
-            throw std::runtime_error("");
-        }
+        CreateInstance();
+        surface = static_cast<VkSurfaceKHR>(window->CreateSurface(appInstance));
+        FindPhysicalDevice();
+        CreateLogicalDevice();
 
         spdlog::info("Vulkan instance created successfully!");
         exit(420);
@@ -49,7 +49,11 @@ namespace Luna::Vulkan {
     void Implementation::setCulling(bool flag) {
     }
 
-    VkResult Implementation::CreateInstance() {
+    void CreateInstance() {
+        if (initialized) {
+            return;
+        }
+
         appInfo = {
             .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
             .pApplicationName = "Luna Engine",
@@ -63,18 +67,18 @@ namespace Luna::Vulkan {
         for (auto i = 0; i < extCount; i++)
             requestedExtensions.push_back(extensions[i]);
 
-        std::vector requestedLayers { "VK_LAYER_KHRONOS_VALIDATION" };
+        std::vector requestedLayers { "VK_LAYER_KHRONOS_validation" };
         VkDebugUtilsMessengerCreateInfoEXT debugInfo {
             .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-             .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-                                VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-                                VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
-             .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-                            VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
-             .pfnUserCallback = debugCallback
+            .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+                VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+                VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
+            .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+                VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
+            .pfnUserCallback = debugCallback
         };
 
-        VkInstanceCreateInfo ci {
+        const VkInstanceCreateInfo ci {
             .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
             .pNext = &debugInfo,
             .pApplicationInfo = &appInfo,
@@ -84,6 +88,53 @@ namespace Luna::Vulkan {
             .ppEnabledExtensionNames = requestedExtensions.data()
         };
 
-        return vkCreateInstance(&ci, nullptr, &appInstance);
+        if (vkCreateInstance(&ci, nullptr, &appInstance) != VK_SUCCESS) {
+            spdlog::error("Failed to create Vulkan instance!");
+            throw std::runtime_error("Failed to create Vulkan instance!");
+        }
+
+        initialized = true;
+    }
+
+    bool DeviceSuitable(const VkPhysicalDevice pd) {
+        uint32_t formatCount = 0;
+        vkGetPhysicalDeviceSurfaceFormatsKHR(pd, surface, &formatCount, nullptr);
+        std::vector<VkSurfaceFormatKHR> formats(formatCount);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(pd, surface, &formatCount, formats.data());
+
+        auto supported = false;
+        for (const auto &[format, colorSpace] : formats) {
+            if (format == VK_FORMAT_B8G8R8A8_SRGB) {
+                supported = true;
+                break;
+            }
+        }
+
+        return supported;
+    }
+
+    VkPhysicalDevice FindPhysicalDevice() {
+        uint32_t deviceCount = 0;
+        vkEnumeratePhysicalDevices(appInstance, &deviceCount, nullptr);
+        std::vector<VkPhysicalDevice> devices(deviceCount);
+        vkEnumeratePhysicalDevices(appInstance, &deviceCount, devices.data());
+
+        for (auto i = 0; i < deviceCount; i++) {
+            physicalDevice = devices[i];
+            if (!DeviceSuitable(physicalDevice)) {
+                continue;
+            }
+            VkPhysicalDeviceProperties props {};
+            vkGetPhysicalDeviceProperties(physicalDevice, &props);
+            spdlog::info("Device: {}", props.deviceName);
+            return physicalDevice;
+        }
+
+        spdlog::info("No physical device found!");
+        throw std::runtime_error("No physical device found!");
+    }
+
+    void CreateLogicalDevice() {
+
     }
 }

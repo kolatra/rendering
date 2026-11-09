@@ -20,6 +20,7 @@ public:
     virtual void Show() = 0;
     virtual void HandleInput(EngineCamera *camera, float delta) = 0;
     virtual void* CreateSurface(void* apiContext) = 0;
+    virtual void SetTitle(const std::string& title) = 0;
 };
 
     std::unique_ptr<IWindow> CreateAppWindow(const std::shared_ptr<Configuration> &config, AppCore *application);

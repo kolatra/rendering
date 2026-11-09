@@ -3,10 +3,20 @@
 #include <vulkan/vulkan.h>
 
 namespace Luna::Vulkan {
+    inline VkApplicationInfo appInfo {};
+    inline VkInstance appInstance {};
+    inline bool initialized = false;
+    void CreateInstance();
+
+    inline VkSurfaceKHR surface;
+
+    inline VkDevice device;
+    inline VkPhysicalDevice physicalDevice;
+    bool DeviceSuitable(VkPhysicalDevice pd);
+    VkPhysicalDevice FindPhysicalDevice();
+    void CreateLogicalDevice();
+
     class Implementation : public IRenderer {
-        VkApplicationInfo appInfo {};
-        VkInstance appInstance {};
-        VkResult CreateInstance();
     public:
         explicit Implementation() {}
         ~Implementation() override;

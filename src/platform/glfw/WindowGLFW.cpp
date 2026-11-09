@@ -98,7 +98,6 @@ WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, AppCore *ap
     glfwSetWindowUserPointer(handle, app);
 
     glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    app->holdingMouse = true;
 }
 
 void WindowGLFW::HandleInput(EngineCamera *camera, const float delta) {
@@ -141,10 +140,10 @@ void *WindowGLFW::CreateSurface(void *apiContext) {
         // create surface and other shit and return
         // TODO: needs vk instance
         VkSurfaceKHR surface_khr;
-        auto err = glfwCreateWindowSurface(nullptr, handle, nullptr, &surface_khr);
-        if (err) {
+        if (auto err = glfwCreateWindowSurface(static_cast<VkInstance>(apiContext), handle, nullptr, &surface_khr)) {
             throw;
         }
+        return surface_khr;
     }
 
     return nullptr;
@@ -172,5 +171,9 @@ bool WindowGLFW::ShouldClose() {
 
 double WindowGLFW::GetTime() {
     return glfwGetTime();
+}
+
+void WindowGLFW::SetTitle(const std::string &title) {
+    glfwSetWindowTitle(handle, title.c_str());
 }
 }
