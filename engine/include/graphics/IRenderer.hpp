@@ -59,7 +59,7 @@ public:
 
 class IModel {
 public:
-    static IModel* Create(Configuration *config, std::string path, bool gamma = false);
+    static std::shared_ptr<IModel> Create(Configuration *config, std::string path, bool gamma = false);
     virtual ~IModel() = default;
     std::vector<Texture> textures_loaded;
     std::vector<IMesh*> meshes;
@@ -74,11 +74,16 @@ public:
 };
 
 class GameObject {
-    uint32_t renderPriority = 0;
 public:
-    virtual ~GameObject() = default;
+    uint32_t renderPriority = 0;
+    glm::mat4 position {1.0f};
+    std::shared_ptr<IModel> model;
+    bool culling = false;
+    virtual ~GameObject() {
+        model.reset();
+    }
 
-    virtual void Draw(const std::unique_ptr<IRenderer> &renderer) const = 0;
+    void Draw(const std::shared_ptr<IRenderer> &renderer) const;
 
     uint32_t GetPriority() const { return renderPriority; }
 };
@@ -87,7 +92,7 @@ class IRenderer {
 public:
     std::vector<IShader*> shaders;
     std::unique_ptr<EngineCamera> camera;
-    std::vector<GameObject*> objects;
+    std::vector<std::shared_ptr<GameObject>> objects;
     float deltaTime;
     virtual ~IRenderer() = default;
 

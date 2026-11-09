@@ -3,17 +3,24 @@
 #include <memory>
 
 namespace Luna {
-    struct Configuration;
-    class IWindow;
-    class IRenderer;
-    class GameObject;
-    struct Floor;
+struct Configuration;
+class IWindow;
+class IRenderer;
+class GameObject;
+struct Floor;
+
+typedef std::shared_ptr<Configuration> HandleConfiguration;
+typedef std::shared_ptr<IWindow> HandleWindow;
+typedef std::shared_ptr<IRenderer> HandleRenderer;
+typedef std::shared_ptr<GameObject> HandleGameObject;
 
 class AppCore {
 public:
-    std::shared_ptr<Configuration> config;
-    std::unique_ptr<IWindow> window;
-    std::unique_ptr<IRenderer> renderer;
+    HandleConfiguration config;
+    HandleWindow window;
+    HandleRenderer renderer;
+
+    // The in-editor wiremesh floor, doesn't show on final product
     std::unique_ptr<Floor> floor;
 
     void Run();
@@ -25,7 +32,7 @@ public:
     bool holdingMouse = false;
     void UpdateMouse(double x, double y);
 
-    void RegisterObject(GameObject *obj) const;
+    void RegisterObject(HandleGameObject &obj);
 };
 
 std::unique_ptr<AppCore> Initialize();

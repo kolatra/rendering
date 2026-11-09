@@ -46,10 +46,10 @@ IShader *IShader::Create(AppCore *app, const std::string &name) {
     return out;
 }
 
-IModel *IModel::Create(Configuration *config, std::string path, bool gamma) {
+std::shared_ptr<IModel> IModel::Create(Configuration *config, std::string path, bool gamma) {
     switch (config->rendering_api) {
         case Backend::OpenGL:
-            return new OpenGL::GlModel(path, gamma);
+            return std::make_shared<OpenGL::GlModel>(path, gamma);
         case Backend::Vulkan:
             throw std::runtime_error("Vulkan models are not implemented!");
         case Backend::Metal:
@@ -76,5 +76,17 @@ std::unique_ptr<Floor> Floor::Create(Configuration *config) {
 
     out->Setup();
     return out;
+}
+
+void GameObject::Draw(const std::shared_ptr<IRenderer> &renderer) const {
+    const auto shader = renderer->shaders[0];
+    shader->use();
+    shader->setMat4("model", position);
+    shader->setMat4("view", renderer->camera->view);
+    shader->setMat4("projection", renderer->camera->projection);
+
+    if (culling)
+        renderer->setCulling(true);
+    this->model->Draw(*shader);
 }
 }

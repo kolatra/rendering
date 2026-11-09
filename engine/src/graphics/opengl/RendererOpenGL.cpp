@@ -41,10 +41,6 @@ namespace Luna::OpenGL {
         for (const auto *shader : shaders) {
             delete shader;
         }
-
-        for (const auto *object : objects) {
-            delete object;
-        }
     }
 
     void Implementation::clear(const glm::vec4 &colour) {

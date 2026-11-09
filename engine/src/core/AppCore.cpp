@@ -33,7 +33,7 @@ namespace Luna {
         spdlog::info("Renderer initialized.");
     }
 
-    void AppCore::RegisterObject(GameObject *obj) const {
+    void AppCore::RegisterObject(HandleGameObject &obj) {
         this->renderer->objects.push_back(obj);
     }
 
