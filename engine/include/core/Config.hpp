@@ -32,6 +32,7 @@ struct Configuration {
     const char *name = "Luna Application";
     uint32_t width = 1280;
     uint32_t height = 720;
+    bool showFloor = true;
 
     bool Load();
 private:

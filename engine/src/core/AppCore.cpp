@@ -33,11 +33,11 @@ namespace Luna {
         spdlog::info("Renderer initialized.");
     }
 
-    void AppCore::RegisterObject(HandleGameObject &obj) {
+    void AppCore::RegisterObject(const std::shared_ptr<GameObject> &obj) const {
         this->renderer->objects.push_back(obj);
     }
 
-    void AppCore::Run() {
+    int AppCore::Run() {
         window->Show();
         auto last_time = window->GetTime();
         while (!window->ShouldClose()) {
@@ -55,8 +55,10 @@ namespace Luna {
                     object->Draw(renderer);
                 }
 
-                renderer->setCulling(false);
-                floor->Render(*renderer->camera);
+                if (config->showFloor) {
+                    renderer->setCulling(false);
+                    floor->Render(*renderer->camera);
+                }
 
                 renderer->endFrame();
             }
@@ -64,6 +66,7 @@ namespace Luna {
             window->SwapBuffers();
             window->PollEvents();
         }
+        return 0;
     }
 
     void AppCore::UpdateMouse(double x, double y) {

@@ -1,31 +1,24 @@
 #include <spdlog/spdlog.h>
 
 #include "core/AppCore.hpp"
+#include "core/Config.hpp"
 #include "graphics/IRenderer.hpp"
 
 namespace {
 class BusinessMan : public Luna::GameObject {
 public:
-    explicit BusinessMan(Luna::HandleConfiguration config) {
-        model = Luna::IModel::Create(config.get(), "assets/penger-obj-main/suitger/suitedpenger.obj");
+    explicit BusinessMan(std::shared_ptr<Luna::Configuration> &config) {
+        model = Luna::IModel::Create(config, "assets/penger-obj-main/suitger/suitedpenger.obj");
         culling = true;
     }
 };
 }
 
-template <typename T>
-static void RegisterObject(const std::unique_ptr<Luna::AppCore> &app) {
-    Luna::HandleGameObject newObject = std::make_unique<T>(app->config);
-    app->RegisterObject(newObject);
-}
-
 int main(int argc, char *argv[]) {
     const auto app = Luna::Initialize();
+    app->config->showFloor = false;
 
-    RegisterObject<BusinessMan>(app);
+    Luna::RegisterObject<BusinessMan>(app);
 
-    app->Run();
-
-    spdlog::info("Exiting successfully");
-    return 0;
+    return app->Run();
 }

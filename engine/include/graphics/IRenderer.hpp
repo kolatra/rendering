@@ -59,7 +59,7 @@ public:
 
 class IModel {
 public:
-    static std::shared_ptr<IModel> Create(Configuration *config, std::string path, bool gamma = false);
+    static std::shared_ptr<IModel> Create(std::shared_ptr<Configuration> &config, std::string path, bool gamma = false);
     virtual ~IModel() = default;
     std::vector<Texture> textures_loaded;
     std::vector<IMesh*> meshes;
