@@ -13,6 +13,7 @@ public:
     void PollEvents() override;
     void SwapBuffers() override;
     double GetTime() override;
+    std::pair<int, int> GetFrameBufferSize() override;
     void *GetNativeHandle() override;
     bool ShouldClose() override;
     void Show() override;

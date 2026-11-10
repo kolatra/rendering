@@ -18,7 +18,8 @@ namespace Luna::OpenGL {
 
         glEnable(GL_PROGRAM_POINT_SIZE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glViewport(0, 0, window.config->startingWidth, window.config->startingHeight);
+        const auto [width, height] = window.GetFrameBufferSize();
+        glViewport(0, 0, width, height);
     }
 
     void Implementation::setCulling(bool flag) {

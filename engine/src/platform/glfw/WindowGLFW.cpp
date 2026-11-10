@@ -128,6 +128,13 @@ void *WindowGLFW::CreateSurface(void *apiContext) {
     return nullptr;
 }
 
+std::pair<int, int> WindowGLFW::GetFrameBufferSize() {
+    int width = 0;
+    int height = 0;
+    glfwGetFramebufferSize(handle, &width, &height);
+    return {width, height};
+}
+
 void WindowGLFW::Show() {
     glfwShowWindow(handle);
 }
