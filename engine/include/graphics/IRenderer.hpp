@@ -78,6 +78,7 @@ public:
     uint32_t renderPriority = 0;
     glm::mat4 position {1.0f};
     std::shared_ptr<IModel> model;
+    std::string modelPath;
     bool culling = false;
     virtual ~GameObject() {
         model.reset();
