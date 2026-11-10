@@ -4,11 +4,10 @@ find_package(Vulkan REQUIRED COMPONENTS volk shaderc_combined)
 
 add_subdirectory(external/glfw)
 add_subdirectory(external/spdlog)
+add_subdirectory(external/glm)
 
 if(APPLE)
     message(STATUS "Configuring for macOS")
-
-    enable_language(Swift)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fobjc-arc")
     set(CMAKE_OBJCXX_FLAGS "${CMAKE_OBJCXX_FLAGS} -fobjc-arc")
@@ -65,6 +64,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         include
         external
         external/spdlog/include
+        external/glm
 )
 
 if(APPLE)
@@ -78,17 +78,13 @@ if(APPLE)
             ${APPKIT_FRAMEWORK}
     )
 
-    add_library(${PROJECT_NAME} PRIVATE
-            engine/engine/platform/WindowMetal.mm
-            engine/platform/macos/WindowMacOS.hpp
-    )
-
     target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_EXPOSE_NATIVE_COCOA APP_HAS_SWIFT)
     target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:OBJCXX>:-fobjc-arc>)
 endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         glfw
+        glm::glm
         assimp::assimp
         Vulkan::Vulkan
         Vulkan::volk
