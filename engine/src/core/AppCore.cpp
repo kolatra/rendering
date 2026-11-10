@@ -6,7 +6,13 @@
 #include "core/Config.hpp"
 
 namespace Luna {
-    std::unique_ptr<AppCore> Initialize(bool storeDefaultConfig) {
+    std::unique_ptr<AppCore> Initialize(int argc, char **argv) {
+        bool storeDefaultConfig = false;
+        for (int i = 1; i < argc; i++) {
+            if (strcmp(argv[i], "--save-config") == 0) {
+                storeDefaultConfig = true;
+            }
+        }
         auto config = std::make_shared<Configuration>(storeDefaultConfig);
 
         spdlog::trace("creating app core");

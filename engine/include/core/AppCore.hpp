@@ -34,5 +34,5 @@ public:
     }
 };
 
-std::unique_ptr<AppCore> Initialize(bool storeDefaultConfig = false);
+std::unique_ptr<AppCore> Initialize(int argc, char **argv);
 }
