@@ -1,5 +1,3 @@
-#include <spdlog/spdlog.h>
-
 #include "core/AppCore.hpp"
 #include "core/Config.hpp"
 #include "graphics/IRenderer.hpp"
@@ -14,9 +12,11 @@ public:
 };
 }
 
+/*
+ * The engine can be initialized from our main function like so, and objects can be easily registered.
+ */
 int main(int argc, char **argv) {
     const auto app = Luna::Initialize(argc, argv);
-    app->config->showFloor = false;
 
     app->RegisterObject<BusinessMan>();
 
