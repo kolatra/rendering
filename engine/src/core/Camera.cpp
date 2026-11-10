@@ -5,10 +5,10 @@
 #include <glm/ext/matrix_transform.hpp>
 
 namespace Luna {
-    EngineCamera::EngineCamera(const Configuration *config) {
+    EngineCamera::EngineCamera(Configuration &config) {
         constexpr float fov = glm::radians(45.0f);
-        const auto W = static_cast<float>(config->width);
-        const auto H = static_cast<float>(config->height);
+        const auto W = static_cast<float>(config.startingWidth);
+        const auto H = static_cast<float>(config.startingHeight);
         projection = glm::perspective(fov, W / H, 0.1f, 100.0f);
 
         position = glm::vec3(0.0f, 0.0f, 5.0f);

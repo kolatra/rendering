@@ -96,7 +96,7 @@ public:
     float deltaTime;
     virtual ~IRenderer() = default;
 
-    virtual void init(IWindow *window, Configuration *config) = 0;
+    virtual void init(IWindow &window) = 0;
     virtual void beginFrame() = 0;
     virtual void endFrame() = 0;
 
@@ -115,5 +115,5 @@ struct Floor {
     virtual void Render(EngineCamera &camera) = 0;
 };
 
-std::unique_ptr<IRenderer> StartBackend(Configuration *config);
+std::unique_ptr<IRenderer> StartBackend(Configuration &config);
 }

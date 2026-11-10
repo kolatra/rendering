@@ -14,8 +14,14 @@ public:
 };
 }
 
-int main(int argc, char *argv[]) {
-    const auto app = Luna::Initialize();
+int main(int argc, char **argv) {
+    bool storeDefaultConfig = false;
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "--save-config") == 0) {
+            storeDefaultConfig = true;
+        }
+    }
+    const auto app = Luna::Initialize(storeDefaultConfig);
     app->config->showFloor = false;
 
     app->RegisterObject<BusinessMan>();

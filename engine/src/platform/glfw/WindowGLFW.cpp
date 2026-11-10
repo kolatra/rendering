@@ -45,25 +45,30 @@ static void errors(int32_t error, const char *description) {
     std::fprintf(stderr, "Code: %d\nError: %s\n", error, description);
 }
 
-WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, AppCore *app) {
-    this->config = config;
-    const auto width = config->width;
-    const auto height = config->height;
+WindowGLFW::WindowGLFW(const std::unique_ptr<AppCore> &app) {
+    this->config = app->config;
+    const auto width = config->startingWidth;
+    const auto height = config->startingHeight;
 
+    spdlog::debug("Loading glfw");
     if (!glfwInit()) {
         throw std::runtime_error("Couldn't load glfw!");
     }
 
     if (config->rendering_api == Backend::OpenGL) {
+        std::string debugOutput;
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     // I hate that I even have to do this holy shit
     #ifndef __APPLE__
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+        debugOutput = "OpenGL v4.6";
     #else
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        debugOutput = "OpenGL v4.1";
     #endif
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+        spdlog::debug(debugOutput);
     } else if (config->rendering_api == Backend::Vulkan) {
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
@@ -76,8 +81,8 @@ WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, AppCore *ap
         const char *text = nullptr;
         glfwGetError(&text);
         glfwTerminate();
-        const auto error = std::format("Could not create glfw window! Error: {}", text);
-        throw std::runtime_error(error);
+        spdlog::error("Could not create glfw window! Error: {}", text);
+        throw std::runtime_error("");
     }
 
     if (config->rendering_api == Backend::OpenGL) {
@@ -88,6 +93,7 @@ WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, AppCore *ap
             glfwTerminate();
             throw std::runtime_error("Couldn't load OpenGL with glad!");
         }
+        spdlog::trace("glad load successful");
     }
 
     glfwSetErrorCallback(errors);
@@ -95,16 +101,21 @@ WindowGLFW::WindowGLFW(const std::shared_ptr<Configuration> &config, AppCore *ap
     glfwSetKeyCallback(handle, keys);
     glfwSetCursorPosCallback(handle, cursor);
     glfwSetMouseButtonCallback(handle, mouse);
-    glfwSetWindowUserPointer(handle, app);
+    glfwSetWindowUserPointer(handle, app.get());
 
     glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    spdlog::trace("glfw window constructor ending");
 }
 
 void WindowGLFW::HandleInput(EngineCamera *camera, const float delta) {
-    const auto sens = 2.0f * delta;
+    auto sens = 2.0f * delta;
 
     if (held_input[GLFW_KEY_Q])
         glfwSetWindowShouldClose(handle, true);
+
+    if (held_input[GLFW_KEY_LEFT_SHIFT])
+        sens *= 2.5f;
 
     if (held_input[GLFW_KEY_SPACE])
         camera->position += sens * camera->up;

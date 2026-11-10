@@ -2,7 +2,7 @@
 #include "platform/glfw/WindowGLFW.hpp"
 
 namespace Luna {
-    std::unique_ptr<IWindow> CreateAppWindow(const std::shared_ptr<Configuration> &config, AppCore *application) {
-        return std::make_unique<WindowGLFW>(config, application);
+    std::unique_ptr<IWindow> CreateWindow(const std::unique_ptr<AppCore> &application) {
+        return std::make_unique<WindowGLFW>(application);
     }
 }

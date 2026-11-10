@@ -10,9 +10,9 @@
 #include "core/AppCore.hpp"
 
 namespace Luna {
-std::unique_ptr<IRenderer> StartBackend(Configuration *config) {
+std::unique_ptr<IRenderer> StartBackend(Configuration &config) {
     spdlog::info("Starting Backend");
-    switch (config->rendering_api) {
+    switch (config.rendering_api) {
         case Backend::OpenGL:
             return std::make_unique<OpenGL::Implementation>();
         case Backend::Vulkan:
@@ -27,6 +27,7 @@ std::unique_ptr<IRenderer> StartBackend(Configuration *config) {
     throw std::runtime_error("StartBackend: This should never happen.");
 }
 
+[[maybe_unused]]
 IShader *IShader::Create(AppCore *app, const std::string &name) {
     IShader *out;
     switch (app->config->rendering_api) {

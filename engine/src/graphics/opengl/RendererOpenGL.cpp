@@ -9,9 +9,8 @@
 #include "core/Config.hpp"
 #include "Utilities.hpp"
 
-
 namespace Luna::OpenGL {
-    void Implementation::init(IWindow *window, Configuration *config) {
+    void Implementation::init(IWindow &window) {
         // glfw has already initialized OpenGL in the background, so here we can
         // set our application specific settings
         glEnable(GL_BLEND);
@@ -19,7 +18,7 @@ namespace Luna::OpenGL {
 
         glEnable(GL_PROGRAM_POINT_SIZE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glViewport(0, 0, config->width, config->height);
+        glViewport(0, 0, window.config->startingWidth, window.config->startingHeight);
     }
 
     void Implementation::setCulling(bool flag) {
@@ -152,10 +151,10 @@ namespace Luna::OpenGL {
             glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
 
-            spdlog::debug("Loaded texture from: {}", path);
+            spdlog::debug("Loaded texture from: {}", filename);
             stbi_image_free(data);
         } else {
-            spdlog::error("Texture failed to load from: {}", path);
+            spdlog::error("Texture failed to load from: {}", filename);
             stbi_image_free(data);
         }
 

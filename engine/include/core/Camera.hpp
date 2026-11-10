@@ -18,7 +18,7 @@ namespace Luna {
         float yaw = -90.f;
         bool firstMouse = true;
 
-        explicit EngineCamera(const Configuration *config);
+        explicit EngineCamera(Configuration &config);
         void Update(IWindow &window, float delta);
     };
 }

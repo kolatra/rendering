@@ -21,20 +21,20 @@ namespace Luna::Vulkan {
 
     }
 
-    void Implementation::init(IWindow *window, Configuration *config) {
-        spdlog::info("Checking for proper support in Vulkan");
+    void Implementation::init(IWindow &window) {
+        spdlog::info("Checking for Vulkan support");
         if (!glfwVulkanSupported()) {
             spdlog::error("glfw and Vulkan said no");
             throw std::runtime_error("");
         }
 
         CreateInstance();
-        surface = static_cast<VkSurfaceKHR>(window->CreateSurface(appInstance));
+        surface = static_cast<VkSurfaceKHR>(window.CreateSurface(appInstance));
         FindPhysicalDevice();
         CreateLogicalDevice();
 
-        spdlog::info("Vulkan instance created successfully!");
-        exit(420);
+        spdlog::error("No real error, but Vulkan is not ready for use yet.");
+        throw std::runtime_error("");
     }
 
     void Implementation::beginFrame() {
@@ -60,12 +60,7 @@ namespace Luna::Vulkan {
             .apiVersion = VK_API_VERSION_1_4
         };
 
-        uint32_t extCount = 0;
-        const auto extensions = glfwGetRequiredInstanceExtensions(&extCount);
-        std::vector requestedExtensions { VK_EXT_DEBUG_UTILS_EXTENSION_NAME };
-        spdlog::info("Found {} instance extensions", extCount);
-        for (auto i = 0; i < extCount; i++)
-            requestedExtensions.push_back(extensions[i]);
+        auto requestedExtensions = GetExtensions();
 
         std::vector requestedLayers { "VK_LAYER_KHRONOS_validation" };
         VkDebugUtilsMessengerCreateInfoEXT debugInfo {
@@ -94,6 +89,16 @@ namespace Luna::Vulkan {
         }
 
         initialized = true;
+    }
+
+    std::vector<const char *> GetExtensions() {
+        uint32_t extCount = 0;
+        const auto extensions = glfwGetRequiredInstanceExtensions(&extCount);
+        std::vector requestedExtensions { VK_EXT_DEBUG_UTILS_EXTENSION_NAME };
+        spdlog::info("Found {} instance extensions", extCount);
+        for (auto i = 0; i < extCount; i++)
+            requestedExtensions.push_back(extensions[i]);
+        return requestedExtensions;
     }
 
     bool DeviceSuitable(const VkPhysicalDevice pd) {

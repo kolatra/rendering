@@ -23,5 +23,5 @@ public:
     virtual void SetTitle(const std::string& title) = 0;
 };
 
-std::unique_ptr<IWindow> CreateAppWindow(const std::shared_ptr<Configuration> &config, AppCore *application);
+std::unique_ptr<IWindow> CreateWindow(const std::unique_ptr<AppCore> &app);
 }

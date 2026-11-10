@@ -34,8 +34,5 @@ public:
     }
 };
 
-std::unique_ptr<AppCore> Initialize();
-
-void AddRenderingLayer(std::unique_ptr<AppCore> &app);
-
+std::unique_ptr<AppCore> Initialize(bool storeDefaultConfig = false);
 }

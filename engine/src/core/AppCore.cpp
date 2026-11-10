@@ -6,35 +6,32 @@
 #include "core/Config.hpp"
 
 namespace Luna {
-    std::unique_ptr<AppCore> Initialize() {
+    std::unique_ptr<AppCore> Initialize(bool storeDefaultConfig) {
+        auto config = std::make_shared<Configuration>(storeDefaultConfig);
+
+        spdlog::trace("creating app core");
         auto app = std::make_unique<AppCore>();
-        app->config = std::make_shared<Configuration>();
-        app->config->Load();
+        app->config = std::move(config);
 
-        app->window = CreateAppWindow(app->config, app.get());
-        spdlog::info("Window initialized.");
+        spdlog::trace("creating window");
+        app->window = CreateWindow(app);
+        app->window->Show();
 
-        AddRenderingLayer(app);
+        spdlog::trace("initializing rendering");
+        app->renderer = StartBackend(*app->config);
+        app->renderer->init(*app->window);
+
+        app->renderer->camera = std::make_unique<EngineCamera>(*app->config);
+        app->holdingMouse = true;
+        spdlog::trace("renderer initialized");
+
+        IShader::Create(app.get(), "triangle");
+        app->floor = Floor::Create(app->config.get());
 
         return app;
     }
 
-    void AddRenderingLayer(std::unique_ptr<AppCore> &app) {
-        app->renderer = StartBackend(app->config.get());
-        app->renderer->init(app->window.get(), app->config.get());
-
-        app->renderer->camera = std::make_unique<EngineCamera>(app->config.get());
-        app->holdingMouse = true;
-
-        IShader::Create(app.get(), "triangle");
-
-        app->floor = Floor::Create(app->config.get());
-
-        spdlog::info("Renderer initialized.");
-    }
-
     int AppCore::Run() {
-        window->Show();
         auto last_time = window->GetTime();
         while (!window->ShouldClose()) {
             currentTime = window->GetTime();

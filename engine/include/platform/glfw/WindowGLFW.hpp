@@ -8,7 +8,7 @@ namespace Luna {
 class WindowGLFW : public IWindow {
     GLFWwindow *handle = nullptr;
 public:
-    WindowGLFW(const std::shared_ptr<Configuration> &config, AppCore *app);
+    WindowGLFW(const std::unique_ptr<AppCore>& app);
     ~WindowGLFW() override;
     void PollEvents() override;
     void SwapBuffers() override;

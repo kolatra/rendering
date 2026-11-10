@@ -7,6 +7,7 @@ namespace Luna::Vulkan {
     inline VkInstance appInstance {};
     inline bool initialized = false;
     void CreateInstance();
+    std::vector<const char *> GetExtensions();
 
     inline VkSurfaceKHR surface;
 
@@ -20,7 +21,7 @@ namespace Luna::Vulkan {
     public:
         explicit Implementation() {}
         ~Implementation() override;
-        void init(IWindow *window, Configuration *config) override;
+        void init(IWindow &window) override;
         void beginFrame() override;
         void endFrame() override ;
         void clear(const glm::vec4& colour) override;
