@@ -20,7 +20,7 @@ namespace Luna {
 public:
     std::string name = "Unknown";
 
-    static IShader* Create(AppCore *app, const std::string &name);
+    [[maybe_unused]] static IShader* Create(AppCore *app, const std::string &name);
     virtual ~IShader() = default;
     virtual void use() = 0;
     virtual void setBool(const std::string &name, bool value) = 0;

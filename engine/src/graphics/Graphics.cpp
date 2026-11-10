@@ -27,7 +27,6 @@ std::unique_ptr<IRenderer> StartBackend(Configuration &config) {
     throw std::runtime_error("StartBackend: This should never happen.");
 }
 
-[[maybe_unused]]
 IShader *IShader::Create(AppCore *app, const std::string &name) {
     IShader *out;
     switch (app->config->rendering_api) {
