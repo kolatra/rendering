@@ -110,7 +110,7 @@ struct Floor {
     Texture texture;
     IShader* shader;
 
-    static std::unique_ptr<Floor> Create(Configuration *config);
+    static std::unique_ptr<Floor> Create(Configuration &config);
     virtual ~Floor() = default;
     virtual void Setup() = 0;
     virtual void Render(EngineCamera &camera) = 0;

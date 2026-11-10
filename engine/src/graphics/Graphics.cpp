@@ -11,7 +11,7 @@
 
 namespace Luna {
 std::unique_ptr<IRenderer> StartBackend(Configuration &config) {
-    spdlog::info("Starting Backend");
+    spdlog::info("Starting backend...");
     switch (config.rendering_api) {
         case Backend::OpenGL:
             return std::make_unique<OpenGL::Implementation>();
@@ -61,9 +61,9 @@ std::shared_ptr<IModel> IModel::Create(const std::shared_ptr<Configuration> &con
     }
 }
 
-std::unique_ptr<Floor> Floor::Create(Configuration *config) {
+std::unique_ptr<Floor> Floor::Create(Configuration &config) {
     std::unique_ptr<Floor> out;
-    switch (config->rendering_api) {
+    switch (config.rendering_api) {
         case Backend::OpenGL:
             out = std::make_unique<OpenGL::GlFloor>();
             break;

@@ -64,6 +64,10 @@ bool Configuration::Load() {
         } else if (log_level == "off") {
             spdlog::set_level(spdlog::level::off);
         }
+        std::cout << "spdlog::level::" << log_level << std::endl;
+    } else {
+        std::cout << "spdlog::level::info (unspecified config option)\n";
+        spdlog::set_level(spdlog::level::info);
     }
 
     if (this->alwaysLog) {
@@ -117,7 +121,7 @@ toml::table Configuration::to_toml() const {
         {"height", this->startingHeight},
         {"showFloor", this->showFloor},
         {"alwaysLog", this->alwaysLog},
-        {"logLevel", level_to_string(this->logLevel)}
+        {"log_level", level_to_string(this->logLevel)}
     };
 }
 }

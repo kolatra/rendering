@@ -1,13 +1,14 @@
 #include "core/AppCore.hpp"
 
 namespace {
-class BusinessMan : public Luna::GameObject {
-public:
+
+struct BusinessMan : Luna::GameObject {
     explicit BusinessMan() {
         modelPath = "assets/penger-obj-main/suitger/suitedpenger.obj";
         culling = true;
     }
 };
+
 }
 
 /*

@@ -32,7 +32,7 @@ namespace Luna {
         spdlog::trace("renderer initialized");
 
         IShader::Create(app.get(), "triangle");
-        app->floor = Floor::Create(app->config.get());
+        app->floor = Floor::Create(*app->config);
 
         return app;
     }
