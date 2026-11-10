@@ -1,12 +1,10 @@
 #include "core/AppCore.hpp"
 #include "core/Config.hpp"
-#include "core/Camera.hpp"
 #include "platform/glfw/WindowGLFW.hpp"
 
 #include <glad/gl.h>
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-#include <format>
 
 #include "spdlog/spdlog.h"
 
@@ -58,7 +56,6 @@ WindowGLFW::WindowGLFW(const std::unique_ptr<AppCore> &app) {
     if (config->rendering_api == Backend::OpenGL) {
         std::string debugOutput;
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    // I hate that I even have to do this holy shit
     #ifndef __APPLE__
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         debugOutput = "OpenGL v4.6";
@@ -108,34 +105,6 @@ WindowGLFW::WindowGLFW(const std::unique_ptr<AppCore> &app) {
     spdlog::trace("glfw window constructor ending");
 }
 
-void WindowGLFW::HandleInput(EngineCamera *camera, const float delta) {
-    auto sens = 2.0f * delta;
-
-    if (held_input[GLFW_KEY_Q])
-        glfwSetWindowShouldClose(handle, true);
-
-    if (held_input[GLFW_KEY_LEFT_SHIFT])
-        sens *= 2.5f;
-
-    if (held_input[GLFW_KEY_SPACE])
-        camera->position += sens * camera->up;
-
-    if (held_input[GLFW_KEY_LEFT_CONTROL])
-        camera->position -= sens * camera->up;
-
-    if (held_input[GLFW_KEY_W])
-        camera->position += sens * camera->front;
-
-    if (held_input[GLFW_KEY_S])
-        camera->position -= sens * camera->front;
-
-    if (held_input[GLFW_KEY_D])
-        camera->position += glm::normalize(glm::cross(camera->front, camera->up)) * sens;
-
-    if (held_input[GLFW_KEY_A])
-        camera->position -= glm::normalize(glm::cross(camera->front, camera->up)) * sens;
-}
-
 WindowGLFW::~WindowGLFW() {
     glfwDestroyWindow(handle);
     glfwTerminate();
@@ -177,6 +146,10 @@ void *WindowGLFW::GetNativeHandle() {
 
 bool WindowGLFW::ShouldClose() {
     return glfwWindowShouldClose(handle);
+}
+
+void WindowGLFW::Close() {
+    glfwSetWindowShouldClose(handle, true);
 }
 
 double WindowGLFW::GetTime() {

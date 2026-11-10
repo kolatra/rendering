@@ -17,8 +17,8 @@ public:
     virtual double GetTime() = 0;
     virtual void *GetNativeHandle() = 0;
     virtual bool ShouldClose() = 0;
+    virtual void Close() = 0;
     virtual void Show() = 0;
-    virtual void HandleInput(EngineCamera *camera, float delta) = 0;
     virtual void* CreateSurface(void* apiContext) = 0;
     virtual void SetTitle(const std::string& title) = 0;
 };
