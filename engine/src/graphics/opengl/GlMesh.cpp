@@ -56,7 +56,7 @@ namespace Luna::OpenGL {
         }
     }
 
-    void GlMesh::Draw(IShader &shader) {
+    void GlMesh::Draw(Shader &shader) {
         uint32_t diffuseNr = 1;
         uint32_t specularNr = 1;
         for (uint32_t i = 0; i < textures.size(); i++) {

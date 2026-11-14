@@ -14,14 +14,14 @@
 #include "../core/Camera.hpp"
 
 namespace Luna {
-    class IRenderer;
+class IRenderer;
 
-    class IShader {
+class Shader {
 public:
     std::string name = "Unknown";
 
-    [[maybe_unused]] static IShader* Create(AppCore *app, const std::string &name);
-    virtual ~IShader() = default;
+    [[maybe_unused]] static Shader* Create(const AppCore &app, const std::string &name);
+    virtual ~Shader() = default;
     virtual void use() = 0;
     virtual void setBool(const std::string &name, bool value) = 0;
     virtual void setInt(const std::string &name, int value) = 0;
@@ -29,16 +29,12 @@ public:
     virtual void setMat4(const std::string &name, const glm::mat4 &value) = 0;
 };
 
-#define MAX_BONE_INFLUENCE 4
-
 struct Vertex {
     glm::vec3 Position;
     glm::vec3 Normal;
     glm::vec2 TexCoords;
     glm::vec3 Tangent;
     glm::vec3 Bitangent;
-    int m_BoneIDs[MAX_BONE_INFLUENCE];
-    float m_Weights[MAX_BONE_INFLUENCE];
 };
 
 struct Texture {
@@ -47,43 +43,44 @@ struct Texture {
     std::string path;
 };
 
-class IMesh {
+class Mesh {
 public:
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
     std::vector<Texture> textures;
-    virtual ~IMesh() = default;
-    virtual void Draw(IShader &shader) = 0;
+    virtual ~Mesh() = default;
+    virtual void Draw(Shader &shader) = 0;
     virtual void SetupMesh() = 0;
 };
 
-class IModel {
+class Model {
 public:
-    static std::shared_ptr<IModel> Create(const std::shared_ptr<Configuration> &config, std::string path, bool gamma = false);
-    virtual ~IModel() = default;
+    static std::shared_ptr<Model> Create(const std::shared_ptr<Configuration> &config, std::string path, bool gamma = false);
+    virtual ~Model() = default;
     std::vector<Texture> textures_loaded;
-    std::vector<IMesh*> meshes;
+    std::vector<Mesh*> meshes;
     std::string directory;
     bool gammaCorrection;
 
     void Load(std::string &path);
     void ProcessNode(aiNode *node, const aiScene *scene);
-    IMesh* ProcessMesh(aiMesh *mesh, const aiScene *scene);
+    Mesh* ProcessMesh(aiMesh *mesh, const aiScene *scene);
     std::vector<Texture> LoadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
-    void Draw(IShader &shader) const;
+    void Draw(Shader &shader) const;
 };
 
 class GameObject {
 public:
     uint32_t renderPriority = 0;
-    glm::mat4 position {1.0f};
-    std::shared_ptr<IModel> model;
+    glm::mat4 position;
+    std::shared_ptr<Model> model;
     std::string modelPath;
     bool culling = false;
     virtual ~GameObject() {
         model.reset();
     }
 
+    virtual void Tick() = 0;
     void Draw(const std::shared_ptr<IRenderer> &renderer) const;
 
     uint32_t GetPriority() const { return renderPriority; }
@@ -91,7 +88,7 @@ public:
 
 class IRenderer {
 public:
-    std::vector<IShader*> shaders;
+    std::vector<Shader*> shaders;
     std::unique_ptr<EngineCamera> camera;
     std::vector<std::shared_ptr<GameObject>> objects;
     float deltaTime;
@@ -108,7 +105,7 @@ public:
 
 struct Floor {
     Texture texture;
-    IShader* shader;
+    Shader* shader;
 
     static std::unique_ptr<Floor> Create(Configuration &config);
     virtual ~Floor() = default;

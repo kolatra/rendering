@@ -31,10 +31,14 @@ namespace Luna {
         app->holdingMouse = true;
         spdlog::trace("renderer initialized");
 
-        IShader::Create(app.get(), "triangle");
+        Shader::Create(*app, "triangle");
         app->floor = Floor::Create(*app->config);
 
         return app;
+    }
+
+    static std::string PosToString(glm::vec3 pos) {
+        return std::format("x: {} y: {} z: {}", pos.x, pos.y, pos.z);
     }
 
     int AppCore::Run() {
@@ -43,14 +47,17 @@ namespace Luna {
             currentTime = window->GetTime();
             renderer->deltaTime = static_cast<float>(currentTime - last_time);
             last_time = currentTime;
-            window->SetTitle(std::format("deltaTime = {}", renderer->deltaTime));
+            window->SetTitle(PosToString(renderer->camera->position));
+            for (const auto &object : renderer->objects) {
+                object->Tick();
+            }
 
             renderer->camera->Update(*window, renderer->deltaTime);
 
             {
                 renderer->beginFrame();
 
-                for (const auto object : renderer->objects) {
+                for (const auto &object : renderer->objects) {
                     object->Draw(renderer);
                 }
 

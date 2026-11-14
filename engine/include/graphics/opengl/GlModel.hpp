@@ -4,7 +4,7 @@
 #include "RendererOpenGL.hpp"
 
 namespace Luna::OpenGL {
-class GlModel : public IModel {
+class GlModel : public Model {
 public:
     GlModel() = delete;
     explicit GlModel(std::string path, bool gamma = false) {

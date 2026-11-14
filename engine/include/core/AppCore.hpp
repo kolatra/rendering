@@ -30,7 +30,7 @@ public:
     template <typename T>
     void RegisterObject() const {
         const std::shared_ptr<GameObject> newObject = std::make_shared<T>();
-        newObject->model = IModel::Create(config, newObject->modelPath);
+        newObject->model = Model::Create(config, newObject->modelPath);
         this->renderer->objects.push_back(newObject);
     }
 };

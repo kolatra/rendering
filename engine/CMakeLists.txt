@@ -44,7 +44,7 @@ add_library(${PROJECT_NAME}
         src/graphics/IModel.cpp
         src/core/Config.cpp
         src/core/Camera.cpp
-        src/platform/glfw/WindowGLFW.cpp
+        src/platform/WindowGLFW.cpp
         external/glad/gl.c
         src/graphics/Graphics.cpp
         src/graphics/vulkan/RendererVulkan.cpp

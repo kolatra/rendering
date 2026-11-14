@@ -22,13 +22,13 @@ namespace Luna {
         }
     }
 
-    void IModel::Draw(IShader &shader) const {
+    void Model::Draw(Shader &shader) const {
         for (uint32_t i = 0; i < meshes.size(); i++) {
             meshes[i]->Draw(shader);
         }
     }
 
-    void IModel::Load(std::string &path) {
+    void Model::Load(std::string &path) {
         // read file via ASSIMP
         Assimp::Importer importer;
         const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
@@ -44,7 +44,7 @@ namespace Luna {
         ProcessNode(scene->mRootNode, scene);
     }
 
-    void IModel::ProcessNode(aiNode *node, const aiScene *scene) {
+    void Model::ProcessNode(aiNode *node, const aiScene *scene) {
         // process each mesh located at the current node
         for (uint32_t i = 0; i < node->mNumMeshes; i++) {
             // the node object only contains indices to index the actual objects in the scene.
@@ -58,7 +58,7 @@ namespace Luna {
         }
     }
 
-    IMesh* IModel::ProcessMesh(aiMesh *mesh, const aiScene *scene) {
+    Mesh* Model::ProcessMesh(aiMesh *mesh, const aiScene *scene) {
         // data to fill
         std::vector<Vertex> vertices;
         std::vector<uint32_t> indices;
@@ -141,7 +141,7 @@ namespace Luna {
         return new OpenGL::GlMesh(vertices, indices, textures);
     }
 
-    std::vector<Texture> IModel::LoadMaterialTextures(
+    std::vector<Texture> Model::LoadMaterialTextures(
         aiMaterial *mat, aiTextureType type, std::string typeName) {
         std::vector<Texture> textures;
         for (uint32_t i = 0; i < mat->GetTextureCount(type); i++) {

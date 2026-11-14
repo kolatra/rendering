@@ -21,15 +21,14 @@ std::unique_ptr<IRenderer> StartBackend(Configuration &config) {
             spdlog::error("Metal is not implemented!");
             exit(422);
         case Backend::None:
-            break;
+        default:
+            throw std::runtime_error("StartBackend: This should never happen.");
     }
-
-    throw std::runtime_error("StartBackend: This should never happen.");
 }
 
-IShader *IShader::Create(AppCore *app, const std::string &name) {
-    IShader *out;
-    switch (app->config->rendering_api) {
+Shader *Shader::Create(const AppCore &app, const std::string &name) {
+    Shader *out;
+    switch (app.config->rendering_api) {
         case Backend::OpenGL:
             out = new OpenGL::GLShader(name);
             break;
@@ -42,11 +41,11 @@ IShader *IShader::Create(AppCore *app, const std::string &name) {
             throw std::runtime_error("Invalid state when creating shader!");
     }
 
-    app->renderer->shaders.push_back(out);
+    app.renderer->shaders.push_back(out);
     return out;
 }
 
-std::shared_ptr<IModel> IModel::Create(const std::shared_ptr<Configuration> &config, std::string path, bool gamma) {
+std::shared_ptr<Model> Model::Create(const std::shared_ptr<Configuration> &config, std::string path, bool gamma) {
     switch (config->rendering_api) {
         case Backend::OpenGL:
             return std::make_shared<OpenGL::GlModel>(path, gamma);
@@ -56,7 +55,7 @@ std::shared_ptr<IModel> IModel::Create(const std::shared_ptr<Configuration> &con
             throw std::runtime_error("Metal models are not implemented!");
         case Backend::None:
         default:
-            throw std::runtime_error("IModel: Backend was cleared!");
+            throw std::runtime_error("Model: Backend was cleared!");
     }
 }
 
@@ -71,7 +70,8 @@ std::unique_ptr<Floor> Floor::Create(Configuration &config) {
         case Backend::Metal:
             throw std::runtime_error("Metal is not implemented!");
         case Backend::None:
-            break;
+        default:
+            throw std::runtime_error("Invalid state!");
     }
 
     out->Setup();

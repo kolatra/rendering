@@ -9,7 +9,7 @@ namespace Luna {
 }
 
 namespace Luna::OpenGL {
-    class GlMesh : public IMesh {
+    class GlMesh : public Mesh {
 public:
     GlMesh(const GlMesh&) = delete;
     GlMesh& operator=(const GlMesh&) = delete;
@@ -42,7 +42,7 @@ public:
 
     GlMesh(std::vector<Vertex> &vertices, std::vector<uint32_t> &indices, std::vector<Texture> &textures);
     ~GlMesh() override;
-    void Draw(IShader &shader) override;
+    void Draw(Shader &shader) override;
     void SetupMesh() override;
 private:
     void Release() noexcept;
@@ -50,7 +50,7 @@ private:
     uint32_t VAO {}, VBO {}, EBO {};
 };
 
-class GLShader : public IShader {
+class GLShader : public Shader {
 public:
     uint32_t ID {};
 
@@ -79,6 +79,7 @@ uint32_t TextureFromFile(const char *path, const std::string &directory, bool ga
 
 struct GlFloor : public Floor {
     uint32_t VAO{}, VBO{}, EBO{};
+    uint32_t indexCount{};
 
     GlFloor();
     virtual ~GlFloor();

@@ -14,20 +14,28 @@ namespace Luna::OpenGL {
     }
 
     void GlFloor::Setup() {
-        // Set of vertices for a single square
-        // TODO: use a loop to add this constexpr to a vector of vertices and indices, offset somehow idk yet
-        constexpr float vertices[] = {
-            // positions          // colors           // texture coords
-            0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-            0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-           -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-           -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
-        };
+        constexpr auto SquareCount = 9;
+        std::vector<Vertex> vertices(SquareCount * SquareCount * 4);
+        std::vector<uint32_t> indices(SquareCount * SquareCount * 6);
+        for (uint32_t x = 0; x < SquareCount; x++) {
+            for (uint32_t z = 0; z < SquareCount; z++) {
+                const auto base = static_cast<uint32_t>(vertices.size());
 
-        constexpr uint32_t indices[] = {
-            0, 1, 3,
-            1, 2, 3
-        };
+                vertices.insert(vertices.end(), {
+                    {{x + 0.5f, 0.0f, z - 0.5f}, {1, 0, 0}, {1, 1}},
+                    {{x + 0.5f, 0.0f, z + 0.5f}, {0, 1, 0}, {1, 0}},
+                    {{x - 0.5f, 0.0f, z + 0.5f}, {0, 0, 1}, {0, 0}},
+                    {{x - 0.5f, 0.0f, z - 0.5f}, {1, 1, 0}, {0, 1}},
+                });
+
+                indices.insert(indices.end(), {
+                    base, base + 1, base + 3,
+                    base + 1, base + 2, base + 3
+                });
+            }
+        }
+
+        indexCount = static_cast<uint32_t>(indices.size());;
 
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
@@ -35,18 +43,18 @@ namespace Luna::OpenGL {
         glBindVertexArray(VAO);
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32_t), &indices[0], GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, Position)));
         glEnableVertexAttribArray(0);
 
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(offsetof(Vertex, Normal)));
         glEnableVertexAttribArray(1);
 
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void *>(6 * sizeof(float)));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(offsetof(Vertex, TexCoords)));
         glEnableVertexAttribArray(2);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -61,20 +69,9 @@ namespace Luna::OpenGL {
 
         glBindTexture(GL_TEXTURE_2D, texture.id);
         glBindVertexArray(VAO);
-        constexpr auto SquareCount = 9;
-
-        // TODO: Could this be optimized into a single draw call?
+        shader->setMat4("model", glm::mat4(1.0f));
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        for (uint32_t x = 0; x < SquareCount; x++) {
-            for (uint32_t z = 0; z < SquareCount; z++) {
-                auto model = glm::mat4(1.0f);
-                model = glm::translate(model, glm::vec3(x, 0, z));
-                model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-                shader->setMat4("model", model);
-
-                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-            }
-        }
+        glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 }

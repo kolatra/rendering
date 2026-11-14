@@ -70,6 +70,9 @@ bool Configuration::Load() {
         spdlog::set_level(spdlog::level::info);
     }
 
+    const bool show_floor = config["general"]["showFloor"].value_or(false);
+    this->showFloor = show_floor;
+
     if (this->alwaysLog) {
         this->Print();
     }
@@ -87,6 +90,7 @@ void Configuration::Print() {
     spdlog::debug("CFG: Window name -> {}", this->name);
     spdlog::debug("CFG: Width -> {}", this->startingWidth);
     spdlog::debug("CFG: Height -> {}", this->startingHeight);
+    spdlog::debug("CFG: showFloor -> {}", this->showFloor);
 
     if (spdlog::get_level() != currentLevel) {
         spdlog::set_level(currentLevel);

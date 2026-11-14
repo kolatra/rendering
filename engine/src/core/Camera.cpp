@@ -12,7 +12,7 @@ namespace Luna {
         const auto H = static_cast<float>(config.startingHeight);
         projection = glm::perspective(fov, W / H, 0.1f, 100.0f);
 
-        position = glm::vec3(0.0f, 0.0f, 5.0f);
+        position = glm::vec3(0.0f, 1.0f, 5.0f);
         front = glm::vec3(0.0f, 0.0f, -1.0f);
         up = glm::vec3(0.0f, 1.0f, 0.0f);
         view = glm::mat4(1.0f);
