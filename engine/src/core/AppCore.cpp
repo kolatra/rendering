@@ -1,9 +1,9 @@
 #include "spdlog/spdlog.h"
 #include "platform/IWindow.hpp"
-#include "graphics/IRenderer.hpp"
+#include "graphics/Renderer.hpp"
 #include "core/AppCore.hpp"
-#include "core/Camera.hpp"
-#include "core/Config.hpp"
+
+#include "LunaEngine.hpp"
 
 namespace Luna {
     std::unique_ptr<AppCore> Initialize(int argc, char **argv) {

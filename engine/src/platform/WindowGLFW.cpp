@@ -1,6 +1,6 @@
 #include "core/AppCore.hpp"
 #include "core/Config.hpp"
-#include "../../include/platform/WindowGLFW.hpp"
+#include "platform/WindowGLFW.hpp"
 
 #include <glad/gl.h>
 #define GLFW_INCLUDE_VULKAN
@@ -161,13 +161,6 @@ void WindowGLFW::Close() {
 
 double WindowGLFW::GetTime() {
     return glfwGetTime();
-}
-
-std::pair<int, int> WindowGLFW::GetFramebufferSize() {
-    int width = 0;
-    int height = 0;
-    glfwGetFramebufferSize(handle, &width, &height);
-    return {width, height};
 }
 
 void WindowGLFW::SetTitle(const std::string &title) {

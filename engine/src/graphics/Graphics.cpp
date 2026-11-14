@@ -1,5 +1,4 @@
-#include "core/Config.hpp"
-#include "graphics/IRenderer.hpp"
+#include "graphics/Renderer.hpp"
 #include "graphics/opengl/RendererOpenGL.hpp"
 
 #include <stdexcept>
@@ -7,10 +6,10 @@
 #include "graphics/opengl/GlModel.hpp"
 #include "spdlog/spdlog.h"
 #include "graphics/vulkan/RendererVulkan.hpp"
-#include "core/AppCore.hpp"
+#include "LunaEngine.hpp"
 
 namespace Luna {
-std::unique_ptr<IRenderer> StartBackend(Configuration &config) {
+std::unique_ptr<Renderer> StartBackend(Configuration &config) {
     spdlog::info("Starting backend...");
     switch (config.rendering_api) {
         case Backend::OpenGL:
@@ -78,7 +77,7 @@ std::unique_ptr<Floor> Floor::Create(Configuration &config) {
     return out;
 }
 
-void GameObject::Draw(const std::shared_ptr<IRenderer> &renderer) const {
+void GameObject::Draw(const std::shared_ptr<Renderer> &renderer) const {
     const auto shader = renderer->shaders[0];
     shader->use();
     shader->setMat4("model", position);

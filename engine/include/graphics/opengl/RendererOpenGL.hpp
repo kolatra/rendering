@@ -1,6 +1,6 @@
 #pragma once
 #include <utility>
-#include "../IRenderer.hpp"
+#include "../Renderer.hpp"
 
 namespace Luna {
     struct EngineCamera;
@@ -63,7 +63,7 @@ public:
     void setMat4(const std::string &name, const glm::mat4 &value) override;
 };
 
-class Implementation : public IRenderer {
+class Implementation : public Renderer {
 public:
     explicit Implementation() {}
     void init(IWindow &window) override;

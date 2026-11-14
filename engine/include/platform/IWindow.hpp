@@ -2,6 +2,7 @@
 #include <bitset>
 #include <memory>
 #include <utility>
+#include <string>
 
 namespace Luna {
 class AppCore;

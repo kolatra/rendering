@@ -1,5 +1,5 @@
 #pragma once
-#include "../IRenderer.hpp"
+#include "../Renderer.hpp"
 #include <vulkan/vulkan.h>
 
 namespace Luna::Vulkan {
@@ -17,7 +17,7 @@ namespace Luna::Vulkan {
     VkPhysicalDevice FindPhysicalDevice();
     void CreateLogicalDevice();
 
-    class Implementation : public IRenderer {
+    class Implementation : public Renderer {
     public:
         explicit Implementation() {}
         ~Implementation() override;

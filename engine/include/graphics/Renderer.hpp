@@ -1,20 +1,24 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <string>
 #include <vector>
+#include <memory>
+#include <cstdint>
 
+#include <glm/glm.hpp>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "../platform/IWindow.hpp"
-#include "../core/Camera.hpp"
+#include "platform/IWindow.hpp"
+#include "core/Camera.hpp"
 
 namespace Luna {
-class IRenderer;
+class AppCore;
+struct Configuration;
+class Renderer;
+class GameObject;
 
 class Shader {
 public:
@@ -69,30 +73,13 @@ public:
     void Draw(Shader &shader) const;
 };
 
-class GameObject {
-public:
-    uint32_t renderPriority = 0;
-    glm::mat4 position;
-    std::shared_ptr<Model> model;
-    std::string modelPath;
-    bool culling = false;
-    virtual ~GameObject() {
-        model.reset();
-    }
-
-    virtual void Tick() = 0;
-    void Draw(const std::shared_ptr<IRenderer> &renderer) const;
-
-    uint32_t GetPriority() const { return renderPriority; }
-};
-
-class IRenderer {
+class Renderer {
 public:
     std::vector<Shader*> shaders;
     std::unique_ptr<EngineCamera> camera;
     std::vector<std::shared_ptr<GameObject>> objects;
     float deltaTime;
-    virtual ~IRenderer() = default;
+    virtual ~Renderer() = default;
 
     virtual void init(IWindow &window) = 0;
     virtual void beginFrame() = 0;
@@ -113,5 +100,5 @@ struct Floor {
     virtual void Render(EngineCamera &camera) = 0;
 };
 
-std::unique_ptr<IRenderer> StartBackend(Configuration &config);
+std::unique_ptr<Renderer> StartBackend(Configuration &config);
 }

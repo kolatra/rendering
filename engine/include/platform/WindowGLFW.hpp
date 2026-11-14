@@ -1,10 +1,12 @@
 #pragma once
-#include "../IWindow.hpp"
-#include "../../core/AppCore.hpp"
+#include <utility>
+#include "IWindow.hpp"
 
 struct GLFWwindow;
 
 namespace Luna {
+class AppCore;
+
 class WindowGLFW : public IWindow {
     GLFWwindow *handle = nullptr;
 public:
