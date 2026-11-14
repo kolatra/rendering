@@ -2,6 +2,7 @@
 #include "platform/IWindow.hpp"
 #include "graphics/Renderer.hpp"
 #include "core/AppCore.hpp"
+#include "scene/Scene.hpp"
 
 #include "LunaEngine.hpp"
 
@@ -26,13 +27,7 @@ namespace Luna {
         spdlog::trace("initializing rendering");
         app->renderer = StartBackend(*app->config);
         app->renderer->init(*app->window);
-
-        app->renderer->camera = std::make_unique<EngineCamera>(*app->config);
-        app->holdingMouse = true;
         spdlog::trace("renderer initialized");
-
-        Shader::Create(*app, "triangle");
-        app->floor = Floor::Create(*app->config);
 
         return app;
     }
@@ -42,28 +37,35 @@ namespace Luna {
     }
 
     int AppCore::Run() {
+        if (!renderer->currentScene) {
+            spdlog::error("Current scene not set! Scenes were not loaded correctly!");
+            throw std::runtime_error("Scene not loaded correctly!");
+        }
+        renderer->currentScene->camera = std::make_unique<EngineCamera>(*config, window);
+
+        // This shader can probably be moved to the scene itself, but it's our default for any
+        // triangle based renders
+        Shader::Create(*this, renderer->currentScene, "triangle");
+        floor = Floor::Create(*this->config);
+        holdingMouse = true;
+
         auto last_time = window->GetTime();
         while (!window->ShouldClose()) {
             currentTime = window->GetTime();
             renderer->deltaTime = static_cast<float>(currentTime - last_time);
             last_time = currentTime;
-            window->SetTitle(PosToString(renderer->camera->position));
-            for (const auto &object : renderer->objects) {
-                object->Tick();
-            }
 
-            renderer->camera->Update(*window, renderer->deltaTime);
+            renderer->currentScene->Update(renderer->deltaTime);
+            window->SetTitle(PosToString(renderer->currentScene->camera->position));
 
             {
                 renderer->beginFrame();
 
-                for (const auto &object : renderer->objects) {
-                    object->Draw(renderer);
-                }
+                renderer->currentScene->Render(renderer->deltaTime);
 
                 if (config->showFloor) {
                     renderer->setCulling(false);
-                    floor->Render(*renderer->camera);
+                    floor->Render(*renderer->currentScene->camera);
                 }
 
                 renderer->endFrame();
@@ -77,7 +79,7 @@ namespace Luna {
 
     void AppCore::UpdateMouse(double x, double y) {
         if (!holdingMouse) return;
-        auto &camera = this->renderer->camera;
+        auto &camera = this->renderer->currentScene->camera;
 
         if (camera->firstMouse) {
             this->mouseX = x;

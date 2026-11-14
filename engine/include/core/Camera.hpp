@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <glm/glm.hpp>
 
 namespace Luna {
@@ -7,6 +8,8 @@ namespace Luna {
     class IWindow;
 
     struct EngineCamera {
+        std::shared_ptr<IWindow> window;
+
         glm::mat4 projection {};
 
         glm::vec3 position {};
@@ -18,7 +21,7 @@ namespace Luna {
         float yaw = -90.f;
         bool firstMouse = true;
 
-        explicit EngineCamera(Configuration &config);
-        void Update(IWindow &window, float delta);
+        explicit EngineCamera(Configuration &config, std::shared_ptr<IWindow> window);
+        void Update(float delta);
     };
 }

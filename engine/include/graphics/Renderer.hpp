@@ -15,7 +15,8 @@
 #include "core/Camera.hpp"
 
 namespace Luna {
-class AppCore;
+    class Scene;
+    class AppCore;
 struct Configuration;
 class Renderer;
 class GameObject;
@@ -24,7 +25,7 @@ class Shader {
 public:
     std::string name = "Unknown";
 
-    [[maybe_unused]] static Shader* Create(const AppCore &app, const std::string &name);
+    [[maybe_unused]] static Shader* Create(const AppCore &app, Scene *scene, const std::string &name);
     virtual ~Shader() = default;
     virtual void use() = 0;
     virtual void setBool(const std::string &name, bool value) = 0;
@@ -75,9 +76,8 @@ public:
 
 class Renderer {
 public:
-    std::vector<Shader*> shaders;
-    std::unique_ptr<EngineCamera> camera;
-    std::vector<std::shared_ptr<GameObject>> objects;
+    std::vector<Scene *> scenes;
+    Scene *currentScene;
     float deltaTime;
     virtual ~Renderer() = default;
 
@@ -88,6 +88,7 @@ public:
     virtual void clear(const glm::vec4& colour) = 0;
     virtual void setCulling(bool flag) = 0;
 
+    void LoadScene(Scene *scene);
 };
 
 struct Floor {

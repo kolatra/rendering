@@ -52,6 +52,8 @@ add_library(${PROJECT_NAME}
         src/core/AppCore.cpp
         src/graphics/opengl/GlFloor.cpp
         include/LunaEngine.hpp
+        include/scene/Scene.hpp
+        src/scene/Scene.cpp
 )
 
 if(MSVC)

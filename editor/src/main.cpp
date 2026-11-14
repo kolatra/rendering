@@ -21,7 +21,9 @@ struct BusinessMan : Luna::GameObject {
 int main(int argc, char **argv) {
     const auto app = Luna::Initialize(argc, argv);
 
-    app->RegisterObject<BusinessMan>();
+    auto *ourScene = new Luna::Scene(app->renderer);
+    ourScene->RegisterObject<BusinessMan>(app->config);
+    app->renderer->LoadScene(ourScene);
 
     return app->Run();
 }

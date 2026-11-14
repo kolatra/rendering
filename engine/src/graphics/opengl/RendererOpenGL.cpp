@@ -1,13 +1,16 @@
 #include <iostream>
+
 #include <glm/gtc/type_ptr.hpp>
 #include <spdlog/spdlog.h>
 #define GLAD_GL_IMPLEMENTATION
 #include "glad/gl.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
 #include "graphics/opengl/RendererOpenGL.hpp"
 #include "core/Config.hpp"
 #include "Utilities.hpp"
+#include "scene/Scene.hpp"
 
 namespace Luna::OpenGL {
     void Implementation::init(IWindow &window) {
@@ -38,8 +41,8 @@ namespace Luna::OpenGL {
 
     Implementation::~Implementation() {
         // TODO: i still need to cleanup other resources here
-        for (const auto *shader : shaders) {
-            delete shader;
+        for (const auto scene : scenes) {
+            delete scene;
         }
     }
 

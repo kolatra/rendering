@@ -1,10 +1,10 @@
-#include "graphics/Renderer.hpp"
-#include "graphics/opengl/RendererOpenGL.hpp"
-
 #include <stdexcept>
 
-#include "graphics/opengl/GlModel.hpp"
 #include "spdlog/spdlog.h"
+
+#include "graphics/opengl/GlModel.hpp"
+#include "graphics/Renderer.hpp"
+#include "graphics/opengl/RendererOpenGL.hpp"
 #include "graphics/vulkan/RendererVulkan.hpp"
 #include "LunaEngine.hpp"
 
@@ -25,7 +25,7 @@ std::unique_ptr<Renderer> StartBackend(Configuration &config) {
     }
 }
 
-Shader *Shader::Create(const AppCore &app, const std::string &name) {
+Shader *Shader::Create(const AppCore &app, Scene *scene, const std::string &name) {
     Shader *out;
     switch (app.config->rendering_api) {
         case Backend::OpenGL:
@@ -40,7 +40,7 @@ Shader *Shader::Create(const AppCore &app, const std::string &name) {
             throw std::runtime_error("Invalid state when creating shader!");
     }
 
-    app.renderer->shaders.push_back(out);
+    scene->shaders.push_back(out);
     return out;
 }
 
@@ -78,11 +78,11 @@ std::unique_ptr<Floor> Floor::Create(Configuration &config) {
 }
 
 void GameObject::Draw(const std::shared_ptr<Renderer> &renderer) const {
-    const auto shader = renderer->shaders[0];
+    const auto shader = renderer->currentScene->shaders[0];
     shader->use();
     shader->setMat4("model", position);
-    shader->setMat4("view", renderer->camera->view);
-    shader->setMat4("projection", renderer->camera->projection);
+    shader->setMat4("view", renderer->currentScene->camera->view);
+    shader->setMat4("projection", renderer->currentScene->camera->projection);
 
     if (culling)
         renderer->setCulling(true);
