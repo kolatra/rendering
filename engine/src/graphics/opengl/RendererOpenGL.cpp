@@ -40,10 +40,7 @@ namespace Luna::OpenGL {
     }
 
     Implementation::~Implementation() {
-        // TODO: i still need to cleanup other resources here
-        for (const auto scene : scenes) {
-            delete scene;
-        }
+        currentScene = nullptr;
     }
 
     void Implementation::clear(const glm::vec4 &colour) {

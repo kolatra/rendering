@@ -25,11 +25,11 @@ std::unique_ptr<Renderer> StartBackend(Configuration &config) {
     }
 }
 
-Shader *Shader::Create(const AppCore &app, Scene *scene, const std::string &name) {
-    Shader *out;
+void Shader::Create(const AppCore &app, Scene *scene, const std::string &name) {
+    std::shared_ptr<Shader> out;
     switch (app.config->rendering_api) {
         case Backend::OpenGL:
-            out = new OpenGL::GLShader(name);
+            out = std::make_shared<OpenGL::GLShader>(name);
             break;
         case Backend::Vulkan:
             throw std::runtime_error("Vulkan shaders are not implemented!");
@@ -41,13 +41,12 @@ Shader *Shader::Create(const AppCore &app, Scene *scene, const std::string &name
     }
 
     scene->shaders.push_back(out);
-    return out;
 }
 
-std::shared_ptr<Model> Model::Create(const std::shared_ptr<Configuration> &config, std::string path, bool gamma) {
-    switch (config->rendering_api) {
+std::unique_ptr<Model> Model::Create(Configuration &config, std::string path, bool gamma) {
+    switch (config.rendering_api) {
         case Backend::OpenGL:
-            return std::make_shared<OpenGL::GlModel>(path, gamma);
+            return std::make_unique<OpenGL::GlModel>(path, gamma);
         case Backend::Vulkan:
             throw std::runtime_error("Vulkan models are not implemented!");
         case Backend::Metal:
@@ -77,7 +76,7 @@ std::unique_ptr<Floor> Floor::Create(Configuration &config) {
     return out;
 }
 
-void GameObject::Draw(const std::shared_ptr<Renderer> &renderer) const {
+void GameObject::Draw(Renderer *renderer) const {
     const auto shader = renderer->currentScene->shaders[0];
     shader->use();
     shader->setMat4("model", position);
@@ -87,5 +86,14 @@ void GameObject::Draw(const std::shared_ptr<Renderer> &renderer) const {
     if (culling)
         renderer->setCulling(true);
     this->model->Draw(*shader);
+}
+
+void Renderer::LoadScene(Scene *scene) {
+    // i don't know yet how i want to even store scenes so this is a big WIP
+    currentScene = scene;
+}
+
+void Renderer::UnloadScene(Scene *scene) {
+
 }
 }

@@ -41,7 +41,7 @@ namespace Luna {
             spdlog::error("Current scene not set! Scenes were not loaded correctly!");
             throw std::runtime_error("Scene not loaded correctly!");
         }
-        renderer->currentScene->camera = std::make_unique<EngineCamera>(*config, window);
+        renderer->currentScene->camera = std::make_unique<EngineCamera>(*config, window.get());
 
         // This shader can probably be moved to the scene itself, but it's our default for any
         // triangle based renders

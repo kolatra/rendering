@@ -8,7 +8,7 @@ namespace Luna {
     class IWindow;
 
     struct EngineCamera {
-        std::shared_ptr<IWindow> window;
+        IWindow* window;
 
         glm::mat4 projection {};
 
@@ -21,7 +21,7 @@ namespace Luna {
         float yaw = -90.f;
         bool firstMouse = true;
 
-        explicit EngineCamera(Configuration &config, std::shared_ptr<IWindow> window);
-        void Update(float delta);
+        explicit EngineCamera(Configuration &config, IWindow* window);
+        void Update(float delta, bool controllable);
     };
 }

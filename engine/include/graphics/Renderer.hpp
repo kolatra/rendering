@@ -25,7 +25,7 @@ class Shader {
 public:
     std::string name = "Unknown";
 
-    [[maybe_unused]] static Shader* Create(const AppCore &app, Scene *scene, const std::string &name);
+    [[maybe_unused]] static void Create(const AppCore &app, Scene *scene, const std::string &name);
     virtual ~Shader() = default;
     virtual void use() = 0;
     virtual void setBool(const std::string &name, bool value) = 0;
@@ -60,7 +60,7 @@ public:
 
 class Model {
 public:
-    static std::shared_ptr<Model> Create(const std::shared_ptr<Configuration> &config, std::string path, bool gamma = false);
+    static std::unique_ptr<Model> Create(Configuration &config, std::string path, bool gamma = false);
     virtual ~Model() = default;
     std::vector<Texture> textures_loaded;
     std::vector<Mesh*> meshes;
@@ -76,7 +76,7 @@ public:
 
 class Renderer {
 public:
-    std::vector<Scene *> scenes;
+    // Scenes are handled outside the renderer itself, and it just wants to know what to display
     Scene *currentScene;
     float deltaTime;
     virtual ~Renderer() = default;
@@ -89,6 +89,7 @@ public:
     virtual void setCulling(bool flag) = 0;
 
     void LoadScene(Scene *scene);
+    void UnloadScene(Scene *scene);
 };
 
 struct Floor {
