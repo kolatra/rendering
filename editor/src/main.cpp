@@ -1,4 +1,5 @@
 #include "LunaEngine.hpp"
+#include "graphics/Text.hpp"
 #include "spdlog/spdlog.h"
 
 namespace {
@@ -13,6 +14,10 @@ struct BusinessMan : Luna::GameObject {
     void Tick() override {
         position = glm::rotate(position, glm::radians(-0.1f), glm::vec3(0.0f, 0.0f, 1.0f));
     }
+
+    void PreRender(float dt) override {
+        Luna::FontRenderer::RenderText("this text is rendered from business man right before rendering him", 25.0f, 25.0f, 0.3f, glm::vec3(0.0f, 1.0f, 0.0f));
+    }
 };
 
 }
@@ -20,9 +25,9 @@ struct BusinessMan : Luna::GameObject {
 int main(int argc, char **argv) {
     const auto app = Luna::Initialize(argc, argv);
 
-    auto *ourScene = new Luna::Scene(app, /*controls = */true);
+    auto ourScene = std::make_unique<Luna::Scene>(app, /*controls = */true);
     ourScene->RegisterObject<BusinessMan>();
-    app->renderer->LoadScene(ourScene);
+    app->renderer->LoadScene(std::move(ourScene));
 
     return app->Run();
 }

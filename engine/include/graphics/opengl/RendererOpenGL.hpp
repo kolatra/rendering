@@ -54,8 +54,10 @@ class GLShader : public Shader {
 public:
     uint32_t ID {};
 
-    GLShader(const std::string& name);
+    static std::shared_ptr<Shader> FromFile(const std::string &fileName);
+    GLShader(const char *vCode, const char *fCode);
     ~GLShader() override;
+
     void use() override;
     void setBool(const std::string &name, bool value) override;
     void setInt(const std::string &name, int value) override;
@@ -77,15 +79,15 @@ public:
 
 uint32_t TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
 
-struct GlFloor : public Floor {
+struct GlFloor : Floor {
     uint32_t VAO{}, VBO{}, EBO{};
     uint32_t indexCount{};
 
     GlFloor();
-    virtual ~GlFloor();
+    ~GlFloor() override;
 
-    void Setup();
+    void Setup() override;;
 
-    void Render(EngineCamera &camera);
+    void Render(EngineCamera &camera) override;
 };
 }

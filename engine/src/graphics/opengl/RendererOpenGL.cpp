@@ -48,16 +48,19 @@ namespace Luna::OpenGL {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    GLShader::GLShader(const std::string& name) {
-        auto vertex_path = "shaders/" + name + ".vsh";
-        auto fragment_path = "shaders/" + name + ".fsh";
+    std::shared_ptr<Shader> GLShader::FromFile(const std::string &fileName) {
+        auto vertex_path = "shaders/" + fileName + ".vsh";
+        auto fragment_path = "shaders/" + fileName + ".fsh";
         const auto vCode = Util::ReadFileToString(vertex_path);
         const auto fCode = Util::ReadFileToString(fragment_path);
         const char* vertexCode = vCode.c_str();
         const char* fragmentCode = fCode.c_str();
+        return std::make_shared<GLShader>(vertexCode, fragmentCode);
+    }
 
+    GLShader::GLShader(const char *vCode, const char *fCode) {
         const uint32_t vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexShader, 1, &vertexCode, nullptr);
+        glShaderSource(vertexShader, 1, &vCode, nullptr);
         glCompileShader(vertexShader);
         GLint success = GL_FALSE;
         glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
@@ -66,11 +69,11 @@ namespace Luna::OpenGL {
             glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &logLength);
             std::string log(static_cast<size_t>(logLength), '\0');
             glGetShaderInfoLog(vertexShader, logLength, nullptr, log.data());
-            spdlog::error("Vertex shader compilation failed ({}):\n{}", vertex_path, log);
+            // spdlog::error("Vertex shader compilation failed ({}):\n{}", vertex_path, log);
         }
 
         const uint32_t fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShader, 1, &fragmentCode, nullptr);
+        glShaderSource(fragmentShader, 1, &fCode, nullptr);
         glCompileShader(fragmentShader);
         glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
         if (success != GL_TRUE) {
@@ -78,7 +81,7 @@ namespace Luna::OpenGL {
             glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &logLength);
             std::string log(static_cast<size_t>(logLength), '\0');
             glGetShaderInfoLog(fragmentShader, logLength, nullptr, log.data());
-            spdlog::error("Fragment shader compilation failed ({}):\n{}", fragment_path, log);
+            // spdlog::error("Fragment shader compilation failed ({}):\n{}", fragment_path, log);
             exit(1);
         }
 
@@ -96,7 +99,7 @@ namespace Luna::OpenGL {
             exit(1);
         }
 
-        spdlog::debug("Shader {} created from {}", ID, vertex_path);
+        // spdlog::debug("Shader {} created from {}", ID, vertex_path);
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
 

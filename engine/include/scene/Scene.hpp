@@ -4,10 +4,9 @@
 #include <typeinfo>
 
 #include <glm/glm.hpp>
-
-#include <graphics/Renderer.hpp>
-
 #include "spdlog/spdlog.h"
+
+#include "graphics/Renderer.hpp"
 
 namespace Luna {
     // a scene is a collection of objects, lights, cameras, terrain, etc.
@@ -24,6 +23,7 @@ namespace Luna {
 
         virtual ~GameObject() { model.reset(); }
         virtual void Tick() = 0;
+        virtual void PreRender(float dt) = 0;
         virtual void Draw(Renderer *renderer) const;
 
         uint32_t GetPriority() const { return renderPriority; }

@@ -5,6 +5,7 @@
 #include "scene/Scene.hpp"
 
 #include "LunaEngine.hpp"
+#include "graphics/Text.hpp"
 
 namespace Luna {
     std::unique_ptr<AppCore> Initialize(int argc, char **argv) {
@@ -22,12 +23,16 @@ namespace Luna {
 
         spdlog::trace("creating window");
         app->window = CreateWindow(app);
-        app->window->Show();
 
         spdlog::trace("initializing rendering");
         app->renderer = StartBackend(*app->config);
         app->renderer->init(*app->window);
+        FontRenderer::Init();
         spdlog::trace("renderer initialized");
+
+        app->window->Show();
+        // At this point we could have a loading screen scene of some kind
+        // just with a texture to start but maybe text later and in a dream a progress bar
 
         return app;
     }

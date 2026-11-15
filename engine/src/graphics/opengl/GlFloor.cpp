@@ -4,7 +4,7 @@
 namespace Luna::OpenGL {
     GlFloor::GlFloor() {
         this->texture = Texture(TextureFromFile("floor.png", "assets"));
-        this->shader = new GLShader("floor");
+        this->shader = GLShader::FromFile("floor");
     }
 
     GlFloor::~GlFloor() {

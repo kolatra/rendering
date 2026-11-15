@@ -1,6 +1,7 @@
 project(EngineProject LANGUAGES C CXX)
 
 find_package(Vulkan REQUIRED COMPONENTS volk shaderc_combined)
+find_package(Freetype REQUIRED)
 
 add_subdirectory(external/glfw)
 add_subdirectory(external/spdlog)
@@ -54,6 +55,9 @@ add_library(${PROJECT_NAME}
         include/LunaEngine.hpp
         include/scene/Scene.hpp
         src/scene/Scene.cpp
+        src/graphics/TextRendering.cpp
+        include/graphics/Text.hpp
+        src/graphics/opengl/TextOpenGL.cpp
 )
 
 if(MSVC)
@@ -92,6 +96,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         Vulkan::Vulkan
         Vulkan::volk
         Vulkan::shaderc_combined
+        Freetype::Freetype
 )
 
 if(WIN32 AND BUILD_SHARED_LIBS)

@@ -15,17 +15,17 @@
 #include "core/Camera.hpp"
 
 namespace Luna {
-    class Scene;
-    class AppCore;
+class AppCore;
 struct Configuration;
 class Renderer;
+class Scene;
 class GameObject;
 
 class Shader {
 public:
     std::string name = "Unknown";
 
-    [[maybe_unused]] static void Create(const AppCore &app, Scene *scene, const std::string &name);
+    [[maybe_unused]] static std::shared_ptr<Shader> Create(const AppCore &app, const std::unique_ptr<Scene> &scene, const std::string &name);
     virtual ~Shader() = default;
     virtual void use() = 0;
     virtual void setBool(const std::string &name, bool value) = 0;
@@ -77,9 +77,10 @@ public:
 class Renderer {
 public:
     // Scenes are handled outside the renderer itself, and it just wants to know what to display
-    Scene *currentScene;
+    std::unique_ptr<Scene> currentScene;
     float deltaTime;
-    virtual ~Renderer() = default;
+    Renderer();
+    virtual ~Renderer();
 
     virtual void init(IWindow &window) = 0;
     virtual void beginFrame() = 0;
@@ -88,13 +89,13 @@ public:
     virtual void clear(const glm::vec4& colour) = 0;
     virtual void setCulling(bool flag) = 0;
 
-    void LoadScene(Scene *scene);
-    void UnloadScene(Scene *scene);
+    void LoadScene(std::unique_ptr<Scene> scene);
+    std::unique_ptr<Scene> UnloadScene();
 };
 
 struct Floor {
     Texture texture;
-    Shader* shader;
+    std::shared_ptr<Shader> shader;
 
     static std::unique_ptr<Floor> Create(Configuration &config);
     virtual ~Floor() = default;

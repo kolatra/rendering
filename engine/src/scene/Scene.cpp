@@ -1,6 +1,7 @@
 #include "graphics/Renderer.hpp"
 #include "scene/Scene.hpp"
 #include "core/AppCore.hpp"
+#include "graphics/Text.hpp"
 #include "spdlog/spdlog.h"
 
 namespace Luna {
@@ -28,6 +29,7 @@ namespace Luna {
 
     void Scene::Render(float dt) {
         for (const auto &object : objects) {
+            object->PreRender(dt);
             object->Draw(renderer);
         }
     }

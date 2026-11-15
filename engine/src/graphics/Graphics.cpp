@@ -2,13 +2,18 @@
 
 #include "spdlog/spdlog.h"
 
-#include "graphics/opengl/GlModel.hpp"
 #include "graphics/Renderer.hpp"
+#include "scene/Scene.hpp"
+#include "graphics/opengl/GlModel.hpp"
 #include "graphics/opengl/RendererOpenGL.hpp"
 #include "graphics/vulkan/RendererVulkan.hpp"
 #include "LunaEngine.hpp"
+#include "Utilities.hpp"
 
 namespace Luna {
+Renderer::Renderer() = default;
+Renderer::~Renderer() = default;
+
 std::unique_ptr<Renderer> StartBackend(Configuration &config) {
     spdlog::info("Starting backend...");
     switch (config.rendering_api) {
@@ -25,12 +30,13 @@ std::unique_ptr<Renderer> StartBackend(Configuration &config) {
     }
 }
 
-void Shader::Create(const AppCore &app, Scene *scene, const std::string &name) {
+std::shared_ptr<Shader> Shader::Create(const AppCore &app, const std::unique_ptr<Scene> &scene, const std::string &name) {
     std::shared_ptr<Shader> out;
     switch (app.config->rendering_api) {
-        case Backend::OpenGL:
-            out = std::make_shared<OpenGL::GLShader>(name);
+        case Backend::OpenGL: {
+            out = OpenGL::GLShader::FromFile(name);
             break;
+        }
         case Backend::Vulkan:
             throw std::runtime_error("Vulkan shaders are not implemented!");
         case Backend::Metal:
@@ -41,6 +47,7 @@ void Shader::Create(const AppCore &app, Scene *scene, const std::string &name) {
     }
 
     scene->shaders.push_back(out);
+    return out;
 }
 
 std::unique_ptr<Model> Model::Create(Configuration &config, std::string path, bool gamma) {
@@ -88,12 +95,14 @@ void GameObject::Draw(Renderer *renderer) const {
     this->model->Draw(*shader);
 }
 
-void Renderer::LoadScene(Scene *scene) {
+void Renderer::LoadScene(std::unique_ptr<Scene> scene) {
     // i don't know yet how i want to even store scenes so this is a big WIP
-    currentScene = scene;
+    currentScene = std::move(scene);
 }
 
-void Renderer::UnloadScene(Scene *scene) {
-
+std::unique_ptr<Scene> Renderer::UnloadScene() {
+    auto scene = std::move(currentScene);
+    currentScene = nullptr;
+    return scene;
 }
 }
