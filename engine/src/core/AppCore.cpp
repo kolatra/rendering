@@ -49,9 +49,6 @@ namespace Luna {
         }
         renderer->currentScene->camera = std::make_unique<EngineCamera>(*config, window.get());
 
-        // This shader can probably be moved to the scene itself, but it's our default for any
-        // triangle based renders
-        Shader::Create(renderer->currentScene, "triangle");
         floor = Floor::Create();
         mouseMovement = renderer->currentScene->controlsEnabled;
 
@@ -121,4 +118,16 @@ namespace Luna {
         direction.z = sin(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
         camera->front = glm::normalize(direction);
     }
+
+    void AppCore::LoadScene(std::unique_ptr<Scene> scene) {
+        // i don't know yet how i want to even store scenes so this is a big WIP
+        renderer->currentScene = std::move(scene);
+    }
+
+    std::unique_ptr<Scene> AppCore::UnloadScene() {
+        auto scene = std::move(renderer->currentScene);
+        renderer->currentScene = nullptr;
+        return scene;
+    }
+
 }

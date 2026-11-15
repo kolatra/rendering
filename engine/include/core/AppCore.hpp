@@ -31,6 +31,8 @@ public:
     bool mouseMovement = false;
     bool mouseCaptured = true;
     void UpdateMouse(double x, double y);
+    void LoadScene(std::unique_ptr<Scene> scene);
+    std::unique_ptr<Scene> UnloadScene();
 };
 
 std::unique_ptr<AppCore> Initialize(int argc, char **argv);

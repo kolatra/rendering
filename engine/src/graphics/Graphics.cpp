@@ -30,7 +30,7 @@ std::unique_ptr<Renderer> StartBackend() {
     }
 }
 
-std::shared_ptr<Shader> Shader::Create(const std::unique_ptr<Scene> &scene, const std::string &name) {
+std::shared_ptr<Shader> Shader::Create(const std::string &name) {
     std::shared_ptr<Shader> out;
     switch (ACTIVE_BACKEND) {
         case Backend::OpenGL: {
@@ -45,8 +45,6 @@ std::shared_ptr<Shader> Shader::Create(const std::unique_ptr<Scene> &scene, cons
         default:
             throw std::runtime_error("Invalid state when creating shader!");
     }
-
-    scene->shaders.push_back(out);
     return out;
 }
 
@@ -84,7 +82,6 @@ std::shared_ptr<Floor> Floor::Create() {
 }
 
 void GameObject::Draw(Renderer *renderer) const {
-    const auto shader = renderer->currentScene->shaders[0];
     shader->use();
     shader->setMat4("model", position);
     shader->setMat4("view", renderer->currentScene->camera->view);
@@ -95,14 +92,4 @@ void GameObject::Draw(Renderer *renderer) const {
     this->model->Draw(*shader);
 }
 
-void Renderer::LoadScene(std::unique_ptr<Scene> scene) {
-    // i don't know yet how i want to even store scenes so this is a big WIP
-    currentScene = std::move(scene);
-}
-
-std::unique_ptr<Scene> Renderer::UnloadScene() {
-    auto scene = std::move(currentScene);
-    currentScene = nullptr;
-    return scene;
-}
 }

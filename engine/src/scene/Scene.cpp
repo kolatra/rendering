@@ -10,6 +10,8 @@ namespace Luna {
     renderer(app->renderer.get()),
     config(app->config.get()) {
         camera = std::make_unique<EngineCamera>(*config, app->window.get());
+        // the default shader included in every scene for basic triangle rendering with textures
+        shaders.push_back(Shader::Create("triangle"));
         spdlog::info("Scene loaded");
     }
 

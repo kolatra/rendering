@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 
     auto ourScene = std::make_unique<Luna::Scene>(app, /*controls = */true);
     ourScene->RegisterObject<BusinessMan>();
-    app->renderer->LoadScene(std::move(ourScene));
+    app->LoadScene(std::move(ourScene));
 
     return app->Run();
 }

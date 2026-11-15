@@ -25,7 +25,7 @@ class Shader {
 public:
     std::string name = "Unknown";
 
-    [[maybe_unused]] static std::shared_ptr<Shader> Create(const std::unique_ptr<Scene> &scene, const std::string &name);
+    [[maybe_unused]] static std::shared_ptr<Shader> Create(const std::string &name);
     virtual ~Shader() = default;
     virtual void use() = 0;
     virtual void setBool(const std::string &name, bool value) = 0;
@@ -89,8 +89,6 @@ public:
     virtual void clear(const glm::vec4& colour) = 0;
     virtual void setCulling(bool flag) = 0;
 
-    void LoadScene(std::unique_ptr<Scene> scene);
-    std::unique_ptr<Scene> UnloadScene();
 };
 
 struct Floor {

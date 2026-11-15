@@ -18,6 +18,7 @@ namespace Luna {
         uint32_t renderPriority = 0;
         glm::mat4 position = glm::mat4(1.0f);
         std::unique_ptr<Model> model;
+        std::shared_ptr<Shader> shader;
         std::string modelPath;
         bool culling = false;
 
@@ -54,6 +55,8 @@ namespace Luna {
             spdlog::info("Registered GameObject type: {}", typeid(O).name());
 
             object->model = Model::Create(object->modelPath);
+            // TODO: future things might want other shaders but this is good as a default
+            object->shader = shaders[0];
             objects.push_back(std::move(object));
         }
     };
