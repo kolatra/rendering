@@ -16,6 +16,7 @@ namespace Luna {
             }
         }
         auto config = std::make_shared<Configuration>(storeDefaultConfig);
+        ACTIVE_BACKEND = config->rendering_api;
 
         spdlog::trace("creating app core");
         auto app = std::make_unique<AppCore>();
@@ -25,7 +26,7 @@ namespace Luna {
         app->window = CreateWindow(app);
 
         spdlog::trace("initializing rendering");
-        app->renderer = StartBackend(*app->config);
+        app->renderer = StartBackend();
         app->renderer->init(*app->window);
         FontRenderer::Init();
         spdlog::trace("renderer initialized");
@@ -50,9 +51,9 @@ namespace Luna {
 
         // This shader can probably be moved to the scene itself, but it's our default for any
         // triangle based renders
-        Shader::Create(*this, renderer->currentScene, "triangle");
-        floor = Floor::Create(*this->config);
-        holdingMouse = true;
+        Shader::Create(renderer->currentScene, "triangle");
+        floor = Floor::Create();
+        mouseMovement = renderer->currentScene->controlsEnabled;
 
         auto last_time = window->GetTime();
         while (!window->ShouldClose()) {
@@ -83,7 +84,7 @@ namespace Luna {
     }
 
     void AppCore::UpdateMouse(double x, double y) {
-        if (!holdingMouse) return;
+        if (!mouseMovement) return;
         auto &camera = this->renderer->currentScene->camera;
 
         if (camera->firstMouse) {

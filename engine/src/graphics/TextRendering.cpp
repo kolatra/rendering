@@ -2,10 +2,12 @@
 #include FT_FREETYPE_H
 #include "spdlog/spdlog.h"
 
+#include "LunaEngine.hpp"
+#include "core/Config.hpp"
 #include "graphics/Text.hpp"
 
-namespace Luna::FontRenderer {
-    void Init() {
+namespace Luna {
+    void FontRenderer::Init() {
         spdlog::debug("Starting FT initialization");
 
         FT_Library ft;
@@ -35,6 +37,8 @@ namespace Luna::FontRenderer {
     }
 
     void RenderText(const std::string &text, float x, float y, float scale, glm::vec3 colour) {
-        OpenGLText::render(text, x, y, scale, colour);
+        if (ACTIVE_BACKEND == Backend::OpenGL) {
+            FontRenderer::OpenGLText::render(text, x, y, scale, colour);
+        }
     }
 }

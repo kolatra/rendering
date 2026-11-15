@@ -1,5 +1,4 @@
 #include "LunaEngine.hpp"
-#include "spdlog/spdlog.h"
 
 namespace {
 
@@ -15,7 +14,7 @@ struct BusinessMan : Luna::GameObject {
     }
 
     void PreRender(float dt) override {
-        Luna::FontRenderer::RenderText("this text is rendered from business man right before rendering him", 25.0f, 25.0f, 0.3f, glm::vec3(0.0f, 1.0f, 0.0f));
+        Luna::RenderText("this text is rendered from business man right before rendering him", 25.0f, 25.0f, 0.3f, glm::vec3(0.0f, 1.0f, 0.0f));
     }
 };
 

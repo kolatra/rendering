@@ -11,7 +11,6 @@ struct Configuration;
 
 class IWindow {
 public:
-    std::shared_ptr<Configuration> config {};
     std::bitset<1024> held_input {};
     virtual ~IWindow() = default;
     virtual void PollEvents() = 0;

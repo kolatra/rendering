@@ -14,6 +14,11 @@ static void keys(GLFWwindow* window, int key, int scancode, int action, int mods
         switch (action) {
             case GLFW_PRESS:
                 app->window->held_input[key] = true;
+                if (key == GLFW_KEY_ESCAPE) {
+                    spdlog::debug("releasing mouse");
+                    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                    app->mouseCaptured = false;
+                }
                 break;
             case GLFW_RELEASE:
                 app->window->held_input[key] = false;
@@ -35,7 +40,11 @@ static void cursor(GLFWwindow* window, double x, double y) {
 
 static void mouse(GLFWwindow* window, int32_t button, int32_t action, int32_t mods) {
     if (const auto app = static_cast<AppCore*>(glfwGetWindowUserPointer(window))) {
-
+        if (!app->mouseCaptured) {
+            spdlog::debug("capturing mouse");
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            app->mouseCaptured = true;
+        }
     }
 }
 
@@ -44,16 +53,15 @@ static void errors(int32_t error, const char *description) {
 }
 
 WindowGLFW::WindowGLFW(const std::unique_ptr<AppCore> &app) {
-    this->config = app->config;
-    const auto width = config->startingWidth;
-    const auto height = config->startingHeight;
+    const auto width = app->config->startingWidth;
+    const auto height = app->config->startingHeight;
 
     spdlog::debug("Loading glfw");
     if (!glfwInit()) {
         throw std::runtime_error("Couldn't load glfw!");
     }
 
-    if (config->rendering_api == Backend::OpenGL) {
+    if (ACTIVE_BACKEND == Backend::OpenGL) {
         std::string debugOutput;
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     #ifndef __APPLE__
@@ -66,14 +74,14 @@ WindowGLFW::WindowGLFW(const std::unique_ptr<AppCore> &app) {
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
         spdlog::debug(debugOutput);
-    } else if (config->rendering_api == Backend::Vulkan) {
+    } else if (ACTIVE_BACKEND == Backend::Vulkan) {
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
     }
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
     glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE);
 
-    handle = glfwCreateWindow(width, height, config->name, nullptr, nullptr);
+    handle = glfwCreateWindow(width, height, app->config->name, nullptr, nullptr);
     if (!handle) {
         const char *text = nullptr;
         glfwGetError(&text);
@@ -82,7 +90,7 @@ WindowGLFW::WindowGLFW(const std::unique_ptr<AppCore> &app) {
         throw std::runtime_error("");
     }
 
-    if (config->rendering_api == Backend::OpenGL) {
+    if (ACTIVE_BACKEND == Backend::OpenGL) {
         glfwMakeContextCurrent(handle);
         glfwSwapInterval(0);
         if (!gladLoadGL(glfwGetProcAddress)) {
@@ -111,12 +119,12 @@ WindowGLFW::~WindowGLFW() {
 }
 
 void *WindowGLFW::CreateSurface(void *apiContext) {
-    if (config->rendering_api == Backend::OpenGL) {
+    if (ACTIVE_BACKEND == Backend::OpenGL) {
         // glfw already handles this when the window is created for OpenGL contexts
         return nullptr;
     }
 
-    if (config->rendering_api == Backend::Vulkan) {
+    if (ACTIVE_BACKEND == Backend::Vulkan) {
         VkSurfaceKHR surface_khr;
         const auto err = glfwCreateWindowSurface(static_cast<VkInstance>(apiContext), handle, nullptr, &surface_khr);
         if (err != VK_SUCCESS) {

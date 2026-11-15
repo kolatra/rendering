@@ -53,7 +53,7 @@ namespace Luna {
             std::unique_ptr<GameObject> object = std::make_unique<O>();
             spdlog::info("Registered GameObject type: {}", typeid(O).name());
 
-            object->model = Model::Create(*config, object->modelPath);
+            object->model = Model::Create(object->modelPath);
             objects.push_back(std::move(object));
         }
     };

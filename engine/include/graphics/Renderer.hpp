@@ -25,7 +25,7 @@ class Shader {
 public:
     std::string name = "Unknown";
 
-    [[maybe_unused]] static std::shared_ptr<Shader> Create(const AppCore &app, const std::unique_ptr<Scene> &scene, const std::string &name);
+    [[maybe_unused]] static std::shared_ptr<Shader> Create(const std::unique_ptr<Scene> &scene, const std::string &name);
     virtual ~Shader() = default;
     virtual void use() = 0;
     virtual void setBool(const std::string &name, bool value) = 0;
@@ -60,7 +60,7 @@ public:
 
 class Model {
 public:
-    static std::unique_ptr<Model> Create(Configuration &config, std::string path, bool gamma = false);
+    static std::unique_ptr<Model> Create(std::string path, bool gamma = false);
     virtual ~Model() = default;
     std::vector<Texture> textures_loaded;
     std::vector<Mesh*> meshes;
@@ -97,11 +97,11 @@ struct Floor {
     Texture texture;
     std::shared_ptr<Shader> shader;
 
-    static std::unique_ptr<Floor> Create(Configuration &config);
+    static std::shared_ptr<Floor> Create();
     virtual ~Floor() = default;
     virtual void Setup() = 0;
     virtual void Render(EngineCamera &camera) = 0;
 };
 
-std::unique_ptr<Renderer> StartBackend(Configuration &config);
+std::unique_ptr<Renderer> StartBackend();
 }

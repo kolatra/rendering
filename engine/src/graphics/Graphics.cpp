@@ -14,9 +14,9 @@ namespace Luna {
 Renderer::Renderer() = default;
 Renderer::~Renderer() = default;
 
-std::unique_ptr<Renderer> StartBackend(Configuration &config) {
+std::unique_ptr<Renderer> StartBackend() {
     spdlog::info("Starting backend...");
-    switch (config.rendering_api) {
+    switch (ACTIVE_BACKEND) {
         case Backend::OpenGL:
             return std::make_unique<OpenGL::Implementation>();
         case Backend::Vulkan:
@@ -30,9 +30,9 @@ std::unique_ptr<Renderer> StartBackend(Configuration &config) {
     }
 }
 
-std::shared_ptr<Shader> Shader::Create(const AppCore &app, const std::unique_ptr<Scene> &scene, const std::string &name) {
+std::shared_ptr<Shader> Shader::Create(const std::unique_ptr<Scene> &scene, const std::string &name) {
     std::shared_ptr<Shader> out;
-    switch (app.config->rendering_api) {
+    switch (ACTIVE_BACKEND) {
         case Backend::OpenGL: {
             out = OpenGL::GLShader::FromFile(name);
             break;
@@ -50,8 +50,8 @@ std::shared_ptr<Shader> Shader::Create(const AppCore &app, const std::unique_ptr
     return out;
 }
 
-std::unique_ptr<Model> Model::Create(Configuration &config, std::string path, bool gamma) {
-    switch (config.rendering_api) {
+std::unique_ptr<Model> Model::Create(std::string path, bool gamma) {
+    switch (ACTIVE_BACKEND) {
         case Backend::OpenGL:
             return std::make_unique<OpenGL::GlModel>(path, gamma);
         case Backend::Vulkan:
@@ -64,9 +64,9 @@ std::unique_ptr<Model> Model::Create(Configuration &config, std::string path, bo
     }
 }
 
-std::unique_ptr<Floor> Floor::Create(Configuration &config) {
+std::shared_ptr<Floor> Floor::Create() {
     std::unique_ptr<Floor> out;
-    switch (config.rendering_api) {
+    switch (ACTIVE_BACKEND) {
         case Backend::OpenGL:
             out = std::make_unique<OpenGL::GlFloor>();
             break;

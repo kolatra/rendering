@@ -19,8 +19,6 @@ namespace Luna::FontRenderer {
 
     void Init();
 
-    void RenderText(const std::string &text, float x, float y, float scale, glm::vec3 colour);
-
     namespace OpenGLText {
         void init(void* face);
         void render(const std::string &text, float x, float y, float scale, glm::vec3 colour);
