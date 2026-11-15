@@ -1,5 +1,4 @@
 #include "LunaEngine.hpp"
-#include "graphics/Text.hpp"
 #include "spdlog/spdlog.h"
 
 namespace {

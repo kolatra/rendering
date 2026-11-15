@@ -5,6 +5,7 @@
 #include "core/Config.hpp"
 #include "core/Keys.hpp"
 #include "scene/Scene.hpp"
+#include "graphics/Text.hpp"
 
 namespace Luna {
     class AppCore;
