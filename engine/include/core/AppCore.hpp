@@ -15,12 +15,12 @@ inline auto ACTIVE_BACKEND = Backend::None;
 
 class AppCore {
 public:
-    std::shared_ptr<Configuration> config;
-    std::shared_ptr<IWindow> window;
-    std::shared_ptr<Renderer> renderer;
+    Configuration config;
+    std::unique_ptr<IWindow> window;
+    std::unique_ptr<Renderer> renderer;
 
     // The in-editor wiremesh floor, doesn't show on final product
-    std::shared_ptr<Floor> floor;
+    std::unique_ptr<Floor> floor;
 
     int Run();
 
@@ -36,4 +36,5 @@ public:
 };
 
 std::unique_ptr<AppCore> Initialize(int argc, char **argv);
+Scene& CreateScene(const std::unique_ptr<AppCore> &app, bool controls);
 }

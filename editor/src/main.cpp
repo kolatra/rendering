@@ -18,14 +18,23 @@ struct BusinessMan : Luna::GameObject {
     }
 };
 
+struct LoadingText : Luna::GameObject {
+    void Tick() override {}
+    void Draw(Luna::Renderer &renderer) const override {}
+    void PreRender(float dt) override {
+        Luna::RenderText("Loading...", 50.0f, 50.0f, 1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    }
+};
+
 }
 
 int main(int argc, char **argv) {
-    const auto app = Luna::Initialize(argc, argv);
+    auto app = Luna::Initialize(argc, argv);
+    app->config.showFloor = false;
 
-    auto ourScene = std::make_unique<Luna::Scene>(app, /*controls = */true);
-    ourScene->RegisterObject<BusinessMan>();
-    app->LoadScene(std::move(ourScene));
+    auto controls = true;
+    auto &loadingScreen = Luna::CreateScene(app, controls);
+    loadingScreen.RegisterObject<LoadingText>();
 
     return app->Run();
 }

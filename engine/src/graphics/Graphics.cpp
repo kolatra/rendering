@@ -30,8 +30,8 @@ std::unique_ptr<Renderer> StartBackend() {
     }
 }
 
-std::shared_ptr<Shader> Shader::Create(const std::string &name) {
-    std::shared_ptr<Shader> out;
+std::unique_ptr<Shader> Shader::Create(const std::string &name) {
+    std::unique_ptr<Shader> out;
     switch (ACTIVE_BACKEND) {
         case Backend::OpenGL: {
             out = OpenGL::GLShader::FromFile(name);
@@ -62,7 +62,7 @@ std::unique_ptr<Model> Model::Create(std::string path, bool gamma) {
     }
 }
 
-std::shared_ptr<Floor> Floor::Create() {
+std::unique_ptr<Floor> Floor::Create() {
     std::unique_ptr<Floor> out;
     switch (ACTIVE_BACKEND) {
         case Backend::OpenGL:
@@ -81,14 +81,14 @@ std::shared_ptr<Floor> Floor::Create() {
     return out;
 }
 
-void GameObject::Draw(Renderer *renderer) const {
+void GameObject::Draw(Renderer &renderer) const {
     shader->use();
     shader->setMat4("model", position);
-    shader->setMat4("view", renderer->currentScene->camera->view);
-    shader->setMat4("projection", renderer->currentScene->camera->projection);
+    shader->setMat4("view", renderer.currentScene->camera->view);
+    shader->setMat4("projection", renderer.currentScene->camera->projection);
 
     if (culling)
-        renderer->setCulling(true);
+        renderer.setCulling(true);
     this->model->Draw(*shader);
 }
 

@@ -4,7 +4,6 @@
 #include "core/AppCore.hpp"
 #include "scene/Scene.hpp"
 
-#include "LunaEngine.hpp"
 #include "graphics/Text.hpp"
 
 namespace Luna {
@@ -15,8 +14,8 @@ namespace Luna {
                 storeDefaultConfig = true;
             }
         }
-        auto config = std::make_shared<Configuration>(storeDefaultConfig);
-        ACTIVE_BACKEND = config->rendering_api;
+        auto config = Configuration(storeDefaultConfig);
+        ACTIVE_BACKEND = config.rendering_api;
 
         spdlog::trace("creating app core");
         auto app = std::make_unique<AppCore>();
@@ -38,6 +37,13 @@ namespace Luna {
         return app;
     }
 
+    Scene &CreateScene(const std::unique_ptr<AppCore> &app, bool controls) {
+        auto scene = std::make_unique<Scene>(app, controls);
+        auto &ref = *scene;
+        app->LoadScene(std::move(scene));
+        return ref;
+    }
+
     static std::string PosToString(glm::vec3 pos) {
         return std::format("x: {} y: {} z: {}", pos.x, pos.y, pos.z);
     }
@@ -47,7 +53,7 @@ namespace Luna {
             spdlog::error("Current scene not set! Scenes were not loaded correctly!");
             throw std::runtime_error("Scene not loaded correctly!");
         }
-        renderer->currentScene->camera = std::make_unique<EngineCamera>(*config, window.get());
+        renderer->currentScene->camera = std::make_unique<EngineCamera>(config, window.get());
 
         floor = Floor::Create();
         mouseMovement = renderer->currentScene->controlsEnabled;
@@ -66,7 +72,7 @@ namespace Luna {
 
                 renderer->currentScene->Render(renderer->deltaTime);
 
-                if (config->showFloor) {
+                if (config.showFloor) {
                     renderer->setCulling(false);
                     floor->Render(*renderer->currentScene->camera);
                 }

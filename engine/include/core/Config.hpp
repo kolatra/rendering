@@ -70,6 +70,7 @@ struct Configuration {
     bool alwaysLog = true;
     spdlog::level::level_enum logLevel = spdlog::level::trace;
     explicit Configuration(bool storeDefaults);
+    Configuration() = default;
 
     bool Load();
     bool Save(std::filesystem::path &path) const;

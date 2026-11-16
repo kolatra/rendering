@@ -48,14 +48,14 @@ namespace Luna::OpenGL {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    std::shared_ptr<Shader> GLShader::FromFile(const std::string &fileName) {
+    std::unique_ptr<Shader> GLShader::FromFile(const std::string &fileName) {
         auto vertex_path = "shaders/" + fileName + ".vsh";
         auto fragment_path = "shaders/" + fileName + ".fsh";
         const auto vCode = Util::ReadFileToString(vertex_path);
         const auto fCode = Util::ReadFileToString(fragment_path);
         const char* vertexCode = vCode.c_str();
         const char* fragmentCode = fCode.c_str();
-        return std::make_shared<GLShader>(vertexCode, fragmentCode);
+        return std::make_unique<GLShader>(vertexCode, fragmentCode);
     }
 
     GLShader::GLShader(const char *vCode, const char *fCode) {

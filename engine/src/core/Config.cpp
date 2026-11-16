@@ -34,7 +34,7 @@ bool Configuration::Load() {
         return false;
     }
 
-    if (const std::string api = config["general"]["backend"].value_or(""); api != "") {
+    if (const std::string api = config["general"]["graphics"].value_or(""); api != "") {
         this->rendering_api = be_from_string(api);
     }
 

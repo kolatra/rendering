@@ -54,7 +54,7 @@ class GLShader : public Shader {
 public:
     uint32_t ID {};
 
-    static std::shared_ptr<Shader> FromFile(const std::string &fileName);
+    static std::unique_ptr<Shader> FromFile(const std::string &fileName);
     GLShader(const char *vCode, const char *fCode);
     ~GLShader() override;
 

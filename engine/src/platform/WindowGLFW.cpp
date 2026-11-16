@@ -53,8 +53,8 @@ static void errors(int32_t error, const char *description) {
 }
 
 WindowGLFW::WindowGLFW(const std::unique_ptr<AppCore> &app) {
-    const auto width = app->config->startingWidth;
-    const auto height = app->config->startingHeight;
+    const auto width = app->config.startingWidth;
+    const auto height = app->config.startingHeight;
 
     spdlog::debug("Loading glfw");
     if (!glfwInit()) {
@@ -81,7 +81,7 @@ WindowGLFW::WindowGLFW(const std::unique_ptr<AppCore> &app) {
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
     glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE);
 
-    handle = glfwCreateWindow(width, height, app->config->name, nullptr, nullptr);
+    handle = glfwCreateWindow(width, height, app->config.name, nullptr, nullptr);
     if (!handle) {
         const char *text = nullptr;
         glfwGetError(&text);

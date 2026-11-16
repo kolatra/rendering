@@ -25,7 +25,8 @@ class Shader {
 public:
     std::string name = "Unknown";
 
-    [[maybe_unused]] static std::shared_ptr<Shader> Create(const std::string &name);
+    Shader() = default;
+    [[maybe_unused]] static std::unique_ptr<Shader> Create(const std::string &name);
     virtual ~Shader() = default;
     virtual void use() = 0;
     virtual void setBool(const std::string &name, bool value) = 0;
@@ -95,7 +96,7 @@ struct Floor {
     Texture texture;
     std::shared_ptr<Shader> shader;
 
-    static std::shared_ptr<Floor> Create();
+    static std::unique_ptr<Floor> Create();
     virtual ~Floor() = default;
     virtual void Setup() = 0;
     virtual void Render(EngineCamera &camera) = 0;
