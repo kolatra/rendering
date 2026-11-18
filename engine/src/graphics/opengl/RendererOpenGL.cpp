@@ -69,7 +69,7 @@ namespace Luna::OpenGL {
             glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &logLength);
             std::string log(static_cast<size_t>(logLength), '\0');
             glGetShaderInfoLog(vertexShader, logLength, nullptr, log.data());
-            // spdlog::error("Vertex shader compilation failed ({}):\n{}", vertex_path, log);
+            spdlog::error("Vertex shader compilation failed:\n{}", log);
         }
 
         const uint32_t fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -81,7 +81,7 @@ namespace Luna::OpenGL {
             glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &logLength);
             std::string log(static_cast<size_t>(logLength), '\0');
             glGetShaderInfoLog(fragmentShader, logLength, nullptr, log.data());
-            // spdlog::error("Fragment shader compilation failed ({}):\n{}", fragment_path, log);
+            spdlog::error("Fragment shader compilation failed:\n{}", log);
             exit(1);
         }
 
@@ -99,10 +99,8 @@ namespace Luna::OpenGL {
             exit(1);
         }
 
-        // spdlog::debug("Shader {} created from {}", ID, vertex_path);
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
-
     }
 
     GLShader::~GLShader() {

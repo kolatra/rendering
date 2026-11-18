@@ -126,8 +126,8 @@ void *WindowGLFW::CreateSurface(void *apiContext) {
 
     if (ACTIVE_BACKEND == Backend::Vulkan) {
         VkSurfaceKHR surface_khr;
-        const auto err = glfwCreateWindowSurface(static_cast<VkInstance>(apiContext), handle, nullptr, &surface_khr);
-        if (err != VK_SUCCESS) {
+        if (glfwCreateWindowSurface(static_cast<VkInstance>(apiContext), handle, nullptr, &surface_khr) != VK_SUCCESS) {
+            spdlog::error("Couldn't create surface!");
             throw;
         }
         return surface_khr;

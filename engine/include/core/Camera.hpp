@@ -1,9 +1,9 @@
 #pragma once
 
-#include <memory>
 #include <glm/glm.hpp>
 
 namespace Luna {
+    class AppCore;
     struct Configuration;
     class IWindow;
 
@@ -23,5 +23,6 @@ namespace Luna {
 
         explicit EngineCamera(Configuration &config, IWindow* window);
         void Update(float delta, bool controllable);
+        void UpdateMouse(AppCore *app, float x, float y);
     };
 }

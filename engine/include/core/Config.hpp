@@ -69,6 +69,7 @@ struct Configuration {
     bool showFloor = true;
     bool alwaysLog = true;
     spdlog::level::level_enum logLevel = spdlog::level::trace;
+
     explicit Configuration(bool storeDefaults);
     Configuration() = default;
 

@@ -44,10 +44,6 @@ namespace Luna {
         return ref;
     }
 
-    static std::string PosToString(glm::vec3 pos) {
-        return std::format("x: {} y: {} z: {}", pos.x, pos.y, pos.z);
-    }
-
     int AppCore::Run() {
         if (!renderer->currentScene) {
             spdlog::error("Current scene not set! Scenes were not loaded correctly!");
@@ -65,7 +61,8 @@ namespace Luna {
             last_time = currentTime;
 
             renderer->currentScene->Update(renderer->deltaTime);
-            window->SetTitle(PosToString(renderer->currentScene->camera->position));
+            auto pos = renderer->currentScene->camera->position;
+            window->SetTitle(std::format("x: {} y: {} z: {}", pos.x, pos.y, pos.z));
 
             {
                 renderer->beginFrame();
@@ -88,41 +85,7 @@ namespace Luna {
 
     void AppCore::UpdateMouse(double x, double y) {
         if (!mouseMovement) return;
-        auto &camera = this->renderer->currentScene->camera;
-
-        if (camera->firstMouse) {
-            this->mouseX = x;
-            this->mouseY = y;
-            camera->firstMouse = false;
-        }
-
-        float xoffset = x - this->mouseX;
-        float yoffset = this->mouseY - y;
-        this->mouseX = x;
-        this->mouseY = y;
-
-        const float sensitivity = 0.1f;
-        xoffset *= sensitivity;
-        yoffset *= sensitivity;
-
-        camera->yaw += xoffset;
-        camera->pitch += yoffset;
-
-        if (camera->pitch > 89.0f)
-            camera->pitch = 89.0f;
-        if (camera->pitch < -89.0f)
-            camera->pitch = -89.0f;
-
-        if (camera->yaw > 360.f)
-            camera->yaw = 0.f;
-        if (camera->yaw < -360.f)
-            camera->yaw = 0.f;
-
-        glm::vec3 direction;
-        direction.x = cos(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
-        direction.y = sin(glm::radians(camera->pitch));
-        direction.z = sin(glm::radians(camera->yaw)) * cos(glm::radians(camera->pitch));
-        camera->front = glm::normalize(direction);
+        this->renderer->currentScene->camera->UpdateMouse(this, x, y);
     }
 
     void AppCore::LoadScene(std::unique_ptr<Scene> scene) {

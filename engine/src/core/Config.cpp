@@ -38,7 +38,7 @@ bool Configuration::Load() {
         this->rendering_api = be_from_string(api);
     }
 
-    if (const std::string_view window_name = config["general"]["window_name"].value_or(""sv); window_name != "") {
+    if (const std::string_view window_name = config["general"]["windowName"].value_or(""sv); window_name != "") {
         this->name = window_name.data();
     }
 
@@ -50,7 +50,7 @@ bool Configuration::Load() {
         this->startingHeight = h;
     }
 
-    if (const std::string log_level = config["general"]["log_level"].value_or(""); log_level != "") {
+    if (const std::string log_level = config["general"]["logLevel"].value_or(""); log_level != "") {
         if (log_level == "debug") {
             spdlog::set_level(spdlog::level::debug);
         } else if (log_level == "info") {
@@ -120,12 +120,12 @@ bool Configuration::Save(std::filesystem::path &path) const {
 toml::table Configuration::to_toml() const {
     return toml::table {
         {"graphics", be_to_string(this->rendering_api)},
-        {"window_name", this->name},
+        {"windowName", this->name},
         {"width", this->startingWidth},
         {"height", this->startingHeight},
         {"showFloor", this->showFloor},
         {"alwaysLog", this->alwaysLog},
-        {"log_level", level_to_string(this->logLevel)}
+        {"logLevel", level_to_string(this->logLevel)}
     };
 }
 }

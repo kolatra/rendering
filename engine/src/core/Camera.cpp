@@ -1,9 +1,11 @@
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
+
 #include "core/Camera.hpp"
 #include "core/Config.hpp"
 #include "platform/IWindow.hpp"
 #include "core/Keys.hpp"
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/ext/matrix_transform.hpp>
+#include "core/AppCore.hpp"
 
 namespace Luna {
     EngineCamera::EngineCamera(Configuration &config, IWindow *window) {
@@ -51,5 +53,41 @@ namespace Luna {
 
         // update view
         view = glm::lookAt(position, position + front, up);
+    }
+
+    void EngineCamera::UpdateMouse(AppCore *app, float x, float y) {
+        if (firstMouse) {
+            app->mouseX = x;
+            app->mouseY = y;
+            firstMouse = false;
+        }
+
+        float xoffset = x - app->mouseX;
+        float yoffset = app->mouseY - y;
+        app->mouseX = x;
+        app->mouseY = y;
+
+        const float sensitivity = 0.1f;
+        xoffset *= sensitivity;
+        yoffset *= sensitivity;
+
+        yaw += xoffset;
+        pitch += yoffset;
+
+        if (pitch > 89.0f)
+            pitch = 89.0f;
+        if (pitch < -89.0f)
+            pitch = -89.0f;
+
+        if (yaw > 360.f)
+            yaw = 0.f;
+        if (yaw < -360.f)
+            yaw = 0.f;
+
+        glm::vec3 direction;
+        direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+        direction.y = sin(glm::radians(pitch));
+        direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+        front = glm::normalize(direction);
     }
 }
