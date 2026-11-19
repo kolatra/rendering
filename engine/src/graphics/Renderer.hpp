@@ -83,7 +83,7 @@ public:
     Renderer();
     virtual ~Renderer();
 
-    virtual void init(Window &window) = 0;
+    virtual void init(Window *window) = 0;
     virtual void beginFrame() = 0;
     virtual void endFrame() = 0;
 

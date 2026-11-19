@@ -11,6 +11,8 @@
 
 #include "graphics/impl/vulkan/RendererVulkan.hpp"
 
+#include "graphics/impl/SpirVCompiler.hpp"
+
 namespace Luna::Vulkan {
 
 static Instance instance;
@@ -19,7 +21,10 @@ static Swapchain swapchain;
 static Allocator allocator;
 static std::vector<Pipeline> pipelines;
 static DebugMessenger debugMessenger;
-static Sync sync;
+static SyncManager sync;
+
+// Non-owning reference pointer
+static Window *theWindow;
 
 static void check_error(VkResult result, const std::string &msg) {
     if (result != VK_SUCCESS) {
@@ -29,10 +34,10 @@ static void check_error(VkResult result, const std::string &msg) {
 }
 
 Implementation::~Implementation() {
-
+    SpirVCompiler::Destroy();
 }
 
-void Implementation::init(Window &window) {
+void Implementation::init(Window *window) {
     spdlog::info("Checking for Vulkan support");
     if (!glfwVulkanSupported()) {
         spdlog::error("glfw and Vulkan said no");
@@ -42,6 +47,9 @@ void Implementation::init(Window &window) {
         volkInitialize(),
         "Failed to initialize Vulkan loader"
     );
+
+    spdlog::trace("shader compiler");
+    SpirVCompiler::Init();
 
     spdlog::trace("instance");
     VkDebugUtilsMessengerCreateInfoEXT debugInfo {};
@@ -53,7 +61,7 @@ void Implementation::init(Window &window) {
     );
 
     spdlog::trace("surface");
-    device.surface = static_cast<VkSurfaceKHR>(window.CreateSurface(instance.handle));
+    device.surface = static_cast<VkSurfaceKHR>(window->CreateSurface(instance.handle));
 
     spdlog::trace("physical device");
     device.FindPhysicalDevice();
@@ -66,7 +74,7 @@ void Implementation::init(Window &window) {
     allocator.Init();
 
     spdlog::trace("swapchain");
-    swapchain.Create(window.width, window.height);
+    swapchain.Create(*window);
 
     // TODO: write a pipeline helper as we'll want many, not just one
     spdlog::trace("pipeline");
@@ -79,16 +87,15 @@ void Implementation::init(Window &window) {
     spdlog::trace("command buffers");
     sync.CreateCommandBuffers();
 
+    theWindow = window;
+
     spdlog::error("No real error, but we got here without anything breaking. :D");
     throw std::runtime_error("");
 }
 
 void Implementation::beginFrame() {
-    // wait on semaphores and reset the command pool
     swapchain.Check();
-    const uint64_t frameResIndex = sync.frameIndex++ % MaxFramesInFlight;
-    const uint64_t signal = sync.nextSignal++;
-    const uint64_t waitValue = signal - MaxFramesInFlight;
+    const auto [frameResIndex, signal, waitValue] = sync.Values();
 
     VkSemaphoreWaitInfo waitInfo {
         .sType = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO,
@@ -365,14 +372,14 @@ void Swapchain::Check() {
         vkDeviceWaitIdle(device.logical);
         spdlog::trace("recreating swapchain");
         Destroy();
-        // CreateSwapchain(); // TODO: this needs current window
+        Create(*theWindow);
         requireRecreate = false;
     }
 }
 
-void Swapchain::Create(uint32_t w, uint32_t h) {
-    swapchainWidth = w;
-    swapchainHeight = h;
+void Swapchain::Create(Window &window) {
+    swapchainWidth = window.width;
+    swapchainHeight = window.height;
 
     VkSurfaceCapabilitiesKHR surfaceCaps{};
     check_error(
@@ -653,7 +660,7 @@ void Pipeline::Create() {
     );
 }
 
-void Sync::Setup() {
+void SyncManager::Setup() {
     VkSemaphoreTypeCreateInfo semaphoreTypeInfo {
         .sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO,
         .semaphoreType = VK_SEMAPHORE_TYPE_TIMELINE,
@@ -681,27 +688,15 @@ void Sync::Setup() {
     }
 }
 
+std::tuple<uint64_t, uint64_t, uint64_t> SyncManager::Values() {
+    const uint64_t frameResIndex = frameIndex++ % MaxFramesInFlight;
+    const uint64_t signal = nextSignal++;
+    const uint64_t waitValue = signal - MaxFramesInFlight;
+    return std::make_tuple(frameResIndex, signal, waitValue);
+}
+
 VkShaderModule VShader::createModule(const std::string &filename, shaderc_shader_kind kind) {
-    shaderc::Compiler compiler;
-    shaderc::CompileOptions options;
-    options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_4);
-    options.SetTargetSpirv(shaderc_spirv_version_1_6);
-    options.SetOptimizationLevel(shaderc_optimization_level_zero);
-
-    // TODO
-    std::string src = "todo, need to get the shader code here somehow, either from on disk or in static memory";
-
-    shaderc::CompilationResult result = compiler.CompileGlslToSpv(
-        src,
-        kind,
-        filename.c_str(),
-        options
-    );
-
-    if (result.GetCompilationStatus() != shaderc_compilation_status_success) {
-        spdlog::error("Shader compilation error: {}", result.GetErrorMessage());
-        throw;
-    }
+    auto result = SpirVCompiler::Compile(filename, kind);
 
     size_t shaderSize = (result.cend() - result.cbegin()) * sizeof(uint32_t);
     VkShaderModuleCreateInfo createInfo {
@@ -719,7 +714,7 @@ VkShaderModule VShader::createModule(const std::string &filename, shaderc_shader
     return shaderModule;
 }
 
-void Sync::CreateCommandBuffers() {
+void SyncManager::CreateCommandBuffers() {
     for (auto &resource : sync.frameResources) {
         VkCommandPoolCreateInfo poolInfo {
             .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,

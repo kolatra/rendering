@@ -68,7 +68,7 @@ public:
 class Implementation : public Renderer {
 public:
     explicit Implementation() {}
-    void init(Window &window) override;
+    void init(Window *window) override;
     ~Implementation() override;
     void beginFrame() override;
     void endFrame() override {}

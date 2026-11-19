@@ -27,7 +27,7 @@ namespace Luna {
 
         spdlog::trace("initializing rendering");
         app->renderer = StartGraphics();
-        app->renderer->init(*app->window);
+        app->renderer->init(app->window.get());
         FontRenderer::Init();
         app->floor = Floor::Create();
 

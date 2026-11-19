@@ -14,7 +14,7 @@ namespace Luna::Vulkan {
     public:
         explicit Implementation() {}
         ~Implementation() override;
-        void init(Window &window) override;
+        void init(Window *window) override;
         void beginFrame() override;
         void endFrame() override ;
         void clear(const glm::vec4& colour) override;
@@ -68,7 +68,7 @@ namespace Luna::Vulkan {
         VkImageView depthImageView = nullptr;
         VmaAllocation depthImageAllocation = nullptr;
         void Check();
-        void Create(uint32_t w, uint32_t h);
+        void Create(Window &window);
         void Destroy();
     };
 
@@ -102,12 +102,14 @@ namespace Luna::Vulkan {
         static VkBool32 callback(VK_CALLBACKS);
     };
 
-    struct Sync {
+    struct SyncManager {
         VkSemaphore timelineSemaphore = nullptr;
         std::array<FrameResources, MaxFramesInFlight> frameResources = {};
         uint64_t frameIndex = 0;
         uint64_t nextSignal = 0;
         void Setup();
+        // Updates our frame resource indices and returns them.
+        std::tuple<uint64_t, uint64_t, uint64_t> Values();
         static void CreateCommandBuffers();
     };
 }

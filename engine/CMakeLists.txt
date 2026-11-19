@@ -59,6 +59,8 @@ add_library(${PROJECT_NAME}
         src/managers/AssetManager.hpp
         src/managers/AssetManager.cpp
         src/graphics/types/Shader.hpp
+        src/graphics/impl/SpirVCompiler.cpp
+        src/graphics/impl/SpirVCompiler.hpp
 )
 
 if(MSVC)

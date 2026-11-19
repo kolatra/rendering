@@ -13,7 +13,7 @@
 #include "graphics/scene/Scene.hpp"
 
 namespace Luna::OpenGL {
-    void Implementation::init(Window &window) {
+    void Implementation::init(Window *window) {
         // glfw has already initialized OpenGL in the background, so here we can
         // set our application specific settings
         glEnable(GL_BLEND);
@@ -21,7 +21,7 @@ namespace Luna::OpenGL {
 
         glEnable(GL_PROGRAM_POINT_SIZE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        const auto [width, height] = window.GetFrameBufferSize();
+        const auto [width, height] = window->GetFrameBufferSize();
         glViewport(0, 0, width, height);
     }
 
