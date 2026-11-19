@@ -12,95 +12,10 @@
 #include "graphics/impl/vulkan/RendererVulkan.hpp"
 
 namespace Luna::Vulkan {
-constexpr static auto MaxFramesInFlight = 3;
-constexpr static VkFormat SwapchainFormat = VK_FORMAT_B8G8R8A8_SRGB;
-constexpr static VkFormat DepthFormat = VK_FORMAT_D32_SFLOAT;
-
-namespace {
-    struct Instance {
-        VkInstance handle = nullptr;
-        bool initialized = false;
-        void Create(VkDebugUtilsMessengerCreateInfoEXT &debugInfo);
-
-        static std::vector<const char *> GetExtensions();
-    };
-
-    struct FrameResources {
-        VkCommandPool cmdPool = nullptr;
-        VkCommandBuffer cmdBuffer = nullptr;
-        VkSemaphore imageAcquiredSemaphore = nullptr;
-    };
-    
-    struct Swapchain {
-        VkSwapchainKHR handle = nullptr;
-        std::vector<VkImage> swapchainImages;
-        std::vector<VkImageView> swapchainImageViews;
-        std::vector<VkSemaphore> renderCompleteSemaphores;
-        bool requireRecreate = false;
-        uint32_t swapchainWidth = 0;
-        uint32_t swapchainHeight = 0;
-        VkImage depthImage = nullptr;
-        VkImageView depthImageView = nullptr;
-        VmaAllocation depthImageAllocation = nullptr;
-        void Check();
-        void Create(uint32_t w, uint32_t h);
-        void Destroy();
-    };
-    
-    struct Device {
-        VkPhysicalDevice physical = nullptr;
-        VkDevice logical = nullptr;
-        VkPhysicalDevice FindPhysicalDevice();
-        void CreateLogicalDevice();
-
-        uint32_t gfxQueueId = 0;
-        VkQueue gfxQueue = nullptr;
-    private:
-        static bool Suitable(VkPhysicalDevice pd);
-        bool SelectQueue();
-    };
-
-    struct Pipeline {
-        VkPipeline handle = nullptr;
-        VkPipelineLayout layout = nullptr;
-        void Create();
-    };
-
-    struct Allocator {
-        VmaAllocator handle = nullptr;
-        void Init();
-    };
-
-    struct DebugMessenger {
-        VkDebugUtilsMessengerEXT handle = nullptr;
-        static VkBool32 callback(
-            VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-            VkDebugUtilsMessageSeverityFlagsEXT messageType,
-            const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
-            void *pUserData
-        ) {
-            if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
-                spdlog::error("Validation layer: {}", pCallbackData->pMessage);
-            }
-
-            return VK_FALSE;
-        }
-    };
-
-    struct Sync {
-        VkSemaphore timelineSemaphore = nullptr;
-        std::array<FrameResources, MaxFramesInFlight> frameResources = {};
-        uint64_t frameIndex = 0;
-        uint64_t nextSignal = 0;
-        void Setup();
-        static void CreateCommandBuffers();
-    };
-}
 
 static Instance instance;
 static Device device;
 static Swapchain swapchain;
-static VkSurfaceKHR surface = nullptr;
 static Allocator allocator;
 static std::vector<Pipeline> pipelines;
 static DebugMessenger debugMessenger;
@@ -138,7 +53,7 @@ void Implementation::init(Window &window) {
     );
 
     spdlog::trace("surface");
-    surface = static_cast<VkSurfaceKHR>(window.CreateSurface(instance.handle));
+    device.surface = static_cast<VkSurfaceKHR>(window.CreateSurface(instance.handle));
 
     spdlog::trace("physical device");
     device.FindPhysicalDevice();
@@ -192,6 +107,7 @@ void Implementation::endFrame() {
 }
 
 void Implementation::clear(const glm::vec4 &colour) {
+
 }
 
 void Implementation::setCulling(bool flag) {
@@ -199,8 +115,6 @@ void Implementation::setCulling(bool flag) {
 }
 
 VShader::VShader() {
-    for (auto i = 0; i < 10; i++)
-        spdlog::error("VULKAN SHADERRS NOT READY FOR USE");
     vertexModule = createModule("", shaderc_vertex_shader);
     fragmentModule = createModule("", shaderc_fragment_shader);
 }
@@ -283,9 +197,9 @@ std::vector<const char *> Instance::GetExtensions() {
 
 bool Device::Suitable(const VkPhysicalDevice pd) {
     uint32_t formatCount = 0;
-    vkGetPhysicalDeviceSurfaceFormatsKHR(pd, surface, &formatCount, nullptr);
+    vkGetPhysicalDeviceSurfaceFormatsKHR(pd, device.surface, &formatCount, nullptr);
     std::vector<VkSurfaceFormatKHR> formats(formatCount);
-    vkGetPhysicalDeviceSurfaceFormatsKHR(pd, surface, &formatCount, formats.data());
+    vkGetPhysicalDeviceSurfaceFormatsKHR(pd, device.surface, &formatCount, formats.data());
 
     auto supported = false;
     for (const auto &[format, colorSpace] : formats) {
@@ -462,7 +376,7 @@ void Swapchain::Create(uint32_t w, uint32_t h) {
 
     VkSurfaceCapabilitiesKHR surfaceCaps{};
     check_error(
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device.physical, surface, &surfaceCaps),
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device.physical, device.surface, &surfaceCaps),
         "Could not get surface capabilities!"
     );
 
@@ -482,7 +396,7 @@ void Swapchain::Create(uint32_t w, uint32_t h) {
 
     VkSwapchainCreateInfoKHR swapchainCreateInfo {
         .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
-        .surface = surface,
+        .surface = device.surface,
         .minImageCount = requestedImageCount,
         .imageFormat = SwapchainFormat,
         .imageColorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR,
@@ -829,5 +743,13 @@ void Sync::CreateCommandBuffers() {
             "Could not allocate command buffer!"
         );
     }
+}
+
+VkBool32 DebugMessenger::callback(VK_CALLBACKS) {
+    if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
+        spdlog::error("Validation layer: {}", pCallbackData->pMessage);
+    }
+
+    return VK_FALSE;
 }
 }
