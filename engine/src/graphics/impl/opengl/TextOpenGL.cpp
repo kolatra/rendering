@@ -5,7 +5,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "graphics/Renderer.hpp"
 #include "graphics/Text.hpp"
-#include "graphics/opengl/RendererOpenGL.hpp"
+#include "graphics/impl/opengl/RendererOpenGL.hpp"
 #include "spdlog/spdlog.h"
 
 namespace Luna::FontRenderer {

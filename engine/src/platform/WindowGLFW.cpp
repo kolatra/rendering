@@ -17,7 +17,7 @@ static void keys(GLFWwindow* window, int key, int scancode, int action, int mods
                 if (key == GLFW_KEY_ESCAPE) {
                     spdlog::debug("releasing mouse");
                     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-                    app->mouseCaptured = false;
+                    app->window->mouseCaptured = false;
                 }
                 break;
             case GLFW_RELEASE:
@@ -34,16 +34,16 @@ static void resize(GLFWwindow *window, int32_t w, int32_t h) {
 
 static void cursor(GLFWwindow* window, double x, double y) {
     if (const auto app = static_cast<AppCore*>(glfwGetWindowUserPointer(window))) {
-        app->UpdateMouse(x, y);
+        app->window->UpdateMouse(x, y);
     }
 }
 
 static void mouse(GLFWwindow* window, int32_t button, int32_t action, int32_t mods) {
     if (const auto app = static_cast<AppCore*>(glfwGetWindowUserPointer(window))) {
-        if (!app->mouseCaptured) {
+        if (!app->window->mouseCaptured) {
             spdlog::debug("capturing mouse");
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            app->mouseCaptured = true;
+            app->window->mouseCaptured = true;
         }
     }
 }
@@ -53,8 +53,8 @@ static void errors(int32_t error, const char *description) {
 }
 
 WindowGLFW::WindowGLFW(const std::unique_ptr<AppCore> &app) {
-    const auto width = app->config.startingWidth;
-    const auto height = app->config.startingHeight;
+    width = app->config.startingWidth;
+    height = app->config.startingHeight;
 
     spdlog::debug("Loading glfw");
     if (!glfwInit()) {

@@ -1,8 +1,8 @@
 [general]
 alwaysLog = true
-graphics = 'OpenGL'
+graphics = 'opengl'
 width = 1280
 height = 720
-log_level = 'trace'
+logLevel = 'trace'
 showFloor = true
 window_name = 'beep boop'

@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
     auto app = Luna::Initialize(argc, argv);
 
     auto controls = true;
-    auto &loadingScreen = Luna::CreateScene(app, controls);
+    auto &loadingScreen = app->CreateScene(controls);
     loadingScreen.RegisterObject<BusinessMan>();
 
     return app->Run();

@@ -1,4 +1,4 @@
-#include "graphics/opengl/GlModel.hpp"
+#include "graphics/impl/opengl/GlModel.hpp"
 #include "graphics/Renderer.hpp"
 #include <iostream>
 #include <glad/gl.h>

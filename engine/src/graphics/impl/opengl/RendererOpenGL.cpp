@@ -7,13 +7,13 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#include "graphics/opengl/RendererOpenGL.hpp"
+#include "graphics/impl/opengl/RendererOpenGL.hpp"
 #include "core/Config.hpp"
 #include "Utilities.hpp"
-#include "scene/Scene.hpp"
+#include "graphics/scene/Scene.hpp"
 
 namespace Luna::OpenGL {
-    void Implementation::init(IWindow &window) {
+    void Implementation::init(Window &window) {
         // glfw has already initialized OpenGL in the background, so here we can
         // set our application specific settings
         glEnable(GL_BLEND);

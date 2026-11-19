@@ -1,15 +1,15 @@
 #include "graphics/Renderer.hpp"
-#include "scene/Scene.hpp"
+#include "graphics/scene/Scene.hpp"
 #include "core/AppCore.hpp"
 #include "graphics/Text.hpp"
 #include "spdlog/spdlog.h"
 
 namespace Luna {
-    Scene::Scene(const std::unique_ptr<AppCore> &app, bool controls) :
+    Scene::Scene(AppCore &app, bool controls) :
     controlsEnabled(controls),
-    renderer(*app->renderer),
-    config(app->config) {
-        camera = std::make_unique<EngineCamera>(config, app->window.get());
+    renderer(*app.renderer),
+    config(app.config) {
+        camera = std::make_unique<EngineCamera>(config, app.window.get());
         // the default shader included in every scene for basic triangle rendering with textures
         shaders.push_back(Shader::Create("triangle"));
         spdlog::info("Scene loaded");

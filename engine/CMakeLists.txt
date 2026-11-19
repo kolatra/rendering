@@ -40,24 +40,25 @@ if(TARGET assimp)
 endif()
 
 add_library(${PROJECT_NAME}
-        src/graphics/opengl/GlMesh.cpp
-        src/graphics/opengl/RendererOpenGL.cpp
+        src/graphics/impl/opengl/GlMesh.cpp
+        src/graphics/impl/opengl/RendererOpenGL.cpp
         src/graphics/IModel.cpp
         src/core/Config.cpp
         src/core/Camera.cpp
         src/platform/WindowGLFW.cpp
         external/glad/gl.c
         src/graphics/Graphics.cpp
-        src/graphics/vulkan/RendererVulkan.cpp
+        src/graphics/impl/vulkan/RendererVulkan.cpp
         src/platform/Platform.cpp
         src/core/AppCore.cpp
-        src/graphics/opengl/GlFloor.cpp
-        include/LunaEngine.hpp
-        include/scene/Scene.hpp
-        src/scene/Scene.cpp
+        src/graphics/impl/opengl/GlFloor.cpp
+        src/graphics/scene/Scene.cpp
         src/graphics/TextRendering.cpp
-        include/graphics/Text.hpp
-        src/graphics/opengl/TextOpenGL.cpp
+        src/graphics/impl/opengl/TextOpenGL.cpp
+        src/util/FileHelper.cpp
+        src/managers/AssetManager.hpp
+        src/managers/AssetManager.cpp
+        src/graphics/types/Shader.hpp
 )
 
 if(MSVC)
@@ -68,7 +69,7 @@ if(MSVC)
 endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-        include
+        src
         external
         external/spdlog/include
         external/glm

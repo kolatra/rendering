@@ -3,12 +3,12 @@
 
 #include "core/Camera.hpp"
 #include "core/Config.hpp"
-#include "platform/IWindow.hpp"
+#include "platform/Window.hpp"
 #include "core/Keys.hpp"
 #include "core/AppCore.hpp"
 
 namespace Luna {
-    EngineCamera::EngineCamera(Configuration &config, IWindow *window) {
+    EngineCamera::EngineCamera(Configuration &config, Window *window) {
         this->window = window;
 
         constexpr float fov = glm::radians(45.0f);
@@ -57,15 +57,15 @@ namespace Luna {
 
     void EngineCamera::UpdateMouse(AppCore *app, float x, float y) {
         if (firstMouse) {
-            app->mouseX = x;
-            app->mouseY = y;
+            app->window->mouseX = x;
+            app->window->mouseY = y;
             firstMouse = false;
         }
 
-        float xoffset = x - app->mouseX;
-        float yoffset = app->mouseY - y;
-        app->mouseX = x;
-        app->mouseY = y;
+        float xoffset = x - app->window->mouseX;
+        float yoffset = app->window->mouseY - y;
+        app->window->mouseX = x;
+        app->window->mouseY = y;
 
         const float sensitivity = 0.1f;
         xoffset *= sensitivity;

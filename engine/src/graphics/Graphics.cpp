@@ -3,10 +3,10 @@
 #include "spdlog/spdlog.h"
 
 #include "graphics/Renderer.hpp"
-#include "scene/Scene.hpp"
-#include "graphics/opengl/GlModel.hpp"
-#include "graphics/opengl/RendererOpenGL.hpp"
-#include "graphics/vulkan/RendererVulkan.hpp"
+#include "graphics/scene/Scene.hpp"
+#include "graphics/impl/opengl/GlModel.hpp"
+#include "graphics/impl/opengl/RendererOpenGL.hpp"
+#include "graphics/impl/vulkan/RendererVulkan.hpp"
 #include "LunaEngine.hpp"
 #include "Utilities.hpp"
 
@@ -14,8 +14,8 @@ namespace Luna {
 Renderer::Renderer() = default;
 Renderer::~Renderer() = default;
 
-std::unique_ptr<Renderer> StartBackend() {
-    spdlog::info("Starting backend...");
+std::unique_ptr<Renderer> StartGraphics() {
+    spdlog::debug("Starting backend...");
     switch (ACTIVE_BACKEND) {
         case Backend::OpenGL:
             return std::make_unique<OpenGL::Implementation>();
@@ -26,19 +26,19 @@ std::unique_ptr<Renderer> StartBackend() {
             exit(422);
         case Backend::None:
         default:
-            throw std::runtime_error("StartBackend: This should never happen.");
+            throw std::runtime_error("StartGraphics: This should never happen.");
     }
 }
 
 std::unique_ptr<Shader> Shader::Create(const std::string &name) {
     std::unique_ptr<Shader> out;
     switch (ACTIVE_BACKEND) {
-        case Backend::OpenGL: {
+        case Backend::OpenGL:
             out = OpenGL::GLShader::FromFile(name);
             break;
-        }
         case Backend::Vulkan:
-            throw std::runtime_error("Vulkan shaders are not implemented!");
+            out = std::make_unique<Vulkan::VShader>();
+            break;
         case Backend::Metal:
             throw std::runtime_error("Metal shaders not implemented!");
         case Backend::None:
