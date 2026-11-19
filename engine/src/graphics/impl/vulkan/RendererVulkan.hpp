@@ -1,4 +1,7 @@
 #pragma once
+#include <vulkan/vulkan.h>
+#include <shaderc/shaderc.hpp>
+
 #include "graphics/Renderer.hpp"
 
 namespace Luna::Vulkan {
@@ -24,8 +27,9 @@ namespace Luna::Vulkan {
         void setFloat(const std::string &name, float value) override;
         void setMat4(const std::string &name, const glm::mat4 &value) override;
 
-        typedef void* VkShaderModule;
         VkShaderModule vertexModule = nullptr;
         VkShaderModule fragmentModule = nullptr;
+
+        static VkShaderModule createModule(const std::string &filename, shaderc_shader_kind kind);
     };
 }

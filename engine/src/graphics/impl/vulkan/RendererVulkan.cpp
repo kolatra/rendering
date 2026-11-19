@@ -12,80 +12,99 @@
 #include "graphics/impl/vulkan/RendererVulkan.hpp"
 
 namespace Luna::Vulkan {
+constexpr static auto MaxFramesInFlight = 3;
+constexpr static VkFormat SwapchainFormat = VK_FORMAT_B8G8R8A8_SRGB;
+constexpr static VkFormat DepthFormat = VK_FORMAT_D32_SFLOAT;
+
 namespace {
+    struct Instance {
+        VkInstance handle = nullptr;
+        bool initialized = false;
+        void Create(VkDebugUtilsMessengerCreateInfoEXT &debugInfo);
+
+        static std::vector<const char *> GetExtensions();
+    };
+
     struct FrameResources {
         VkCommandPool cmdPool = nullptr;
         VkCommandBuffer cmdBuffer = nullptr;
         VkSemaphore imageAcquiredSemaphore = nullptr;
     };
+    
+    struct Swapchain {
+        VkSwapchainKHR handle = nullptr;
+        std::vector<VkImage> swapchainImages;
+        std::vector<VkImageView> swapchainImageViews;
+        std::vector<VkSemaphore> renderCompleteSemaphores;
+        bool requireRecreate = false;
+        uint32_t swapchainWidth = 0;
+        uint32_t swapchainHeight = 0;
+        VkImage depthImage = nullptr;
+        VkImageView depthImageView = nullptr;
+        VmaAllocation depthImageAllocation = nullptr;
+        void Check();
+        void Create(uint32_t w, uint32_t h);
+        void Destroy();
+    };
+    
+    struct Device {
+        VkPhysicalDevice physical = nullptr;
+        VkDevice logical = nullptr;
+        VkPhysicalDevice FindPhysicalDevice();
+        void CreateLogicalDevice();
+
+        uint32_t gfxQueueId = 0;
+        VkQueue gfxQueue = nullptr;
+    private:
+        static bool Suitable(VkPhysicalDevice pd);
+        bool SelectQueue();
+    };
+
+    struct Pipeline {
+        VkPipeline handle = nullptr;
+        VkPipelineLayout layout = nullptr;
+        void Create();
+    };
+
+    struct Allocator {
+        VmaAllocator handle = nullptr;
+        void Init();
+    };
+
+    struct DebugMessenger {
+        VkDebugUtilsMessengerEXT handle = nullptr;
+        static VkBool32 callback(
+            VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+            VkDebugUtilsMessageSeverityFlagsEXT messageType,
+            const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
+            void *pUserData
+        ) {
+            if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
+                spdlog::error("Validation layer: {}", pCallbackData->pMessage);
+            }
+
+            return VK_FALSE;
+        }
+    };
+
+    struct Sync {
+        VkSemaphore timelineSemaphore = nullptr;
+        std::array<FrameResources, MaxFramesInFlight> frameResources = {};
+        uint64_t frameIndex = 0;
+        uint64_t nextSignal = 0;
+        void Setup();
+        static void CreateCommandBuffers();
+    };
 }
-constexpr static auto MaxFramesInFlight = 3;
-constexpr static VkFormat SwapchainFormat = VK_FORMAT_B8G8R8A8_SRGB;
-constexpr static VkFormat DepthFormat = VK_FORMAT_D32_SFLOAT;
-static uint64_t frameIndex = 0;
-static uint64_t nextSignal = 0;
-static std::array<FrameResources, MaxFramesInFlight> frameResources = {};
 
-static VkApplicationInfo appInfo {};
-static VkInstance appInstance = nullptr;
-static bool initialized = false;
-static void CreateInstance(VkDebugUtilsMessengerCreateInfoEXT &debugInfo);
-
-static std::vector<const char *> GetExtensions();
-
+static Instance instance;
+static Device device;
+static Swapchain swapchain;
 static VkSurfaceKHR surface = nullptr;
-
-static VkPhysicalDevice physicalDevice = nullptr;
-static VkDevice logicalDevice = nullptr;
-static bool DeviceSuitable(VkPhysicalDevice pd);
-static VkPhysicalDevice FindPhysicalDevice();
-static void CreateLogicalDevice();
-
-static uint32_t gfxQueueId = 0;
-static VkQueue gfxQueue = nullptr;
-static bool SelectQueue();
-
-static VmaAllocator allocator = nullptr;
-static void CreateAllocator();
-
-static VkSwapchainKHR swapchain = nullptr;
-static std::vector<VkImage> swapchainImages;
-static std::vector<VkImageView> swapchainImageViews;
-static std::vector<VkSemaphore> renderCompleteSemaphores;
-static bool requireRecreate = false;
-static uint32_t swapchainWidth = 0;
-static uint32_t swapchainHeight = 0;
-static VkImage depthImage = nullptr;
-static VkImageView depthImageView = nullptr;
-static VmaAllocation depthImageAllocation = nullptr;
-static void CheckSwapchain();
-static void CreateSwapchain(uint32_t w, uint32_t h);
-static void DestroySwapchain();
-
-static VkShaderModule createShaderModule(const std::string &filename, shaderc_shader_kind kind);
-
-static VkPipeline pipeline = nullptr;
-static VkPipelineLayout pipelineLayout = nullptr;
-static void CreatePipeline(VShader &shader);
-
-static VkSemaphore timelineSemaphore = nullptr;
-
-static void SetupSync();
-static void CreateCommandBuffers();
-
-static VkDebugUtilsMessengerEXT debugMessenger = nullptr;
-static VkBool32 debugCallback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-    VkDebugUtilsMessageSeverityFlagsEXT messageType,
-    const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
-    void *pUserData
-) {
-    if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
-        spdlog::error("Validation layer: {}", pCallbackData->pMessage);
-    }
-
-    return VK_FALSE;
-}
+static Allocator allocator;
+static std::vector<Pipeline> pipelines;
+static DebugMessenger debugMessenger;
+static Sync sync;
 
 static void check_error(VkResult result, const std::string &msg) {
     if (result != VK_SUCCESS) {
@@ -111,62 +130,61 @@ void Implementation::init(Window &window) {
 
     spdlog::trace("instance");
     VkDebugUtilsMessengerCreateInfoEXT debugInfo {};
-    CreateInstance(debugInfo);
-    volkLoadInstance(appInstance);
+    instance.Create(debugInfo);
+    volkLoadInstance(instance.handle);
     check_error(
-        vkCreateDebugUtilsMessengerEXT(appInstance, &debugInfo, nullptr, &debugMessenger),
+        vkCreateDebugUtilsMessengerEXT(instance.handle, &debugInfo, nullptr, &debugMessenger.handle),
         "Failed to create debug messenger!"
     );
 
     spdlog::trace("surface");
-    surface = static_cast<VkSurfaceKHR>(window.CreateSurface(appInstance));
+    surface = static_cast<VkSurfaceKHR>(window.CreateSurface(instance.handle));
 
     spdlog::trace("physical device");
-    FindPhysicalDevice();
-
-    spdlog::trace("queue");
-    SelectQueue();
+    device.FindPhysicalDevice();
 
     spdlog::trace("logical device");
-    CreateLogicalDevice();
-    volkLoadDevice(logicalDevice);
+    device.CreateLogicalDevice();
+    volkLoadDevice(device.logical);
 
     spdlog::trace("allocator");
-    CreateAllocator();
+    allocator.Init();
 
     spdlog::trace("swapchain");
-    CreateSwapchain(window.width, window.height);
+    swapchain.Create(window.width, window.height);
 
     // TODO: write a pipeline helper as we'll want many, not just one
     spdlog::trace("pipeline");
-    // CreatePipeline();
+    pipelines.push_back(Pipeline());
+    pipelines[0].Create();
 
     spdlog::trace("setting up sync objects");
-    SetupSync();
+    sync.Setup();
 
     spdlog::trace("command buffers");
-    CreateCommandBuffers();
+    sync.CreateCommandBuffers();
 
     spdlog::error("No real error, but we got here without anything breaking. :D");
+    throw std::runtime_error("");
 }
 
 void Implementation::beginFrame() {
     // wait on semaphores and reset the command pool
-    CheckSwapchain();
-    const uint64_t frameResIndex = frameIndex++ % MaxFramesInFlight;
-    const uint64_t signal = nextSignal++;
+    swapchain.Check();
+    const uint64_t frameResIndex = sync.frameIndex++ % MaxFramesInFlight;
+    const uint64_t signal = sync.nextSignal++;
     const uint64_t waitValue = signal - MaxFramesInFlight;
 
     VkSemaphoreWaitInfo waitInfo {
         .sType = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO,
         .semaphoreCount = 1,
-        .pSemaphores = &timelineSemaphore,
+        .pSemaphores = &sync.timelineSemaphore,
         .pValues = &waitValue
     };
-    vkWaitSemaphores(logicalDevice, &waitInfo, UINT64_MAX);
+    vkWaitSemaphores(device.logical, &waitInfo, UINT64_MAX);
 
-    auto &frameResource = frameResources[frameResIndex];
-    vkResetCommandPool(logicalDevice, frameResource.cmdPool, 0);
+    auto &frameResource = sync.frameResources[frameResIndex];
+    vkResetCommandPool(device.logical, frameResource.cmdPool, 0);
 }
 
 void Implementation::endFrame() {
@@ -183,8 +201,8 @@ void Implementation::setCulling(bool flag) {
 VShader::VShader() {
     for (auto i = 0; i < 10; i++)
         spdlog::error("VULKAN SHADERRS NOT READY FOR USE");
-    vertexModule = createShaderModule("", shaderc_vertex_shader);
-    fragmentModule = createShaderModule("", shaderc_fragment_shader);
+    vertexModule = createModule("", shaderc_vertex_shader);
+    fragmentModule = createModule("", shaderc_fragment_shader);
 }
 
 VShader::~VShader() {
@@ -211,12 +229,12 @@ void VShader::setMat4(const std::string &name, const glm::mat4 &value) {
 
 }
 
-void CreateInstance(VkDebugUtilsMessengerCreateInfoEXT &debugInfo) {
+void Instance::Create(VkDebugUtilsMessengerCreateInfoEXT &debugInfo) {
     if (initialized) {
         return;
     }
 
-    appInfo = {
+    VkApplicationInfo appInfo = {
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
         .pApplicationName = "Luna Engine",
         .apiVersion = VK_API_VERSION_1_4
@@ -232,7 +250,7 @@ void CreateInstance(VkDebugUtilsMessengerCreateInfoEXT &debugInfo) {
             VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
         .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
             VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
-        .pfnUserCallback = debugCallback
+        .pfnUserCallback = debugMessenger.callback
     };
 
     const VkInstanceCreateInfo ci {
@@ -246,14 +264,14 @@ void CreateInstance(VkDebugUtilsMessengerCreateInfoEXT &debugInfo) {
     };
 
     check_error(
-        vkCreateInstance(&ci, nullptr, &appInstance),
+        vkCreateInstance(&ci, nullptr, &handle),
         "Failed to create Vulkan instance!"
     );
 
     initialized = true;
 }
 
-std::vector<const char *> GetExtensions() {
+std::vector<const char *> Instance::GetExtensions() {
     uint32_t extCount = 0;
     const auto extensions = glfwGetRequiredInstanceExtensions(&extCount);
     std::vector requestedExtensions { VK_EXT_DEBUG_UTILS_EXTENSION_NAME };
@@ -263,7 +281,7 @@ std::vector<const char *> GetExtensions() {
     return requestedExtensions;
 }
 
-bool DeviceSuitable(const VkPhysicalDevice pd) {
+bool Device::Suitable(const VkPhysicalDevice pd) {
     uint32_t formatCount = 0;
     vkGetPhysicalDeviceSurfaceFormatsKHR(pd, surface, &formatCount, nullptr);
     std::vector<VkSurfaceFormatKHR> formats(formatCount);
@@ -280,28 +298,29 @@ bool DeviceSuitable(const VkPhysicalDevice pd) {
     return supported;
 }
 
-VkPhysicalDevice FindPhysicalDevice() {
+VkPhysicalDevice Device::FindPhysicalDevice() {
     uint32_t deviceCount = 0;
-    vkEnumeratePhysicalDevices(appInstance, &deviceCount, nullptr);
+    vkEnumeratePhysicalDevices(instance.handle, &deviceCount, nullptr);
     std::vector<VkPhysicalDevice> devices(deviceCount);
-    vkEnumeratePhysicalDevices(appInstance, &deviceCount, devices.data());
+    vkEnumeratePhysicalDevices(instance.handle, &deviceCount, devices.data());
 
     for (auto i = 0; i < deviceCount; i++) {
-        physicalDevice = devices[i];
-        if (!DeviceSuitable(physicalDevice)) {
+        physical = devices[i];
+        if (!Suitable(physical)) {
             continue;
         }
         VkPhysicalDeviceProperties props {};
-        vkGetPhysicalDeviceProperties(physicalDevice, &props);
+        vkGetPhysicalDeviceProperties(physical, &props);
         spdlog::info("Device: {}", props.deviceName);
-        return physicalDevice;
+        SelectQueue();
+        return physical;
     }
 
     spdlog::info("No physical device found!");
     throw std::runtime_error("No physical device found!");
 }
 
-void CreateLogicalDevice() {
+void Device::CreateLogicalDevice() {
     VkPhysicalDeviceVulkan14Features supportedFeatures14{
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_FEATURES,
         .pNext = nullptr
@@ -318,7 +337,7 @@ void CreateLogicalDevice() {
         .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
         .pNext = &supportedFeatures12
     };
-    vkGetPhysicalDeviceFeatures2(physicalDevice, &supportedFeatures);
+    vkGetPhysicalDeviceFeatures2(physical, &supportedFeatures);
 
     if (!supportedFeatures13.dynamicRendering || !supportedFeatures13.
         synchronization2 ||
@@ -382,22 +401,22 @@ void CreateLogicalDevice() {
     };
 
     check_error(
-        vkCreateDevice(physicalDevice, &devCreateInfo, nullptr, &logicalDevice),
+        vkCreateDevice(physical, &devCreateInfo, nullptr, &logical),
         "Failed to create logical device!"
     );
 
-    vkGetDeviceQueue(logicalDevice, gfxQueueId, 0, &gfxQueue);
+    vkGetDeviceQueue(logical, gfxQueueId, 0, &gfxQueue);
     if (!gfxQueue) {
         spdlog::error("Failed to get graphics queue info!");
         throw;
     }
 }
 
-bool SelectQueue() {
+bool Device::SelectQueue() {
     uint32_t count = 0;
-    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &count, nullptr);
+    vkGetPhysicalDeviceQueueFamilyProperties(device.physical, &count, nullptr);
     std::vector<VkQueueFamilyProperties> properties(count);
-    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &count, properties.data());
+    vkGetPhysicalDeviceQueueFamilyProperties(device.physical, &count, properties.data());
 
     for (uint32_t i = 0; i < count; i++) {
         if ((properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0) {
@@ -409,41 +428,41 @@ bool SelectQueue() {
     return false;
 }
 
-void CreateAllocator() {
+void Allocator::Init() {
     VmaVulkanFunctions funcInfo{};
     VmaAllocatorCreateInfo ci {
         .flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT,
-        .physicalDevice = physicalDevice,
-        .device = logicalDevice,
+        .physicalDevice = device.physical,
+        .device = device.logical,
         .pVulkanFunctions = &funcInfo,
-        .instance = appInstance,
+        .instance = instance.handle,
         .vulkanApiVersion = VK_API_VERSION_1_4
     };
 
     vmaImportVulkanFunctionsFromVolk(&ci, &funcInfo);
     check_error(
-        vmaCreateAllocator(&ci, &allocator),
+        vmaCreateAllocator(&ci, &handle),
         "Could not create allocator!"
     );
 }
 
-void CheckSwapchain() {
+void Swapchain::Check() {
     if (requireRecreate) {
-        vkDeviceWaitIdle(logicalDevice);
+        vkDeviceWaitIdle(device.logical);
         spdlog::trace("recreating swapchain");
-        DestroySwapchain();
+        Destroy();
         // CreateSwapchain(); // TODO: this needs current window
         requireRecreate = false;
     }
 }
 
-void CreateSwapchain(uint32_t w, uint32_t h) {
+void Swapchain::Create(uint32_t w, uint32_t h) {
     swapchainWidth = w;
     swapchainHeight = h;
 
     VkSurfaceCapabilitiesKHR surfaceCaps{};
     check_error(
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &surfaceCaps),
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device.physical, surface, &surfaceCaps),
         "Could not get surface capabilities!"
     );
 
@@ -492,15 +511,15 @@ void CreateSwapchain(uint32_t w, uint32_t h) {
     };
 
     check_error(
-        vkCreateSwapchainKHR(logicalDevice, &swapchainCreateInfo, nullptr, &swapchain),
+        vkCreateSwapchainKHR(device.logical, &swapchainCreateInfo, nullptr, &handle),
         "Could not create swapchain!"
     );
 
     // fill our app's swapchain image buffer with what we have available
     uint32_t imageCount = 0;
-    vkGetSwapchainImagesKHR(logicalDevice, swapchain, &imageCount, nullptr);
+    vkGetSwapchainImagesKHR(device.logical, handle, &imageCount, nullptr);
     swapchainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(logicalDevice, swapchain, &imageCount, swapchainImages.data());
+    vkGetSwapchainImagesKHR(device.logical, handle, &imageCount, swapchainImages.data());
     swapchainImageViews.resize(imageCount);
 
     // image views
@@ -520,7 +539,7 @@ void CreateSwapchain(uint32_t w, uint32_t h) {
         };
 
         check_error(
-            vkCreateImageView(logicalDevice, &imgViewInfo, nullptr, &swapchainImageViews[i]),
+            vkCreateImageView(device.logical, &imgViewInfo, nullptr, &swapchainImageViews[i]),
             "Error creating swapchain image view"
         );
     }
@@ -531,7 +550,7 @@ void CreateSwapchain(uint32_t w, uint32_t h) {
             .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
         };
         check_error(
-            vkCreateSemaphore(logicalDevice, &info, nullptr, &semaphore),
+            vkCreateSemaphore(device.logical, &info, nullptr, &semaphore),
             "Could not create semaphore!"
         );
     }
@@ -557,7 +576,7 @@ void CreateSwapchain(uint32_t w, uint32_t h) {
     };
 
     check_error(
-        vmaCreateImage(allocator, &depthCreateInfo, &allocInfo, &depthImage, &depthImageAllocation, nullptr),
+        vmaCreateImage(allocator.handle, &depthCreateInfo, &allocInfo, &depthImage, &depthImageAllocation, nullptr),
         "Could not allocate depth image!"
     );
 
@@ -574,34 +593,34 @@ void CreateSwapchain(uint32_t w, uint32_t h) {
     };
 
     check_error(
-        vkCreateImageView(logicalDevice, &depthImgViewInfo, nullptr, &depthImageView),
+        vkCreateImageView(device.logical, &depthImgViewInfo, nullptr, &depthImageView),
         "Could not create depth image view!"
     );
 }
 
-void DestroySwapchain() {
+void Swapchain::Destroy() {
     for (const auto imageView : swapchainImageViews) {
-        vkDestroyImageView(logicalDevice, imageView, nullptr);
+        vkDestroyImageView(device.logical, imageView, nullptr);
     }
     swapchainImageViews.clear();
 
     for (const auto &semaphore : renderCompleteSemaphores) {
-        vkDestroySemaphore(logicalDevice, semaphore, nullptr);
+        vkDestroySemaphore(device.logical, semaphore, nullptr);
     }
     renderCompleteSemaphores.clear();
 
-    if (swapchain) {
-        vkDestroySwapchainKHR(logicalDevice, swapchain, nullptr);
-        swapchain = nullptr;
+    if (handle) {
+        vkDestroySwapchainKHR(device.logical, handle, nullptr);
+        handle = nullptr;
     }
 
     if (depthImageView) {
-        vkDestroyImageView(logicalDevice, depthImageView, nullptr);
+        vkDestroyImageView(device.logical, depthImageView, nullptr);
         depthImageView = nullptr;
     }
 }
 
-void CreatePipeline(VShader &shader) {
+void Pipeline::Create() {
     VkPipelineLayoutCreateInfo pipelineLayoutInfo {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
         .setLayoutCount = 0,
@@ -609,7 +628,7 @@ void CreatePipeline(VShader &shader) {
     };
 
     check_error(
-        vkCreatePipelineLayout(logicalDevice, &pipelineLayoutInfo, nullptr, &pipelineLayout),
+        vkCreatePipelineLayout(device.logical, &pipelineLayoutInfo, nullptr, &layout),
         "Could not create pipeline layout!"
     );
 
@@ -618,13 +637,13 @@ void CreatePipeline(VShader &shader) {
         {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
             .stage = VK_SHADER_STAGE_VERTEX_BIT,
-            .module = static_cast<VkShaderModule>(shader.vertexModule),
+            .module = static_cast<VkShaderModule>(nullptr),
             .pName = entryPoint
         },
         {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
             .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-            .module = static_cast<VkShaderModule>(shader.fragmentModule),
+            .module = static_cast<VkShaderModule>(nullptr),
             .pName = entryPoint
         }
     };
@@ -710,17 +729,17 @@ void CreatePipeline(VShader &shader) {
         .pDepthStencilState = &depthStencilInfo,
         .pColorBlendState = &blendInfo,
         .pDynamicState = &dynamicStateInfo,
-        .layout = pipelineLayout,
+        .layout = layout,
         .renderPass = VK_NULL_HANDLE,
     };
 
     check_error(
-        vkCreateGraphicsPipelines(logicalDevice, nullptr, 1, &pipelineInfo, nullptr, &pipeline),
+        vkCreateGraphicsPipelines(device.logical, nullptr, 1, &pipelineInfo, nullptr, &handle),
         "Could not create graphics pipeline!"
     );
 }
 
-void SetupSync() {
+void Sync::Setup() {
     VkSemaphoreTypeCreateInfo semaphoreTypeInfo {
         .sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO,
         .semaphoreType = VK_SEMAPHORE_TYPE_TIMELINE,
@@ -733,7 +752,7 @@ void SetupSync() {
     };
 
     check_error(
-        vkCreateSemaphore(logicalDevice, &semaphoreInfo, nullptr, &timelineSemaphore),
+        vkCreateSemaphore(device.logical, &semaphoreInfo, nullptr, &timelineSemaphore),
         "Couldn't create timeline semaphore!"
     );
 
@@ -742,13 +761,13 @@ void SetupSync() {
             .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
         };
         check_error(
-            vkCreateSemaphore(logicalDevice, &createInfo, nullptr, &resource.imageAcquiredSemaphore),
+            vkCreateSemaphore(device.logical, &createInfo, nullptr, &resource.imageAcquiredSemaphore),
             "Unable to create per-frame image-acquired semaphore!"
         );
     }
 }
 
-VkShaderModule createShaderModule(const std::string &filename, shaderc_shader_kind kind) {
+VkShaderModule VShader::createModule(const std::string &filename, shaderc_shader_kind kind) {
     shaderc::Compiler compiler;
     shaderc::CompileOptions options;
     options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_4);
@@ -779,22 +798,22 @@ VkShaderModule createShaderModule(const std::string &filename, shaderc_shader_ki
 
     VkShaderModule shaderModule;
     check_error(
-        vkCreateShaderModule(logicalDevice, &createInfo, nullptr, &shaderModule),
+        vkCreateShaderModule(device.logical, &createInfo, nullptr, &shaderModule),
         "Could not create shader module!"
     );
 
     return shaderModule;
 }
 
-void CreateCommandBuffers() {
-    for (auto &resource : frameResources) {
+void Sync::CreateCommandBuffers() {
+    for (auto &resource : sync.frameResources) {
         VkCommandPoolCreateInfo poolInfo {
             .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-            .queueFamilyIndex = gfxQueueId
+            .queueFamilyIndex = device.gfxQueueId
         };
 
         check_error(
-            vkCreateCommandPool(logicalDevice, &poolInfo, nullptr, &resource.cmdPool),
+            vkCreateCommandPool(device.logical, &poolInfo, nullptr, &resource.cmdPool),
             "Could not create Command Pool!"
         );
 
@@ -806,7 +825,7 @@ void CreateCommandBuffers() {
         };
 
         check_error(
-            vkAllocateCommandBuffers(logicalDevice, &allocInfo, &resource.cmdBuffer),
+            vkAllocateCommandBuffers(device.logical, &allocInfo, &resource.cmdBuffer),
             "Could not allocate command buffer!"
         );
     }

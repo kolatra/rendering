@@ -1,6 +1,6 @@
 [general]
 alwaysLog = true
-graphics = 'opengl'
+graphics = 'Vulkan'
 width = 1280
 height = 720
 logLevel = 'trace'
