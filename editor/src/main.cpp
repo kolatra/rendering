@@ -22,10 +22,7 @@ struct BusinessMan : Luna::GameObject {
 
 int main(int argc, char **argv) {
     auto app = Luna::Initialize(argc, argv);
-
-    auto controls = true;
-    auto &loadingScreen = app->CreateScene(controls);
-    loadingScreen.RegisterObject<BusinessMan>();
+    app->currentScene->RegisterObject<BusinessMan>();
 
     return app->Run();
 }

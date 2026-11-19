@@ -61,6 +61,8 @@ add_library(${PROJECT_NAME}
         src/graphics/types/Shader.hpp
         src/graphics/impl/SpirVCompiler.cpp
         src/graphics/impl/SpirVCompiler.hpp
+        src/graphics/scene/SceneManager.cpp
+        src/util/Strings.cpp
 )
 
 if(MSVC)

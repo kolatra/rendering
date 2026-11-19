@@ -10,4 +10,5 @@ namespace Util {
     }
 
     std::string ReadFileToString(std::string fileName);
+    std::string ToLower(const std::string &str);
 }

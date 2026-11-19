@@ -121,9 +121,10 @@ void Implementation::setCulling(bool flag) {
 
 }
 
-VShader::VShader() {
-    vertexModule = createModule("", shaderc_vertex_shader);
-    fragmentModule = createModule("", shaderc_fragment_shader);
+VShader::VShader(const std::string &name) {
+    throw std::runtime_error("still not implemented");
+    vertexModule = createModule(name, shaderc_vertex_shader);
+    fragmentModule = createModule(name, shaderc_fragment_shader);
 }
 
 VShader::~VShader() {

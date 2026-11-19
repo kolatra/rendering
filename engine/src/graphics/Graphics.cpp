@@ -37,7 +37,7 @@ std::unique_ptr<Shader> Shader::Create(const std::string &name) {
             out = OpenGL::GLShader::FromFile(name);
             break;
         case Backend::Vulkan:
-            out = std::make_unique<Vulkan::VShader>();
+            out = std::make_unique<Vulkan::VShader>(name);
             break;
         case Backend::Metal:
             throw std::runtime_error("Metal shaders not implemented!");

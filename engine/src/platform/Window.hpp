@@ -10,8 +10,7 @@ class AppCore;
 struct EngineCamera;
 struct Configuration;
 
-class Window {
-public:
+struct Window {
     std::bitset<1024> held_input {};
     uint32_t width, height;
     virtual ~Window() = default;

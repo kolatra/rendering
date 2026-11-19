@@ -77,8 +77,7 @@ public:
 
 class Renderer {
 public:
-    // Scenes are handled outside the renderer itself, and it just wants to know what to display
-    std::unique_ptr<Scene> currentScene;
+    Scene *currentScene;
     float deltaTime;
     Renderer();
     virtual ~Renderer();
@@ -89,7 +88,6 @@ public:
 
     virtual void clear(const glm::vec4& colour) = 0;
     virtual void setCulling(bool flag) = 0;
-
 };
 
 struct Floor {

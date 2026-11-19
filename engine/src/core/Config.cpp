@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+#include "Utilities.hpp"
+
 using namespace std::literals;
 namespace fs = std::filesystem;
 

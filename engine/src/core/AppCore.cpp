@@ -29,52 +29,33 @@ namespace Luna {
         app->renderer = StartGraphics();
         app->renderer->init(app->window.get());
         FontRenderer::Init();
-        app->floor = Floor::Create();
+
+        app->sceneManager = std::make_unique<SceneManager>();
+        auto controls = true;
+        app->sceneManager->CreateScene(*app, controls);
 
         app->window->Show();
-        // At this point we could have a loading screen scene of some kind
-        // just with a texture to start but maybe text later and in a dream a progress bar
+        // TODO: ew
+        app->currentScene = app->sceneManager->Scenes()[0].get();
+        app->renderer->currentScene = app->currentScene;
 
         return app;
     }
 
-    Scene &AppCore::CreateScene(bool controls) {
-        auto scene = std::make_unique<Scene>(*this, controls);
-        auto &ref = *scene;
-        PresentScene(std::move(scene));
-        return ref;
-    }
-
     int AppCore::Run() {
-        if (!renderer->currentScene) {
-            spdlog::error("Current scene not set! Scenes were not loaded correctly!");
-            throw std::runtime_error("Scene not loaded correctly!");
-        }
-        renderer->currentScene->camera = std::make_unique<EngineCamera>(config, window.get());
-        window->mouseMovement = renderer->currentScene->controlsEnabled;
+        currentScene->camera = std::make_unique<EngineCamera>(config, window.get());
+        window->mouseMovement = currentScene->controlsEnabled;
 
         while (!window->ShouldClose()) {
-            currentTime = window->GetTime();
-            renderer->deltaTime = static_cast<float>(currentTime - lastTime);
-            lastTime = currentTime;
+            UpdateTime();
+            currentScene->Update(renderer->deltaTime);
 
-            renderer->currentScene->Update(renderer->deltaTime);
-
-            auto pos = renderer->currentScene->camera->position;
+            auto pos = currentScene->camera->position;
             window->SetTitle(std::format("x: {} y: {} z: {}", pos.x, pos.y, pos.z));
 
-            {
-                renderer->beginFrame();
-
-                renderer->currentScene->Render(renderer->deltaTime);
-
-                if (config.showFloor) {
-                    renderer->setCulling(false);
-                    floor->Render(*renderer->currentScene->camera);
-                }
-
-                renderer->endFrame();
-            }
+            renderer->beginFrame();
+            currentScene->Render(renderer->deltaTime);
+            renderer->endFrame();
 
             window->SwapBuffers();
             window->PollEvents();
@@ -82,19 +63,25 @@ namespace Luna {
         return 0;
     }
 
+    void AppCore::UpdateTime() {
+        currentTime = window->GetTime();
+        renderer->deltaTime = static_cast<float>(currentTime - lastTime);
+        lastTime = currentTime;
+    }
+
     void Window::UpdateMouse(double x, double y) {
         if (!mouseMovement) return;
-        app->renderer->currentScene->camera->UpdateMouse(app, x, y);
+        app->currentScene->camera->UpdateMouse(app, x, y);
     }
 
-    void AppCore::PresentScene(std::unique_ptr<Scene> scene) {
+    void AppCore::PresentScene(const std::unique_ptr<Scene> &scene) {
         // i don't know yet how i want to even store scenes so this is a big WIP
-        renderer->currentScene = std::move(scene);
+        currentScene = scene.get();
     }
 
-    std::unique_ptr<Scene> AppCore::ClearActiveScene() {
-        auto scene = std::move(renderer->currentScene);
-        renderer->currentScene = nullptr;
+    Scene *AppCore::ClearActiveScene() {
+        auto scene = std::move(currentScene);
+        currentScene = nullptr;
         return scene;
     }
 

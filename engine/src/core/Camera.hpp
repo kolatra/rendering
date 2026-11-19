@@ -5,7 +5,7 @@
 namespace Luna {
     class AppCore;
     struct Configuration;
-    class Window;
+    struct Window;
 
     struct EngineCamera {
         Window* window;

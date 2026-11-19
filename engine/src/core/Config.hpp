@@ -4,6 +4,8 @@
 #include <spdlog/spdlog.h>
 #include <filesystem>
 
+#include "Utilities.hpp"
+
 namespace Luna {
 enum class Backend {
     None,
@@ -13,15 +15,15 @@ enum class Backend {
 };
 
 inline Backend be_from_string(const std::string& in) {
-    if (in == "OpenGL") {
+    if (Util::ToLower(in) == "opengl") {
         return Backend::OpenGL;
     }
 
-    if (in == "Vulkan") {
+    if (Util::ToLower(in) == "vulkan") {
         return Backend::Vulkan;
     }
 
-    if (in == "Metal") {
+    if (Util::ToLower(in) == "metal") {
         return Backend::Metal;
     }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <vulkan/vulkan.h>
 #include <shaderc/shaderc.hpp>
+#include <vma/vk_mem_alloc.h>
 
 #include "graphics/Renderer.hpp"
 
@@ -27,7 +28,7 @@ namespace Luna::Vulkan {
 
     class VShader : public Shader {
     public:
-        explicit VShader();
+        explicit VShader(const std::string &filename);
         ~VShader() override;
 
         void use() override;

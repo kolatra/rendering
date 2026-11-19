@@ -4,7 +4,7 @@
 
 namespace Luna {
     struct EngineCamera;
-    class Window;
+    struct Window;
     struct Configuration;
 }
 

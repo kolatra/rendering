@@ -9,9 +9,6 @@
 #include "graphics/Renderer.hpp"
 
 namespace Luna {
-    // a scene is a collection of objects, lights, cameras, terrain, etc.
-    // it's basically the holder of everything that's currently on screen.
-    // could be a loading screen while everything else happens in the background, then it switches to the main scene
 
     class GameObject {
     public:
@@ -55,10 +52,18 @@ namespace Luna {
 
             if (object->modelPath != "") {
                 object->model = Model::Create(object->modelPath);
-                // TODO: future things might want other shaders but this is good as a default
-                object->shader = shaders[0].get();
+                object->shader = shaders.at(0).get();
             }
             objects.push_back(std::move(object));
         }
+    };
+
+    struct SceneManager {
+        std::vector<std::unique_ptr<Scene>>& Scenes();
+        Scene& CreateScene(AppCore &app, bool controls = true);
+        void AddScene(std::unique_ptr<Scene> scene);
+        Scene& SelectScene(int index);
+    private:
+        std::vector<std::unique_ptr<Scene>> scenes;
     };
 }
