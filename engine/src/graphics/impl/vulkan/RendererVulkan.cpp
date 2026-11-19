@@ -618,13 +618,13 @@ void CreatePipeline(VShader &shader) {
         {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
             .stage = VK_SHADER_STAGE_VERTEX_BIT,
-            .module = shader.vertexModule,
+            .module = static_cast<VkShaderModule>(shader.vertexModule),
             .pName = entryPoint
         },
         {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
             .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-            .module = shader.fragmentModule,
+            .module = static_cast<VkShaderModule>(shader.fragmentModule),
             .pName = entryPoint
         }
     };
