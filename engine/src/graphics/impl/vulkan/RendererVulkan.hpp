@@ -4,6 +4,7 @@
 #include <vma/vk_mem_alloc.h>
 
 #include "graphics/Renderer.hpp"
+#include "graphics/types/Shader.hpp"
 
 #define VK_CALLBACKS VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, \
             VkDebugUtilsMessageSeverityFlagsEXT messageType, \

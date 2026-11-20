@@ -1,4 +1,5 @@
 #include "graphics/Renderer.hpp"
+#include "graphics/types/Shader.hpp"
 #include "graphics/scene/Scene.hpp"
 #include "core/AppCore.hpp"
 #include "spdlog/spdlog.h"

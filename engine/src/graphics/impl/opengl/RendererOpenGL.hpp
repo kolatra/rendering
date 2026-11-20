@@ -1,7 +1,8 @@
 #pragma once
 #include <utility>
-#include <graphics/Renderer.hpp>
 
+#include "graphics/Renderer.hpp"
+#include "graphics/types/Shader.hpp"
 #include "graphics/impl/SpirVCompiler.hpp"
 
 namespace Luna {

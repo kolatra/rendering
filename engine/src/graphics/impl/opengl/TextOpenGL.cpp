@@ -1,12 +1,14 @@
 #include <ranges>
 #include <stdexcept>
-#include <freetype/freetype.h>
 
+#include <freetype/freetype.h>
+#include "spdlog/spdlog.h"
 #include "glad/gl.h"
 #include "glm/gtc/type_ptr.hpp"
+
 #include "graphics/Renderer.hpp"
 #include "graphics/Text.hpp"
-#include "spdlog/spdlog.h"
+#include "graphics/types/Shader.hpp"
 
 namespace Luna::FontRenderer::OpenGLText {
     static std::unique_ptr<Shader> shader;
