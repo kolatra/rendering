@@ -6,7 +6,7 @@ namespace Util {
     std::string ReadFileToString(std::string fileName) {
         std::ifstream file(fileName);
         if (!file.is_open()) {
-            return fileName;
+            throw std::runtime_error(std::format("Could not open file {}", fileName));
         }
         std::stringstream buf;
         buf << file.rdbuf();

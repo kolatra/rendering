@@ -24,6 +24,8 @@ class GameObject;
 class Shader {
 public:
     std::string name = "Unknown";
+    uint32_t ID {};
+
 
     Shader() = default;
     [[maybe_unused]] static std::unique_ptr<Shader> Create(const std::string &name);

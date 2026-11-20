@@ -9,6 +9,7 @@
 #include "graphics/impl/vulkan/RendererVulkan.hpp"
 #include "LunaEngine.hpp"
 #include "Utilities.hpp"
+#include "impl/SpirVCompiler.hpp"
 
 namespace Luna {
 Renderer::Renderer() = default;
@@ -32,12 +33,19 @@ std::unique_ptr<Renderer> StartGraphics() {
 
 std::unique_ptr<Shader> Shader::Create(const std::string &name) {
     std::unique_ptr<Shader> out;
+    std::string v = std::format("shaders/{}.vert", name);
+    std::string f = std::format("shaders/{}.frag", name);
+
+    SpirVCompiler::Init();
+    auto vertexRes = SpirVCompiler::Compile(v, shaderc_glsl_vertex_shader);
+    auto fragmentRes = SpirVCompiler::Compile(f, shaderc_glsl_fragment_shader);
+
     switch (ACTIVE_BACKEND) {
         case Backend::OpenGL:
-            out = OpenGL::GLShader::FromFile(name);
+            out = std::make_unique<OpenGL::GLShader>(vertexRes, fragmentRes);
             break;
         case Backend::Vulkan:
-            out = std::make_unique<Vulkan::VShader>(name);
+            out = std::make_unique<Vulkan::VShader>(vertexRes, fragmentRes);
             break;
         case Backend::Metal:
             throw std::runtime_error("Metal shaders not implemented!");

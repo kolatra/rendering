@@ -11,6 +11,7 @@
 
 #include "graphics/impl/vulkan/RendererVulkan.hpp"
 
+#include "core/AppCore.hpp"
 #include "graphics/impl/SpirVCompiler.hpp"
 
 namespace Luna::Vulkan {
@@ -28,8 +29,7 @@ static Window *theWindow;
 
 static void check_error(VkResult result, const std::string &msg) {
     if (result != VK_SUCCESS) {
-        spdlog::error(msg);
-        throw;
+        throw std::runtime_error(msg);
     }
 }
 
@@ -77,9 +77,7 @@ void Implementation::init(Window *window) {
     swapchain.Create(*window);
 
     // TODO: write a pipeline helper as we'll want many, not just one
-    spdlog::trace("pipeline");
-    pipelines.push_back(Pipeline());
-    pipelines[0].Create();
+    // how they will be done for this app has to be designed more, since it's not cut-and-dry like opengl
 
     spdlog::trace("setting up sync objects");
     sync.Setup();
@@ -89,8 +87,7 @@ void Implementation::init(Window *window) {
 
     theWindow = window;
 
-    spdlog::error("No real error, but we got here without anything breaking. :D");
-    throw std::runtime_error("");
+    throw std::runtime_error("No real error, but we got here without anything breaking. :D");
 }
 
 void Implementation::beginFrame() {
@@ -121,10 +118,9 @@ void Implementation::setCulling(bool flag) {
 
 }
 
-VShader::VShader(const std::string &name) {
-    throw std::runtime_error("still not implemented");
-    vertexModule = createModule(name, shaderc_vertex_shader);
-    fragmentModule = createModule(name, shaderc_fragment_shader);
+VShader::VShader(const shaderc::CompilationResult<uint32_t> &vSpirv, const shaderc::CompilationResult<uint32_t> &fSpirv) {
+    vertexModule = createModule(vSpirv);
+    fragmentModule = createModule(fSpirv);
 }
 
 VShader::~VShader() {
@@ -152,10 +148,6 @@ void VShader::setMat4(const std::string &name, const glm::mat4 &value) {
 }
 
 void Instance::Create(VkDebugUtilsMessengerCreateInfoEXT &debugInfo) {
-    if (initialized) {
-        return;
-    }
-
     VkApplicationInfo appInfo = {
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
         .pApplicationName = "Luna Engine",
@@ -189,8 +181,6 @@ void Instance::Create(VkDebugUtilsMessengerCreateInfoEXT &debugInfo) {
         vkCreateInstance(&ci, nullptr, &handle),
         "Failed to create Vulkan instance!"
     );
-
-    initialized = true;
 }
 
 std::vector<const char *> Instance::GetExtensions() {
@@ -542,7 +532,7 @@ void Swapchain::Destroy() {
     }
 }
 
-void Pipeline::Create() {
+void Pipeline::Create(std::vector<VShader*> &shaders) {
     VkPipelineLayoutCreateInfo pipelineLayoutInfo {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
         .setLayoutCount = 0,
@@ -559,13 +549,13 @@ void Pipeline::Create() {
         {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
             .stage = VK_SHADER_STAGE_VERTEX_BIT,
-            .module = static_cast<VkShaderModule>(nullptr),
+            .module = shaders[0]->vertexModule,
             .pName = entryPoint
         },
         {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
             .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-            .module = static_cast<VkShaderModule>(nullptr),
+            .module = shaders[0]->fragmentModule,
             .pName = entryPoint
         }
     };
@@ -696,14 +686,12 @@ std::tuple<uint64_t, uint64_t, uint64_t> SyncManager::Values() {
     return std::make_tuple(frameResIndex, signal, waitValue);
 }
 
-VkShaderModule VShader::createModule(const std::string &filename, shaderc_shader_kind kind) {
-    auto result = SpirVCompiler::Compile(filename, kind);
-
-    size_t shaderSize = (result.cend() - result.cbegin()) * sizeof(uint32_t);
+VkShaderModule VShader::createModule(const shaderc::CompilationResult<uint32_t> &code) {
+    size_t shaderSize = (code.cend() - code.cbegin()) * sizeof(uint32_t);
     VkShaderModuleCreateInfo createInfo {
         .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
         .codeSize = shaderSize,
-        .pCode = result.cbegin(),
+        .pCode = code.cbegin(),
     };
 
     VkShaderModule shaderModule;

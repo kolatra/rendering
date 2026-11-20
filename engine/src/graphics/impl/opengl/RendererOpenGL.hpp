@@ -2,6 +2,8 @@
 #include <utility>
 #include <graphics/Renderer.hpp>
 
+#include "graphics/impl/SpirVCompiler.hpp"
+
 namespace Luna {
     struct EngineCamera;
     struct Window;
@@ -52,10 +54,7 @@ private:
 
 class GLShader : public Shader {
 public:
-    uint32_t ID {};
-
-    static std::unique_ptr<Shader> FromFile(const std::string &fileName);
-    GLShader(const char *vCode, const char *fCode);
+    GLShader(const shaderc::CompilationResult<uint32_t> &vCode, const shaderc::CompilationResult<uint32_t> &fCode);
     ~GLShader() override;
 
     void use() override;

@@ -36,7 +36,7 @@ namespace Luna::OpenGL {
     }
 
     void Implementation::beginFrame() {
-        this->clear({0.2f, 0.3f, 0.3f, 1.0f});
+        this->clear({0.4f, 0.7f, 1.0f, 1.0f});
     }
 
     Implementation::~Implementation() {
@@ -48,20 +48,12 @@ namespace Luna::OpenGL {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    std::unique_ptr<Shader> GLShader::FromFile(const std::string &fileName) {
-        auto vertex_path = "shaders/" + fileName + ".vsh";
-        auto fragment_path = "shaders/" + fileName + ".fsh";
-        const auto vCode = Util::ReadFileToString(vertex_path);
-        const auto fCode = Util::ReadFileToString(fragment_path);
-        const char* vertexCode = vCode.c_str();
-        const char* fragmentCode = fCode.c_str();
-        return std::make_unique<GLShader>(vertexCode, fragmentCode);
-    }
-
-    GLShader::GLShader(const char *vCode, const char *fCode) {
+    GLShader::GLShader(const shaderc::CompilationResult<uint32_t> &vCode, const shaderc::CompilationResult<uint32_t> &fCode) {
+        std::vector vertexCode(vCode.begin(), vCode.end());
+        std::vector fragmentCode(fCode.begin(), fCode.end());
         const uint32_t vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexShader, 1, &vCode, nullptr);
-        glCompileShader(vertexShader);
+        glShaderBinary(1, &vertexShader, GL_SHADER_BINARY_FORMAT_SPIR_V, vertexCode.data(), vertexCode.size() * sizeof(uint32_t));
+        glSpecializeShader(vertexShader, "main", 0, nullptr, nullptr);
         GLint success = GL_FALSE;
         glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
         if (success != GL_TRUE) {
@@ -70,11 +62,12 @@ namespace Luna::OpenGL {
             std::string log(static_cast<size_t>(logLength), '\0');
             glGetShaderInfoLog(vertexShader, logLength, nullptr, log.data());
             spdlog::error("Vertex shader compilation failed:\n{}", log);
+            exit(1);
         }
 
         const uint32_t fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShader, 1, &fCode, nullptr);
-        glCompileShader(fragmentShader);
+        glShaderBinary(1, &fragmentShader, GL_SHADER_BINARY_FORMAT_SPIR_V, fragmentCode.data(), fragmentCode.size() * sizeof(uint32_t));
+        glSpecializeShader(fragmentShader, "main", 0, nullptr, nullptr);
         glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
         if (success != GL_TRUE) {
             GLint logLength = 0;

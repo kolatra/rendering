@@ -13,12 +13,13 @@ namespace Luna::SpirVCompiler {
         if (initialized) return;
         if (ACTIVE_BACKEND == Backend::Vulkan) {
             options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_4);
+            options.SetTargetSpirv(shaderc_spirv_version_1_6);
         } else if (ACTIVE_BACKEND == Backend::OpenGL) {
             options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
+            options.SetTargetSpirv(shaderc_spirv_version_1_0);
         } else {
             throw std::runtime_error("Unknown Backend");
         }
-        options.SetTargetSpirv(shaderc_spirv_version_1_6);
         options.SetOptimizationLevel(shaderc_optimization_level_zero);
         initialized = true;
     }

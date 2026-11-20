@@ -28,7 +28,7 @@ namespace Luna::Vulkan {
 
     class VShader : public Shader {
     public:
-        explicit VShader(const std::string &filename);
+        explicit VShader(const shaderc::CompilationResult<uint32_t> &vSpirv, const shaderc::CompilationResult<uint32_t> &fSpirv);
         ~VShader() override;
 
         void use() override;
@@ -40,12 +40,11 @@ namespace Luna::Vulkan {
         VkShaderModule vertexModule = nullptr;
         VkShaderModule fragmentModule = nullptr;
 
-        static VkShaderModule createModule(const std::string &filename, shaderc_shader_kind kind);
+        static VkShaderModule createModule(const shaderc::CompilationResult<uint32_t> &code);
     };
 
     struct Instance {
         VkInstance handle = nullptr;
-        bool initialized = false;
         void Create(VkDebugUtilsMessengerCreateInfoEXT &debugInfo);
 
         static std::vector<const char *> GetExtensions();
@@ -90,7 +89,7 @@ namespace Luna::Vulkan {
     struct Pipeline {
         VkPipeline handle = nullptr;
         VkPipelineLayout layout = nullptr;
-        void Create();
+        void Create(std::vector<VShader*> &shaders);
     };
 
     struct Allocator {
