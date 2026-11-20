@@ -36,6 +36,13 @@ namespace Luna {
         FT_Done_FreeType(ft);
     }
 
+    void FontRenderer::Shutdown() {
+        if (ACTIVE_BACKEND == Backend::OpenGL) {
+            OpenGLText::shutdown();
+        }
+        character_map.clear();
+    }
+
     void RenderText(const std::string &text, float x, float y, float scale, glm::vec3 colour) {
         if (ACTIVE_BACKEND == Backend::OpenGL) {
             FontRenderer::OpenGLText::render(text, x, y, scale, colour);

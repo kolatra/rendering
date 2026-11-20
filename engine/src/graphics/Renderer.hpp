@@ -64,7 +64,7 @@ public:
 class Model {
 public:
     static std::unique_ptr<Model> Create(std::string path, bool gamma = false);
-    virtual ~Model() = default;
+    virtual ~Model();
     std::vector<Texture> textures_loaded;
     std::vector<Mesh*> meshes;
     std::string directory;
@@ -79,7 +79,6 @@ public:
 
 class Renderer {
 public:
-    Scene *currentScene;
     float deltaTime;
     Renderer();
     virtual ~Renderer();

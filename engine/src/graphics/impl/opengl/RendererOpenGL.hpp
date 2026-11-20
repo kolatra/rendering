@@ -69,7 +69,7 @@ public:
     explicit Implementation() {}
     void init(Window *window) override;
     ~Implementation() override;
-    void beginFrame() override;
+    void beginFrame() override {}
     void endFrame() override {}
     void clear(const glm::vec4 &colour) override;
 

@@ -11,6 +11,12 @@
 
 // https://learnopengl.com/Model-Loading/Model
 namespace Luna {
+    Model::~Model() {
+        for (auto *mesh : meshes) {
+            delete mesh;
+        }
+    }
+
     namespace OpenGL {
         GlModel::~GlModel() {
             for (auto &texture: textures_loaded) {

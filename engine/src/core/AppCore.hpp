@@ -10,7 +10,6 @@ namespace Luna {
 class AppCore;
 struct Configuration;
 struct Window;
-struct SceneManager;
 
 std::unique_ptr<AppCore> Initialize(int argc, char **argv);
 
@@ -22,16 +21,14 @@ public:
     Configuration config;
     std::unique_ptr<Window> window;
     std::unique_ptr<Renderer> renderer;
-    std::unique_ptr<SceneManager> sceneManager;
-    Scene *currentScene;
 
-    int Run();
+    ~AppCore();
+
+    void Run();
 
     double currentTime = 0;
     double lastTime = 0;
     void UpdateTime();
 
-    void PresentScene(const std::unique_ptr<Scene> &scene);
-    Scene *ClearActiveScene();
 };
 }

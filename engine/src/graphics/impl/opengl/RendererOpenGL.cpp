@@ -35,12 +35,8 @@ namespace Luna::OpenGL {
         }
     }
 
-    void Implementation::beginFrame() {
-        this->clear({0.4f, 0.7f, 1.0f, 1.0f});
-    }
-
     Implementation::~Implementation() {
-        currentScene = nullptr;
+
     }
 
     void Implementation::clear(const glm::vec4 &colour) {

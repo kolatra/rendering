@@ -1,7 +1,9 @@
 #include "LunaEngine.hpp"
 
 int main(int argc, char **argv) {
-    struct BusinessMan : Luna::GameObject {
+    using namespace Luna;
+
+    struct BusinessMan : GameObject {
         explicit BusinessMan() {
             modelPath = "assets/penger-obj-main/suitger/suitedpenger.obj";
             culling = true;
@@ -13,12 +15,14 @@ int main(int argc, char **argv) {
         }
 
         void PreRender(float dt) override {
-            Luna::RenderText("this text is rendered from business man right before rendering him", 25.0f, 25.0f, 0.3f, glm::vec3(1.0f, 0.0f, 0.0f));
+            RenderText("this text is rendered from business man right before rendering him", 25.0f, 25.0f, 0.3f, glm::vec3(1.0f, 0.0f, 0.0f));
         }
     };
 
     auto app = Luna::Initialize(argc, argv);
-    app->currentScene->RegisterObject<BusinessMan>();
+    SceneManager::CurrentScene().RegisterObject<BusinessMan>();
 
-    return app->Run();
+    app->Run();
+
+    return 0;
 }

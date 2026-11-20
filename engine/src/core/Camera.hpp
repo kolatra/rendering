@@ -21,7 +21,7 @@ namespace Luna {
         float yaw = -90.f;
         bool firstMouse = true;
 
-        explicit EngineCamera(Configuration &config, Window* window);
+        explicit EngineCamera(Configuration config, Window* window);
         void Update(float delta, bool controllable);
         void UpdateMouse(AppCore *app, float x, float y);
     };

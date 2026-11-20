@@ -9,7 +9,6 @@
 #include "graphics/Renderer.hpp"
 
 namespace Luna {
-
     class GameObject {
     public:
         uint32_t renderPriority = 0;
@@ -58,12 +57,17 @@ namespace Luna {
         }
     };
 
-    struct SceneManager {
-        std::vector<std::unique_ptr<Scene>>& Scenes();
-        Scene& CreateScene(AppCore &app, bool controls = true);
-        void AddScene(std::unique_ptr<Scene> scene);
-        Scene& SelectScene(int index);
-    private:
-        std::vector<std::unique_ptr<Scene>> scenes;
-    };
+    namespace SceneManager {
+        void Startup();
+        void Shutdown();
+        void Update(float dt);
+        void Render(float dt);
+
+        std::vector<std::unique_ptr<Scene>> &Scenes();
+        EngineCamera &Camera();
+
+        Scene& CurrentScene();
+        Scene& CreateScene(AppCore &app, bool controls);
+        bool SelectScene(int i);
+    }
 }

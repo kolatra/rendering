@@ -35,4 +35,15 @@ namespace Luna {
             object->Draw(renderer);
         }
     }
+
+    void GameObject::Draw(Renderer &renderer) const {
+        shader->use();
+        shader->setMat4("model", position);
+        shader->setMat4("view", SceneManager::CurrentScene().camera->view);
+        shader->setMat4("projection", SceneManager::CurrentScene().camera->projection);
+
+        if (culling)
+            renderer.setCulling(true);
+        this->model->Draw(*shader);
+    }
 }

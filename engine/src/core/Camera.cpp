@@ -8,7 +8,7 @@
 #include "core/AppCore.hpp"
 
 namespace Luna {
-    EngineCamera::EngineCamera(Configuration &config, Window *window) {
+    EngineCamera::EngineCamera(Configuration config, Window *window) {
         this->window = window;
 
         constexpr float fov = glm::radians(45.0f);
