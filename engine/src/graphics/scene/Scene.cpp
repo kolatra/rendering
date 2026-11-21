@@ -2,7 +2,7 @@
 #include "graphics/types/Shader.hpp"
 #include "graphics/scene/Scene.hpp"
 #include "core/AppCore.hpp"
-#include <fmt/core.h>
+#include <spdlog/spdlog.h>
 
 namespace Luna {
     Scene::Scene(AppCore &app, bool controls) :
@@ -13,7 +13,6 @@ namespace Luna {
         // the default shader included in every scene for basic triangle rendering with textures
         auto sh = Shader::Create("triangle");
         shaders.push_back(std::move(sh));
-        fmt::println("Scene loaded");
     }
 
     Scene::~Scene() {
@@ -37,10 +36,10 @@ namespace Luna {
         }
     }
 
-    void GameObject::Draw(Renderer &renderer) const {
+    void Node::Draw(Renderer &renderer) const {
         if (!shader) return;
         shader->use();
-        shader->setMat4("model", position);
+        shader->setMat4("model", transform);
         shader->setMat4("view", SceneManager::CurrentScene().camera->view);
         shader->setMat4("projection", SceneManager::CurrentScene().camera->projection);
 

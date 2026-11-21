@@ -5,7 +5,7 @@ find_package(Freetype REQUIRED)
 
 add_subdirectory(external/glfw)
 add_subdirectory(external/glm)
-add_subdirectory(external/fmt)
+add_subdirectory(external/spdlog)
 
 if(APPLE)
     message(STATUS "Configuring for macOS")
@@ -89,7 +89,8 @@ if(APPLE)
     target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:OBJCXX>:-fobjc-arc>)
 endif()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
+target_link_libraries(${PROJECT_NAME}
+        PRIVATE
         glfw
         glm::glm
         assimp::assimp
@@ -97,7 +98,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         Vulkan::volk
         Vulkan::shaderc_combined
         Freetype::Freetype
-        PUBLIC fmt::fmt
+        PUBLIC
+        spdlog::spdlog
 )
 
 if(WIN32 AND BUILD_SHARED_LIBS)

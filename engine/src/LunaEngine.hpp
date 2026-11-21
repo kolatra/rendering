@@ -10,7 +10,7 @@
 namespace Luna {
     class AppCore;
     struct Configuration;
-    class GameObject;
+    class Node;
 
     void RenderText(const std::string &text, float x, float y, float scale, glm::vec3 colour);
 }

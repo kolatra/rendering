@@ -2,7 +2,7 @@
 #include <stdexcept>
 
 #include <freetype/freetype.h>
-#include <fmt/core.h>
+#include <spdlog/spdlog.h>
 #include "glad/gl.h"
 #include "glm/gtc/type_ptr.hpp"
 
@@ -19,6 +19,7 @@ namespace Luna::FontRenderer::OpenGLText {
         auto face = static_cast<FT_Face>(f);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+        spdlog::debug("loading characters");
         for (uint8_t c = 0; c < 128; c++) {
             if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
                 throw std::runtime_error("Could not render character");
@@ -53,7 +54,7 @@ namespace Luna::FontRenderer::OpenGLText {
         }
 
         shader = Shader::Create("text");
-        fmt::println("Text data shader created");
+        spdlog::debug("shader created");
 
         glGenVertexArrays(1, &c_VAO);
         glGenBuffers(1, &c_VBO);
@@ -67,7 +68,7 @@ namespace Luna::FontRenderer::OpenGLText {
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_2D, 0);
 
-        fmt::println("Text data buffered");
+        spdlog::debug("data buffered");
     }
 
     void shutdown() {

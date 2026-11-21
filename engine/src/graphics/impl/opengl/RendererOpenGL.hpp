@@ -55,7 +55,7 @@ private:
 
 class GLShader : public Shader {
 public:
-    GLShader(const shaderc::CompilationResult<uint32_t> &vCode, const shaderc::CompilationResult<uint32_t> &fCode);
+    GLShader(const std::vector<uint32_t> &vCode, const std::vector<uint32_t> &fCode);
     ~GLShader() override;
 
     void use() override;

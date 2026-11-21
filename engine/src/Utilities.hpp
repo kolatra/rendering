@@ -1,8 +1,6 @@
 #pragma once
 #include <random>
 
-#include <fmt/core.h>
-
 namespace Util {
     template <typename T>
     T Random(T min, T max) {

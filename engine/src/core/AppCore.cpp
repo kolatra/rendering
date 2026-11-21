@@ -1,9 +1,9 @@
-#include <fmt/core.h>
+#include <spdlog/spdlog.h>
+
 #include "platform/Window.hpp"
 #include "graphics/Renderer.hpp"
 #include "core/AppCore.hpp"
 #include "graphics/scene/Scene.hpp"
-
 #include "graphics/Text.hpp"
 
 namespace Luna {
@@ -20,6 +20,7 @@ namespace Luna {
             }
         }
         auto config = Configuration(storeDefaultConfig);
+        config.Print();
         ACTIVE_BACKEND = config.rendering_api;
 
         auto app = std::make_unique<AppCore>();

@@ -19,7 +19,7 @@ class AppCore;
 struct Configuration;
 class Renderer;
 class Scene;
-class GameObject;
+class Node;
 class Shader;
 
 struct Vertex {

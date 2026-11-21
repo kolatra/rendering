@@ -1,24 +1,28 @@
 #include <filesystem>
-
-#include "core/Config.hpp"
-
 #include <iostream>
 
-#include "Utilities.hpp"
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
+
+#include "core/Config.hpp"
 
 using namespace std::literals;
 namespace fs = std::filesystem;
 
 namespace Luna {
+
 Configuration::Configuration(bool storeDefaults) {
+    spdlog::set_level(spdlog::level::trace);
+    spdlog::set_pattern("[%^%l%$] %v");
+
     if (!Load()) {
         fs::path file = fs::current_path() / "config.toml";
-        fmt::println("No config file found at {} - Defaults will be used.", file.string());
+        spdlog::warn("No config file found at {} - Defaults will be used.", file.string());
         if (storeDefaults) {
+            spdlog::info("Saving config to {}", file.string());
             Save(file);
-            fmt::println("Saved config to {}", file.string());
         } else {
-            fmt::println("Start the program with --save-config to save the defaults to disk.");
+            spdlog::info("Start the program with --save-config to save the defaults to disk.");
         }
     }
 }
@@ -49,6 +53,23 @@ bool Configuration::Load() {
     return true;
 }
 
+
+void Configuration::Print() {
+    auto currentLevel = spdlog::get_level();
+    if (currentLevel > spdlog::level::debug) {
+        spdlog::set_level(spdlog::level::debug);
+    }
+
+    spdlog::debug("CFG: Graphics API -> {}", this->rendering_api);
+    spdlog::debug("CFG: Window name -> {}", this->name);
+    spdlog::debug("CFG: Width -> {}", this->startingWidth);
+    spdlog::debug("CFG: Height -> {}", this->startingHeight);
+
+    if (spdlog::get_level() != currentLevel) {
+        spdlog::set_level(currentLevel);
+    }
+}
+
 bool Configuration::Save(std::filesystem::path &path) const {
     auto cwd = std::filesystem::current_path();
     toml::table configTable = this->to_toml();
@@ -56,7 +77,7 @@ bool Configuration::Save(std::filesystem::path &path) const {
         {"general", std::move(configTable)}
     };
 
-    fmt::println("--- Serialized ---");
+    spdlog::debug("--- Serialized ---");
     std::cout << root << std::endl;
 
     std::ofstream outFile(path);
@@ -64,18 +85,17 @@ bool Configuration::Save(std::filesystem::path &path) const {
         outFile << root << std::endl;
         return true;
     } else {
-        fmt::println("Could not open config file for writing at {}", path.string());
+        spdlog::error("Could not open config file for writing at {}", path.string());
         return false;
     }
 }
 
 toml::table Configuration::to_toml() const {
     return toml::table {
-        {"graphics", be_to_string(this->rendering_api)},
+        {"graphics", this->rendering_api},
         {"windowName", this->name},
         {"width", this->startingWidth},
         {"height", this->startingHeight},
-        {"alwaysLog", this->alwaysLog}
     };
 }
 }

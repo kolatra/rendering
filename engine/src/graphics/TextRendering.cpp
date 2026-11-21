@@ -1,6 +1,6 @@
 #include <freetype/freetype.h>
 #include FT_FREETYPE_H
-#include <fmt/core.h>
+#include <spdlog/spdlog.h>
 
 #include "LunaEngine.hpp"
 #include "core/Config.hpp"
@@ -8,29 +8,29 @@
 
 namespace Luna {
     void FontRenderer::Init() {
-        fmt::println("Starting FT initialization");
+        spdlog::debug("Starting FT initialization");
 
         FT_Library ft;
         if (FT_Init_FreeType(&ft)) {
-            fmt::println("Could not init FreeType Library");
+            spdlog::critical("Could not init FreeType Library");
             throw std::runtime_error("Could not init FreeType Library");
         }
 
         FT_Face face;
         if (FT_New_Face(ft, "/usr/share/fonts/jetbrains-mono-fonts/JetBrainsMono-Regular.otf", 0, &face)) {
-            fmt::println("Could not load font");
+            spdlog::critical("Could not load font");
             throw std::runtime_error("Could not load font");
         }
 
         FT_Set_Pixel_Sizes(face, 0, 48);
 
         if (FT_Load_Char(face, 'X', FT_LOAD_RENDER)) {
-            fmt::println("Could not render character");
+            spdlog::critical("Could not render character");
             throw std::runtime_error("Could not render character");
         }
 
         if (ACTIVE_BACKEND == Backend::OpenGL) {
-            fmt::println("Loading into OpenGL...");
+            spdlog::debug("Loading into OpenGL...");
             OpenGLText::init(face);
         }
 

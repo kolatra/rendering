@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <glm/gtc/type_ptr.hpp>
-#include <fmt/core.h>
+#include <spdlog/spdlog.h>
 #define GLAD_GL_IMPLEMENTATION
 #include "glad/gl.h"
 #define STB_IMAGE_IMPLEMENTATION
@@ -44,11 +44,9 @@ namespace Luna::OpenGL {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    GLShader::GLShader(const shaderc::CompilationResult<uint32_t> &vCode, const shaderc::CompilationResult<uint32_t> &fCode) {
-        std::vector vertexCode(vCode.begin(), vCode.end());
-        std::vector fragmentCode(fCode.begin(), fCode.end());
+    GLShader::GLShader(const std::vector<uint32_t> &vCode, const std::vector<uint32_t> &fCode) {
         const uint32_t vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderBinary(1, &vertexShader, GL_SHADER_BINARY_FORMAT_SPIR_V, vertexCode.data(), vertexCode.size() * sizeof(uint32_t));
+        glShaderBinary(1, &vertexShader, GL_SHADER_BINARY_FORMAT_SPIR_V, vCode.data(), vCode.size() * sizeof(uint32_t));
         glSpecializeShader(vertexShader, "main", 0, nullptr, nullptr);
         GLint success = GL_FALSE;
         glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
@@ -57,12 +55,12 @@ namespace Luna::OpenGL {
             glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &logLength);
             std::string log(static_cast<size_t>(logLength), '\0');
             glGetShaderInfoLog(vertexShader, logLength, nullptr, log.data());
-            fmt::println("Vertex shader compilation failed:\n{}", log);
+            spdlog::error("Vertex shader compilation failed:\n{}", log);
             exit(1);
         }
 
         const uint32_t fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderBinary(1, &fragmentShader, GL_SHADER_BINARY_FORMAT_SPIR_V, fragmentCode.data(), fragmentCode.size() * sizeof(uint32_t));
+        glShaderBinary(1, &fragmentShader, GL_SHADER_BINARY_FORMAT_SPIR_V, fCode.data(), fCode.size() * sizeof(uint32_t));
         glSpecializeShader(fragmentShader, "main", 0, nullptr, nullptr);
         glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
         if (success != GL_TRUE) {
@@ -70,7 +68,7 @@ namespace Luna::OpenGL {
             glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &logLength);
             std::string log(static_cast<size_t>(logLength), '\0');
             glGetShaderInfoLog(fragmentShader, logLength, nullptr, log.data());
-            fmt::println("Fragment shader compilation failed:\n{}", log);
+            spdlog::error("Fragment shader compilation failed:\n{}", log);
             exit(1);
         }
 
@@ -84,7 +82,7 @@ namespace Luna::OpenGL {
             glGetProgramiv(ID, GL_INFO_LOG_LENGTH, &logLength);
             std::string log(static_cast<size_t>(logLength), '\0');
             glGetProgramInfoLog(ID, logLength, nullptr, log.data());
-            fmt::println("Shader program link failed:\n{}", log);
+            spdlog::error("Shader program link failed:\n{}", log);
             exit(1);
         }
 
@@ -142,10 +140,10 @@ namespace Luna::OpenGL {
             glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
 
-            fmt::println("Loaded texture from: {}", filename);
+            spdlog::debug("Loaded texture from: {}", filename);
             stbi_image_free(data);
         } else {
-            fmt::println("Texture failed to load from: {}", filename);
+            spdlog::error("Texture failed to load from: {}", filename);
             stbi_image_free(data);
         }
 

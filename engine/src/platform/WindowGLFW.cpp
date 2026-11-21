@@ -6,7 +6,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include <fmt/core.h>
+#include <spdlog/spdlog.h>
 
 namespace Luna {
 static void keys(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -15,7 +15,6 @@ static void keys(GLFWwindow* window, int key, int scancode, int action, int mods
             case GLFW_PRESS:
                 app->window->held_input[key] = true;
                 if (key == GLFW_KEY_ESCAPE) {
-                    fmt::println("releasing mouse");
                     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
                     app->window->mouseCaptured = false;
                 }
@@ -41,7 +40,6 @@ static void cursor(GLFWwindow* window, double x, double y) {
 static void mouse(GLFWwindow* window, int32_t button, int32_t action, int32_t mods) {
     if (const auto app = static_cast<AppCore*>(glfwGetWindowUserPointer(window))) {
         if (!app->window->mouseCaptured) {
-            fmt::println("capturing mouse");
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             app->window->mouseCaptured = true;
         }
@@ -56,24 +54,19 @@ WindowGLFW::WindowGLFW(const std::unique_ptr<AppCore> &app) {
     width = app->config.startingWidth;
     height = app->config.startingHeight;
 
-    fmt::println("Loading glfw");
     if (!glfwInit()) {
         throw std::runtime_error("Couldn't load glfw!");
     }
 
     if (ACTIVE_BACKEND == Backend::OpenGL) {
-        std::string debugOutput;
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     #ifndef __APPLE__
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-        debugOutput = "OpenGL v4.6";
     #else
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-        debugOutput = "OpenGL v4.1";
     #endif
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-        fmt::println("{}", debugOutput);
     } else if (ACTIVE_BACKEND == Backend::Vulkan) {
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
@@ -86,7 +79,7 @@ WindowGLFW::WindowGLFW(const std::unique_ptr<AppCore> &app) {
         const char *text = nullptr;
         glfwGetError(&text);
         glfwTerminate();
-        fmt::println("Could not create glfw window! Error: {}", text);
+        spdlog::error("Could not create glfw window! Error: {}", text);
         throw std::runtime_error("");
     }
 
@@ -98,7 +91,6 @@ WindowGLFW::WindowGLFW(const std::unique_ptr<AppCore> &app) {
             glfwTerminate();
             throw std::runtime_error("Couldn't load OpenGL with glad!");
         }
-        fmt::println("glad load successful");
     }
 
     glfwSetErrorCallback(errors);
@@ -109,8 +101,6 @@ WindowGLFW::WindowGLFW(const std::unique_ptr<AppCore> &app) {
     glfwSetWindowUserPointer(handle, app.get());
 
     glfwSetInputMode(handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    fmt::println("glfw window constructor ending");
 }
 
 WindowGLFW::~WindowGLFW() {
@@ -127,7 +117,7 @@ void *WindowGLFW::CreateSurface(void *apiContext) {
     if (ACTIVE_BACKEND == Backend::Vulkan) {
         VkSurfaceKHR surface_khr;
         if (glfwCreateWindowSurface(static_cast<VkInstance>(apiContext), handle, nullptr, &surface_khr) != VK_SUCCESS) {
-            fmt::println("Couldn't create surface!");
+            spdlog::error("Couldn't create surface!");
             throw;
         }
         return surface_khr;

@@ -1,6 +1,6 @@
 #include <stdexcept>
 
-#include <fmt/core.h>
+#include <spdlog/spdlog.h>
 
 #include "graphics/Renderer.hpp"
 #include "graphics/impl/opengl/GlModel.hpp"
@@ -14,7 +14,7 @@ Renderer::Renderer() = default;
 Renderer::~Renderer() = default;
 
 std::unique_ptr<Renderer> StartGraphics() {
-    fmt::println("Starting backend...");
+    spdlog::debug("Starting backend...");
     switch (ACTIVE_BACKEND) {
         case Backend::OpenGL: return std::make_unique<OpenGL::Implementation>();
         case Backend::Vulkan: return std::make_unique<Vulkan::Implementation>();
@@ -29,12 +29,12 @@ std::unique_ptr<Shader> Shader::Create(const std::string &name) {
     std::string f = std::format("shaders/{}.frag", name);
 
     SpirVCompiler::Init();
-    auto vertexRes = SpirVCompiler::Compile(v, shaderc_glsl_vertex_shader);
-    auto fragmentRes = SpirVCompiler::Compile(f, shaderc_glsl_fragment_shader);
+    auto vertexBytes = SpirVCompiler::Compile(v, shaderc_glsl_vertex_shader);
+    auto fragmentBytes = SpirVCompiler::Compile(f, shaderc_glsl_fragment_shader);
 
     switch (ACTIVE_BACKEND) {
-        case Backend::OpenGL: return std::make_unique<OpenGL::GLShader>(vertexRes, fragmentRes);
-        case Backend::Vulkan: return std::make_unique<Vulkan::VShader>(vertexRes, fragmentRes);
+        case Backend::OpenGL: return std::make_unique<OpenGL::GLShader>(vertexBytes, fragmentBytes);
+        case Backend::Vulkan: return std::make_unique<Vulkan::VShader>(vertexBytes, fragmentBytes);
         case Backend::Metal:  throw std::runtime_error("Metal shaders not implemented!");
         case Backend::None:
         default:              throw std::runtime_error("Invalid state when creating shader!");

@@ -1,29 +1,28 @@
 #pragma once
 #include <memory>
-#include <cstdint>
 #include <typeinfo>
 
 #include <glm/glm.hpp>
-#include <fmt/core.h>
+#include <spdlog/spdlog.h>
 
 #include "graphics/Renderer.hpp"
 
 namespace Luna {
-    class GameObject {
+    class Node {
     public:
-        uint32_t renderPriority = 0;
-        glm::mat4 position = glm::mat4(1.0f);
+        std::weak_ptr<Node> parent;
+        std::vector<std::shared_ptr<Node>> children;
+
+        glm::mat4 transform = glm::mat4(1.0f);
         std::unique_ptr<Model> model = nullptr;
         Shader* shader = nullptr;
         std::string modelPath = "";
         bool culling = false;
 
-        virtual ~GameObject() { model.reset(); }
-        virtual void Tick() = 0;
-        virtual void PreRender() = 0;
+        virtual ~Node() { model.reset(); }
+        virtual void Tick() {}
+        virtual void PreRender() {}
         virtual void Draw(Renderer &renderer) const;
-
-        uint32_t GetPriority() const { return renderPriority; }
     };
 
     class Scene {
@@ -39,15 +38,15 @@ namespace Luna {
         // Managed by the scene
         std::unique_ptr<EngineCamera> camera;
         std::vector<std::unique_ptr<Shader>> shaders;
-        std::vector<std::unique_ptr<GameObject>> objects;
+        std::vector<std::unique_ptr<Node>> objects;
 
         void Update(float dt);
         void Render();
 
         template <typename O>
         void RegisterObject() {
-            std::unique_ptr<GameObject> object = std::make_unique<O>();
-            fmt::println("Registered GameObject type: {}", typeid(O).name());
+            std::unique_ptr<Node> object = std::make_unique<O>();
+            spdlog::debug("Registered GameObject type: {}", typeid(O).name());
 
             if (object->modelPath != "") {
                 object->model = Model::Create(object->modelPath);
