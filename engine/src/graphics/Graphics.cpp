@@ -1,9 +1,8 @@
 #include <stdexcept>
 
-#include "spdlog/spdlog.h"
+#include <fmt/core.h>
 
 #include "graphics/Renderer.hpp"
-#include "graphics/scene/Scene.hpp"
 #include "graphics/impl/opengl/GlModel.hpp"
 #include "graphics/impl/opengl/RendererOpenGL.hpp"
 #include "graphics/impl/vulkan/RendererVulkan.hpp"
@@ -15,7 +14,7 @@ Renderer::Renderer() = default;
 Renderer::~Renderer() = default;
 
 std::unique_ptr<Renderer> StartGraphics() {
-    spdlog::debug("Starting backend...");
+    fmt::println("Starting backend...");
     switch (ACTIVE_BACKEND) {
         case Backend::OpenGL: return std::make_unique<OpenGL::Implementation>();
         case Backend::Vulkan: return std::make_unique<Vulkan::Implementation>();
@@ -55,16 +54,11 @@ std::unique_ptr<Model> Model::Create(std::string path, bool gamma) {
 std::unique_ptr<Floor> Floor::Create() {
     std::unique_ptr<Floor> out;
     switch (ACTIVE_BACKEND) {
-        case Backend::OpenGL:
-            out = std::make_unique<OpenGL::GlFloor>();
-            break;
-        case Backend::Vulkan:
-            throw std::runtime_error("Vulkan is not implemented!");
-        case Backend::Metal:
-            throw std::runtime_error("Metal is not implemented!");
+        case Backend::OpenGL: out = std::make_unique<OpenGL::GlFloor>(); break;
+        case Backend::Vulkan: throw std::runtime_error("Vulkan is not implemented!");
+        case Backend::Metal:  throw std::runtime_error("Metal is not implemented!");
         case Backend::None:
-        default:
-            throw std::runtime_error("Invalid state!");
+        default:              throw std::runtime_error("Invalid state!");
     }
 
     out->Setup();

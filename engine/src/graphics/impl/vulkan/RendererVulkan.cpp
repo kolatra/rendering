@@ -1,16 +1,14 @@
 #include <queue>
 
-#include <spdlog/spdlog.h>
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 #define VOLK_IMPLEMENTATION
 #include <volk/volk.h>
-#define VMA_IMPLEMENTATION
-#include <vma/vk_mem_alloc.h>
 #include <shaderc/shaderc.hpp>
 
+#define VMA_IMPLEMENTATION
+#include "vk_types.hpp"
 #include "graphics/impl/vulkan/RendererVulkan.hpp"
-
 #include "core/AppCore.hpp"
 #include "graphics/impl/SpirVCompiler.hpp"
 
@@ -38,9 +36,9 @@ Implementation::~Implementation() {
 }
 
 void Implementation::init(Window *window) {
-    spdlog::info("Checking for Vulkan support");
+    fmt::println("Checking for Vulkan support");
     if (!glfwVulkanSupported()) {
-        spdlog::error("glfw and Vulkan said no");
+        fmt::println("glfw and Vulkan said no");
         throw std::runtime_error("");
     }
     check_error(
@@ -48,10 +46,10 @@ void Implementation::init(Window *window) {
         "Failed to initialize Vulkan loader"
     );
 
-    spdlog::trace("shader compiler");
+    fmt::println("shader compiler");
     SpirVCompiler::Init();
 
-    spdlog::trace("instance");
+    fmt::println("instance");
     VkDebugUtilsMessengerCreateInfoEXT debugInfo {};
     instance.Create(debugInfo);
     volkLoadInstance(instance.handle);
@@ -60,29 +58,29 @@ void Implementation::init(Window *window) {
         "Failed to create debug messenger!"
     );
 
-    spdlog::trace("surface");
+    fmt::println("surface");
     device.surface = static_cast<VkSurfaceKHR>(window->CreateSurface(instance.handle));
 
-    spdlog::trace("physical device");
+    fmt::println("physical device");
     device.FindPhysicalDevice();
 
-    spdlog::trace("logical device");
+    fmt::println("logical device");
     device.CreateLogicalDevice();
     volkLoadDevice(device.logical);
 
-    spdlog::trace("allocator");
+    fmt::println("allocator");
     allocator.Init();
 
-    spdlog::trace("swapchain");
+    fmt::println("swapchain");
     swapchain.Create(*window);
 
     // TODO: write a pipeline helper as we'll want many, not just one
     // how they will be done for this app has to be designed more, since it's not cut-and-dry like opengl
 
-    spdlog::trace("setting up sync objects");
+    fmt::println("setting up sync objects");
     sync.Setup();
 
-    spdlog::trace("command buffers");
+    fmt::println("command buffers");
     sync.CreateCommandBuffers();
 
     theWindow = window;
@@ -187,7 +185,7 @@ std::vector<const char *> Instance::GetExtensions() {
     uint32_t extCount = 0;
     const auto extensions = glfwGetRequiredInstanceExtensions(&extCount);
     std::vector requestedExtensions { VK_EXT_DEBUG_UTILS_EXTENSION_NAME };
-    spdlog::trace("Found {} instance extensions", extCount);
+    fmt::println("Found {} instance extensions", extCount);
     for (auto i = 0; i < extCount; i++)
         requestedExtensions.push_back(extensions[i]);
     return requestedExtensions;
@@ -223,12 +221,12 @@ VkPhysicalDevice Device::FindPhysicalDevice() {
         }
         VkPhysicalDeviceProperties props {};
         vkGetPhysicalDeviceProperties(physical, &props);
-        spdlog::info("Device: {}", props.deviceName);
+        // fmt::println("Device: {}", props.deviceName);
         SelectQueue();
         return physical;
     }
 
-    spdlog::info("No physical device found!");
+    fmt::println("No physical device found!");
     throw std::runtime_error("No physical device found!");
 }
 
@@ -254,7 +252,7 @@ void Device::CreateLogicalDevice() {
     if (!supportedFeatures13.dynamicRendering || !supportedFeatures13.
         synchronization2 ||
         !supportedFeatures12.timelineSemaphore) {
-        spdlog::error("Physical device doesn't meet the feature requirements");
+        fmt::println("Physical device doesn't meet the feature requirements");
         throw;
     }
 
@@ -319,7 +317,7 @@ void Device::CreateLogicalDevice() {
 
     vkGetDeviceQueue(logical, gfxQueueId, 0, &gfxQueue);
     if (!gfxQueue) {
-        spdlog::error("Failed to get graphics queue info!");
+        fmt::println("Failed to get graphics queue info!");
         throw;
     }
 }
@@ -361,7 +359,7 @@ void Allocator::Init() {
 void Swapchain::Check() {
     if (requireRecreate) {
         vkDeviceWaitIdle(device.logical);
-        spdlog::trace("recreating swapchain");
+        fmt::println("recreating swapchain");
         Destroy();
         Create(*theWindow);
         requireRecreate = false;
@@ -731,7 +729,7 @@ void SyncManager::CreateCommandBuffers() {
 
 VkBool32 DebugMessenger::callback(VK_CALLBACKS) {
     if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
-        spdlog::error("Validation layer: {}", pCallbackData->pMessage);
+        // fmt::println("Validation layer: {}", pCallbackData->pMessage);
     }
 
     return VK_FALSE;

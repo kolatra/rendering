@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <glm/gtc/type_ptr.hpp>
-#include <spdlog/spdlog.h>
+#include <fmt/core.h>
 #define GLAD_GL_IMPLEMENTATION
 #include "glad/gl.h"
 #define STB_IMAGE_IMPLEMENTATION
@@ -57,7 +57,7 @@ namespace Luna::OpenGL {
             glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &logLength);
             std::string log(static_cast<size_t>(logLength), '\0');
             glGetShaderInfoLog(vertexShader, logLength, nullptr, log.data());
-            spdlog::error("Vertex shader compilation failed:\n{}", log);
+            fmt::println("Vertex shader compilation failed:\n{}", log);
             exit(1);
         }
 
@@ -70,7 +70,7 @@ namespace Luna::OpenGL {
             glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &logLength);
             std::string log(static_cast<size_t>(logLength), '\0');
             glGetShaderInfoLog(fragmentShader, logLength, nullptr, log.data());
-            spdlog::error("Fragment shader compilation failed:\n{}", log);
+            fmt::println("Fragment shader compilation failed:\n{}", log);
             exit(1);
         }
 
@@ -84,7 +84,7 @@ namespace Luna::OpenGL {
             glGetProgramiv(ID, GL_INFO_LOG_LENGTH, &logLength);
             std::string log(static_cast<size_t>(logLength), '\0');
             glGetProgramInfoLog(ID, logLength, nullptr, log.data());
-            spdlog::error("Shader program link failed:\n{}", log);
+            fmt::println("Shader program link failed:\n{}", log);
             exit(1);
         }
 
@@ -142,10 +142,10 @@ namespace Luna::OpenGL {
             glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
 
-            spdlog::debug("Loaded texture from: {}", filename);
+            fmt::println("Loaded texture from: {}", filename);
             stbi_image_free(data);
         } else {
-            spdlog::error("Texture failed to load from: {}", filename);
+            fmt::println("Texture failed to load from: {}", filename);
             stbi_image_free(data);
         }
 

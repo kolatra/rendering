@@ -1,15 +1,8 @@
 #pragma once
-#include <vulkan/vulkan.h>
-#include <shaderc/shaderc.hpp>
-#include <vma/vk_mem_alloc.h>
+#include "vk_types.hpp"
 
 #include "graphics/Renderer.hpp"
 #include "graphics/types/Shader.hpp"
-
-#define VK_CALLBACKS VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, \
-            VkDebugUtilsMessageSeverityFlagsEXT messageType, \
-            const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, \
-            void *pUserData
 
 namespace Luna::Vulkan {
     class Implementation : public Renderer {

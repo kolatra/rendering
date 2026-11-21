@@ -55,7 +55,7 @@ namespace Luna::SceneManager {
         currentScene->Update(dt);
     }
 
-    void Render(float dt) {
-        currentScene->Render(dt);
+    void Render() {
+        currentScene->Render();
     }
 }

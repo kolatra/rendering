@@ -4,8 +4,8 @@ find_package(Vulkan REQUIRED COMPONENTS volk shaderc_combined)
 find_package(Freetype REQUIRED)
 
 add_subdirectory(external/glfw)
-add_subdirectory(external/spdlog)
 add_subdirectory(external/glm)
+add_subdirectory(external/fmt)
 
 if(APPLE)
     message(STATUS "Configuring for macOS")
@@ -56,11 +56,7 @@ add_library(${PROJECT_NAME}
         src/graphics/TextRendering.cpp
         src/graphics/impl/opengl/TextOpenGL.cpp
         src/util/FileHelper.cpp
-        src/managers/AssetManager.hpp
-        src/managers/AssetManager.cpp
-        src/graphics/types/Shader.hpp
         src/graphics/impl/SpirVCompiler.cpp
-        src/graphics/impl/SpirVCompiler.hpp
         src/graphics/scene/SceneManager.cpp
         src/util/Strings.cpp
 )
@@ -75,7 +71,6 @@ endif()
 target_include_directories(${PROJECT_NAME} PUBLIC
         src
         external
-        external/spdlog/include
         external/glm
 )
 
@@ -102,6 +97,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         Vulkan::volk
         Vulkan::shaderc_combined
         Freetype::Freetype
+        PUBLIC fmt::fmt
 )
 
 if(WIN32 AND BUILD_SHARED_LIBS)

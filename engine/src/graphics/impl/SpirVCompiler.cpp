@@ -1,4 +1,4 @@
-#include <spdlog/spdlog.h>
+#include <fmt/core.h>
 
 #include "SpirVCompiler.hpp"
 #include "Utilities.hpp"
@@ -31,13 +31,13 @@ namespace Luna::SpirVCompiler {
 
     shaderc::CompilationResult<uint32_t> Compile(const std::string &filename, shaderc_shader_kind kind) {
         if (!initialized) {
-            spdlog::error("Trying to compile a SpirV shader without starting the compiler!");
+            fmt::println("Trying to compile a SpirV shader without starting the compiler!");
             throw std::runtime_error("");
         }
         std::string src = Util::ReadFileToString(filename);
         shaderc::CompilationResult result = compiler.CompileGlslToSpv(src, kind, filename.c_str(), options);
         if (result.GetCompilationStatus() != shaderc_compilation_status_success) {
-            spdlog::error("Shader compilation error: {}", result.GetErrorMessage());
+            fmt::println("Shader compilation error: {}", result.GetErrorMessage());
             throw;
         }
         return result;

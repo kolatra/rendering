@@ -4,7 +4,7 @@
 #include <typeinfo>
 
 #include <glm/glm.hpp>
-#include "spdlog/spdlog.h"
+#include <fmt/core.h>
 
 #include "graphics/Renderer.hpp"
 
@@ -20,7 +20,7 @@ namespace Luna {
 
         virtual ~GameObject() { model.reset(); }
         virtual void Tick() = 0;
-        virtual void PreRender(float dt) = 0;
+        virtual void PreRender() = 0;
         virtual void Draw(Renderer &renderer) const;
 
         uint32_t GetPriority() const { return renderPriority; }
@@ -42,12 +42,12 @@ namespace Luna {
         std::vector<std::unique_ptr<GameObject>> objects;
 
         void Update(float dt);
-        void Render(float dt);
+        void Render();
 
         template <typename O>
         void RegisterObject() {
             std::unique_ptr<GameObject> object = std::make_unique<O>();
-            spdlog::info("Registered GameObject type: {}", typeid(O).name());
+            fmt::println("Registered GameObject type: {}", typeid(O).name());
 
             if (object->modelPath != "") {
                 object->model = Model::Create(object->modelPath);
@@ -61,7 +61,7 @@ namespace Luna {
         void Startup();
         void Shutdown();
         void Update(float dt);
-        void Render(float dt);
+        void Render();
 
         std::vector<std::unique_ptr<Scene>> &Scenes();
         EngineCamera &Camera();

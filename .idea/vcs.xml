@@ -3,6 +3,7 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/engine/external/assimp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/engine/external/fmt" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/engine/external/glfw" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/engine/external/glm" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/engine/external/metal-cpp" vcs="Git" />

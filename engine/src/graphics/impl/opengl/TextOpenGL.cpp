@@ -2,7 +2,7 @@
 #include <stdexcept>
 
 #include <freetype/freetype.h>
-#include "spdlog/spdlog.h"
+#include <fmt/core.h>
 #include "glad/gl.h"
 #include "glm/gtc/type_ptr.hpp"
 
@@ -53,7 +53,7 @@ namespace Luna::FontRenderer::OpenGLText {
         }
 
         shader = Shader::Create("text");
-        spdlog::debug("Text data shader created");
+        fmt::println("Text data shader created");
 
         glGenVertexArrays(1, &c_VAO);
         glGenBuffers(1, &c_VBO);
@@ -67,7 +67,7 @@ namespace Luna::FontRenderer::OpenGLText {
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_2D, 0);
 
-        spdlog::debug("Text data buffered");
+        fmt::println("Text data buffered");
     }
 
     void shutdown() {

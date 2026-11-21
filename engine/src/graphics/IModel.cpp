@@ -7,7 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "spdlog/spdlog.h"
+#include <fmt/core.h>
 
 // https://learnopengl.com/Model-Loading/Model
 namespace Luna {
@@ -40,7 +40,7 @@ namespace Luna {
         const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
         // check for errors
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-            spdlog::error("ERROR::ASSIMP:: {}", importer.GetErrorString());
+            fmt::println("ERROR::ASSIMP:: {}", importer.GetErrorString());
             return;
         }
         // retrieve the directory path of the filepath

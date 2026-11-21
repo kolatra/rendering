@@ -16,3 +16,6 @@
 [submodule "engine/external/glm"]
 	path = engine/external/glm
 	url = https://github.com/g-truc/glm.git
+[submodule "engine/external/fmt"]
+	path = engine/external/fmt
+	url = https://github.com/fmtlib/fmt.git

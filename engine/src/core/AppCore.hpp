@@ -25,10 +25,5 @@ public:
     ~AppCore();
 
     void Run();
-
-    double currentTime = 0;
-    double lastTime = 0;
-    void UpdateTime();
-
 };
 }

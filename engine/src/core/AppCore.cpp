@@ -1,4 +1,4 @@
-#include "spdlog/spdlog.h"
+#include <fmt/core.h>
 #include "platform/Window.hpp"
 #include "graphics/Renderer.hpp"
 #include "core/AppCore.hpp"
@@ -43,24 +43,37 @@ namespace Luna {
     }
 
     void AppCore::Run() {
+        auto currentTime = window->GetTime();
+        auto dt = 0.01;
+        auto frameCount = 0;
+        auto lastFpsUpdate = currentTime;
+
         while (!window->ShouldClose()) {
-            UpdateTime();
-            SceneManager::Update(renderer->deltaTime);
+            auto newTime = window->GetTime();
+            auto frameTime = newTime - currentTime;
+            currentTime = newTime;
+
+            if (currentTime - lastFpsUpdate >= 1) {
+                window->SetTitle(std::format("FPS: {}", frameCount));
+                lastFpsUpdate = currentTime;
+                frameCount = 0;
+            }
+
+            while (frameTime > 0.0) {
+                float deltaTime = std::min(frameTime, dt);
+                SceneManager::Update(deltaTime);
+                frameTime -= deltaTime;
+            }
 
             renderer->clear({0.4f, 0.7f, 1.0f, 1.0f});
             renderer->beginFrame();
-            SceneManager::Render(renderer->deltaTime);
+            SceneManager::Render();
             renderer->endFrame();
 
             window->SwapBuffers();
             window->PollEvents();
+            frameCount++;
         }
-    }
-
-    void AppCore::UpdateTime() {
-        currentTime = window->GetTime();
-        renderer->deltaTime = static_cast<float>(currentTime - lastTime);
-        lastTime = currentTime;
     }
 
     void Window::UpdateMouse(double x, double y) {

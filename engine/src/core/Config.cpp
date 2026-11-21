@@ -1,5 +1,4 @@
 #include <filesystem>
-#include <spdlog/spdlog.h>
 
 #include "core/Config.hpp"
 
@@ -12,16 +11,14 @@ namespace fs = std::filesystem;
 
 namespace Luna {
 Configuration::Configuration(bool storeDefaults) {
-    spdlog::set_level(spdlog::level::trace);
-
     if (!Load()) {
         fs::path file = fs::current_path() / "config.toml";
-        spdlog::warn("No config file found at {} - Defaults will be used.", file.string());
+        fmt::println("No config file found at {} - Defaults will be used.", file.string());
         if (storeDefaults) {
             Save(file);
-            spdlog::info("Saved config to {}", file.string());
+            fmt::println("Saved config to {}", file.string());
         } else {
-            spdlog::warn("Start the program with --save-config to save the defaults to disk.");
+            fmt::println("Start the program with --save-config to save the defaults to disk.");
         }
     }
 }
@@ -30,9 +27,6 @@ bool Configuration::Load() {
     try {
          config = toml::parse_file("config.toml");
     } catch (toml::v3::ex::parse_error& _) {
-        if (this->alwaysLog) {
-            this->Print();
-        }
         return false;
     }
 
@@ -52,51 +46,7 @@ bool Configuration::Load() {
         this->startingHeight = h;
     }
 
-    if (const std::string log_level = config["general"]["logLevel"].value_or(""); log_level != "") {
-        if (log_level == "debug") {
-            spdlog::set_level(spdlog::level::debug);
-        } else if (log_level == "info") {
-            spdlog::set_level(spdlog::level::info);
-        } else if (log_level == "warning") {
-            spdlog::set_level(spdlog::level::warn);
-        } else if (log_level == "error") {
-            spdlog::set_level(spdlog::level::err);
-        } else if (log_level == "critical") {
-            spdlog::set_level(spdlog::level::critical);
-        } else if (log_level == "off") {
-            spdlog::set_level(spdlog::level::off);
-        }
-        std::cout << "spdlog::level::" << log_level << std::endl;
-    } else {
-        std::cout << "spdlog::level::info (unspecified config option)\n";
-        spdlog::set_level(spdlog::level::info);
-    }
-
-    const bool show_floor = config["general"]["showFloor"].value_or(false);
-    this->showFloor = show_floor;
-
-    if (this->alwaysLog) {
-        this->Print();
-    }
-
     return true;
-}
-
-void Configuration::Print() {
-    auto currentLevel = spdlog::get_level();
-    if (currentLevel > spdlog::level::debug) {
-        spdlog::set_level(spdlog::level::debug);
-    }
-
-    spdlog::debug("CFG: Graphics API -> {}", be_to_string(this->rendering_api));
-    spdlog::debug("CFG: Window name -> {}", this->name);
-    spdlog::debug("CFG: Width -> {}", this->startingWidth);
-    spdlog::debug("CFG: Height -> {}", this->startingHeight);
-    spdlog::debug("CFG: showFloor -> {}", this->showFloor);
-
-    if (spdlog::get_level() != currentLevel) {
-        spdlog::set_level(currentLevel);
-    }
 }
 
 bool Configuration::Save(std::filesystem::path &path) const {
@@ -106,7 +56,7 @@ bool Configuration::Save(std::filesystem::path &path) const {
         {"general", std::move(configTable)}
     };
 
-    spdlog::info("--- Serialized ---");
+    fmt::println("--- Serialized ---");
     std::cout << root << std::endl;
 
     std::ofstream outFile(path);
@@ -114,7 +64,7 @@ bool Configuration::Save(std::filesystem::path &path) const {
         outFile << root << std::endl;
         return true;
     } else {
-        spdlog::error("Could not open config file for writing at {}", path.string());
+        fmt::println("Could not open config file for writing at {}", path.string());
         return false;
     }
 }
@@ -125,9 +75,7 @@ toml::table Configuration::to_toml() const {
         {"windowName", this->name},
         {"width", this->startingWidth},
         {"height", this->startingHeight},
-        {"showFloor", this->showFloor},
-        {"alwaysLog", this->alwaysLog},
-        {"logLevel", level_to_string(this->logLevel)}
+        {"alwaysLog", this->alwaysLog}
     };
 }
 }

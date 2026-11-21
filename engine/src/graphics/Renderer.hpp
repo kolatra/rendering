@@ -64,7 +64,6 @@ public:
 
 class Renderer {
 public:
-    float deltaTime;
     Renderer();
     virtual ~Renderer();
 
